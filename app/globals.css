@@ -5,6 +5,12 @@
  * Palette is the calm financial-minimal light theme (emerald accent).
  * Feature code consumes tokens (var(--fin-*) or Tailwind fin-* utilities), never raw hex.
  * Dark theme is "compatible / future" (DESIGN.md §2) — tokens TBD; do not auto-flip yet.
+ *
+ * OWNERSHIP (TC-MOD-02, FR-SHELL-04): this file, app/layout.tsx, app/page.tsx, and
+ * the fin-* tokens are owned by Foundation. They change ONLY through a Foundation /
+ * Coordination change. The sole sanctioned literal-hex copies of these colors live
+ * in app/manifest.ts (theme/background) and the layout's viewport.themeColor, which
+ * are JS and cannot read CSS variables — keep them in sync with the tokens.
  */
 :root {
   /* surfaces */

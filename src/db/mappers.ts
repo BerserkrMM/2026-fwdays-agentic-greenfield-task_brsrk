@@ -1,0 +1,76 @@
+// Mappers: raw DB rows <-> framework-free domain types. The only place that
+// knows about column names and DB coercions (TC-STACK-04).
+
+import { CURRENCY } from "@/src/domain/money";
+import type { InputEvent } from "@/src/domain/input-event";
+import type { LedgerItem } from "@/src/domain/ledger-item";
+import type { ParserRun } from "@/src/domain/parser-run";
+import type { InputEventRow, LedgerItemRow, ParserRunRow } from "./rows";
+
+export function toInputEvent(row: InputEventRow): InputEvent {
+  return {
+    id: row.id,
+    source: row.source,
+    provider: row.provider,
+    rawText: row.raw_text,
+    storageUri: row.storage_uri,
+    mimeType: row.mime_type,
+    createdAt: row.created_at,
+  };
+}
+
+export function toParserRun(row: ParserRunRow): ParserRun {
+  return {
+    id: row.id,
+    inputEventId: row.input_event_id,
+    status: row.status,
+    normalizedPayload: row.normalized_payload,
+    resultJson:
+      row.result_json == null
+        ? null
+        : typeof row.result_json === "string"
+          ? row.result_json
+          : JSON.stringify(row.result_json),
+    error: row.error,
+    createdAt: row.created_at,
+  };
+}
+
+export function toLedgerItem(row: LedgerItemRow): LedgerItem {
+  return {
+    id: row.id,
+    accountId: row.account_id,
+    inputEventId: row.input_event_id,
+    parserRunId: row.parser_run_id,
+    description: row.description,
+    amountMinor:
+      typeof row.amount_minor === "string"
+        ? Number(row.amount_minor)
+        : row.amount_minor,
+    currency: CURRENCY,
+    type: row.type,
+    category: row.category,
+    status: row.status,
+    importRowNumber: row.import_row_number,
+    occurredAt: row.occurred_at,
+    createdAt: row.created_at,
+  };
+}
+
+export function fromLedgerItem(item: LedgerItem): LedgerItemRow {
+  return {
+    id: item.id,
+    account_id: item.accountId,
+    input_event_id: item.inputEventId,
+    parser_run_id: item.parserRunId,
+    description: item.description,
+    amount_minor: item.amountMinor,
+    currency: item.currency,
+    type: item.type,
+    category: item.category,
+    status: item.status,
+    import_row_number: item.importRowNumber,
+    occurred_at: item.occurredAt,
+    created_at: item.createdAt,
+  };
+}

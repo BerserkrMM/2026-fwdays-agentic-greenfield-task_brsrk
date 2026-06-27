@@ -4,6 +4,119 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-27 07:25 UTC
+
+**What was done**
+- Prepared the repository for PR submission after the OpenSpec archive: re-ran verification (`npm run lint`, `npx tsc --noEmit`, `npm run test`, `npm run build`) and confirmed the foundation work is green.
+- Planned branch correction: keep `dev` at the starter baseline and move all current foundation changes onto the feature branch `add-foudation` for a PR into `dev`.
+
+**Current state**
+- Foundation/App Shell implementation and archived OpenSpec artifacts are ready to commit on `add-foudation`.
+- PR body is prepared per `README.md`, with the video link intentionally left as a TODO for later.
+
+**Next steps**
+- Commit the pending changes, push `dev` and `add-foudation`, and open the PR from `add-foudation` into `dev`.
+- Add the 1–2 minute demo video link before final homework submission.
+
+**Open questions / blockers**
+- Need the author's real name and video-demo URL for the final PR template checklist.
+
+---
+
+## 2026-06-26 18:15 UTC
+
+**What was done**
+- Read the homework `README.md`, project docs, and checked the current repository state for a submission-readiness assessment.
+- Re-ran verification: `npm run lint`, `npx tsc --noEmit`, `npm run test` (9/9), and `npm run build` all pass.
+
+**Current state**
+- Foundation/App Shell implementation remains green, but working tree changes are still uncommitted.
+- Homework submission still needs PR-level artifacts: filled PR template, real name, video demo link, and final CodeRabbit iteration evidence.
+
+**Next steps**
+- Commit/push the current work on a submission branch, open PR, fill the homework template, add a 1–2 minute demo video, and iterate on CodeRabbit feedback.
+
+**Open questions / blockers**
+- Need the author's real name and video-demo URL before the homework can be submitted.
+
+---
+
+## 2026-06-26 18:13 UTC
+
+**What was done**
+- Synced the `add-foundation-shell` delta spec into the main specs: created the
+  baseline `openspec/specs/foundation/spec.md` (13 requirements / 38 scenarios,
+  all ADDED). `openspec validate foundation --type spec --strict` passes.
+- Archived the completed change to
+  `openspec/changes/archive/2026-06-26-add-foundation-shell/` (all artifacts +
+  34/34 tasks complete). No active changes remain.
+
+**Current state**
+- `foundation` is now a baseline main spec future changes can delta against.
+- Implementation unchanged from the 18:01 entry (green across tsc/lint/test/build).
+
+**Next steps**
+- Start **`add-accounts`** (`opsx:propose`): account metadata + default account,
+  implementing the `AccountsPort` seam (precondition for saving ledger items).
+
+**Open questions / blockers**
+- None.
+
+---
+
+## 2026-06-26 18:01 UTC
+
+**What was done**
+- Ran the first capability through the OpenSpec workflow end-to-end:
+  `opsx:propose` → independent clean-context review → spec refined to ~95%
+  (`openspec validate --strict` passes; 13 requirements / 38 scenarios) →
+  `opsx:apply` (all 34 tasks). Change: **`add-foundation-shell`** (capability
+  `foundation`).
+- Implemented Foundation (TC-MOD-02 owner of cross-cutting files + shared schema):
+  - **Domain (`src/domain/**`)** — framework-free `LedgerItem`, `InputEvent`,
+    `ParserRun`, `ParsedLedgerItemDraft`, money model (signed kopiyky, UAH),
+    repository ports, `AccountsPort` seam, and the item-creation contract types.
+  - **DB boundary (`src/db/**`)** — single shared `postgres` client with a named
+    in-memory fallback (runs with no `DATABASE_URL`), `rows.ts`/`mappers.ts`, and
+    `bootstrap.sql` (`input_events`, `parser_runs`, `ledger_items`; `timestamptz`;
+    UAH CHECK; `(input_event_id, import_row_number)` UNIQUE index). `server-only`
+    guards it.
+  - **Item-creation contract (`src/modules/foundation/item-creation.ts`)** — the
+    only ledger-item write path; default-account resolution via the port, category
+    default `Без категорії`, referential-ordering check.
+  - **App shell** — `app/layout.tsx` (`lang="uk"`, `viewport` with
+    `viewportFit:"cover"` + token-synced `themeColor`), responsive `AppShell`
+    (desktop sidebar + topbar, mobile bottom nav, safe-area), six shared screen
+    states, live offline indicator, installable PWA (`app/manifest.ts`, icons,
+    shell-only `public/sw.js`), `/imports` hub + placeholder routes for all nav
+    destinations (no dead links).
+- Verification: `npx tsc --noEmit` ✓, `npm run lint` ✓, `npm run test` ✓ (9/9,
+  incl. a structural TC-STACK-02 check that no `"use client"` file imports the db
+  boundary), `npm run build` ✓ (13 routes), runtime smoke via `next start` — all
+  routes 200, manifest/SW/icons serve, dashboard renders UA nav + `viewport-fit`.
+
+**Current state**
+- Foundation shell + shared schema + contracts are in place and green across
+  tsc/lint/test/build. App runs on a clean checkout (in-memory fallback).
+- Feature screens are intentional placeholders ("Скоро") pending their
+  capabilities. `/imports` hub is real and links the three channels.
+- `openspec/changes/add-foundation-shell` is fully implemented (34/34 tasks); not
+  yet archived.
+
+**Next steps**
+- Archive `add-foundation-shell` (`opsx:archive`) once accepted.
+- Start **`add-accounts`** (Phase 2): account metadata + default account — the
+  `AccountsPort` seam is waiting for its implementation, and it is the
+  precondition for saving ledger items.
+
+**Open questions / blockers**
+- Browser-console silence (NFR-OBS-01) and the install prompt are best verified
+  manually in a real browser; server-side smoke was clean.
+- `account_id` FK to the future `accounts` table is deferred to the `add-accounts`
+  coordination change (table is owned there); column is already `NOT NULL`.
+
+---
+
 ## 2026-06-26 17:31 UTC
 
 **What was done**
