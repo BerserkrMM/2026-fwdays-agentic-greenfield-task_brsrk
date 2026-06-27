@@ -4,6 +4,25 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-27 08:05 UTC
+
+**What was done**
+- Fixed the CodeRabbit configuration parsing issue by shortening `.coderabbit.yaml` `tone_instructions` to 140 characters while preserving the Ukrainian mentor/process-focused review intent.
+- Locally parsed `.coderabbit.yaml` with Python/YAML to confirm the field is under CodeRabbit's 250-character limit.
+
+**Current state**
+- CodeRabbit config should no longer fail on `tone_instructions` length.
+- PR #1 still targets `dev`, so CodeRabbit auto-review may still need a manual `@coderabbitai review` comment unless repo settings are changed.
+
+**Next steps**
+- Push this config fix to `add-foudation`.
+- Trigger CodeRabbit manually in the PR with `@coderabbitai review` if auto-review remains skipped for non-default base branches.
+
+**Open questions / blockers**
+- Need author's real name and video-demo URL for final submission.
+
+---
+
 ## 2026-06-27 07:25 UTC
 
 **What was done**
