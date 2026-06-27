@@ -8,15 +8,16 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 **What was done**
 - Prepared the repository for PR submission after the OpenSpec archive: re-ran verification (`npm run lint`, `npx tsc --noEmit`, `npm run test`, `npm run build`) and confirmed the foundation work is green.
-- Planned branch correction: keep `dev` at the starter baseline and move all current foundation changes onto the feature branch `add-foudation` for a PR into `dev`.
+- Corrected the branch flow: created/pushed `dev` from the starter baseline, created/pushed `add-foudation` with the foundation changes, and opened PR #1 from `add-foudation` into `dev`.
+- Filled the PR body according to `README.md`, with the video link intentionally left as a TODO for later.
 
 **Current state**
-- Foundation/App Shell implementation and archived OpenSpec artifacts are ready to commit on `add-foudation`.
-- PR body is prepared per `README.md`, with the video link intentionally left as a TODO for later.
+- PR is open: https://github.com/BerserkrMM/2026-fwdays-agentic-greenfield-task_brsrk/pull/1
+- Foundation/App Shell implementation and archived OpenSpec artifacts are on `add-foudation`; `dev` remains at the homework starter baseline.
 
 **Next steps**
-- Commit the pending changes, push `dev` and `add-foudation`, and open the PR from `add-foudation` into `dev`.
-- Add the 1–2 minute demo video link before final homework submission.
+- Add the author's real name and the 1–2 minute demo video link before final homework submission.
+- Review and iterate on CodeRabbit feedback when it appears.
 
 **Open questions / blockers**
 - Need the author's real name and video-demo URL for the final PR template checklist.
