@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-28T20:04:24.936Z",
+  "generatedAt": "2026-06-28T20:06:49.140Z",
   "generatedBy": "scripts/slice-report.mjs",
   "slice": "add-accounts",
   "commands": {
@@ -36,12 +36,12 @@
     "openspecPassed": 10,
     "activeChanges": 0,
     "testFilesPassed": 7,
-    "testsPassed": 34,
+    "testsPassed": 37,
     "traceFailures": 0,
     "traceWarnings": 106,
     "trajectoryFailures": 0,
     "trajectoryWarnings": 2,
-    "changedFiles": 44,
+    "changedFiles": 46,
     "evalBaseline": {
       "ua-ux-clarity": 95,
       "explicit-state-clarity": 96,

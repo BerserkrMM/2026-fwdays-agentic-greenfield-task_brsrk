@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it } from "vitest";
 import { createInMemoryRepositories } from "@/src/db/memory";
 import { AccountError, CASH_ACCOUNT_NAME } from "@/src/domain/account";
-import type { Repositories } from "@/src/domain/ports";
+import type { Account } from "@/src/domain/account";
+import type { AccountRepository, Repositories } from "@/src/domain/ports";
 import { AccountsService } from "./service";
 
 let repos: Repositories;
@@ -17,6 +18,17 @@ function caught(p: Promise<unknown>): Promise<unknown> {
     () => null,
     (e) => e,
   );
+}
+
+function account(name: string, isDefault = false, archivedAt: Date | null = null): Account {
+  return {
+    id: globalThis.crypto.randomUUID(),
+    name,
+    currency: "UAH",
+    isDefault,
+    archivedAt,
+    createdAt: new Date(),
+  };
 }
 
 describe("AccountsService", () => {
@@ -55,6 +67,32 @@ describe("AccountsService", () => {
   });
 
   // @trace FR-ACCT-04
+  it("retries first-default creation as non-default after a default conflict", async () => {
+    const existingDefault = account("Готівка", true);
+    const inserted: Account[] = [];
+    let defaultLookups = 0;
+    const repo: AccountRepository = {
+      list: async () => [],
+      findById: async () => null,
+      findDefault: async () => (++defaultLookups === 1 ? null : existingDefault),
+      countActive: async () => 1,
+      insert: async (next) => {
+        if (next.isDefault) throw new Error("default-account-conflict");
+        inserted.push(next);
+        return next;
+      },
+      update: async (next) => next,
+      setDefault: async () => {},
+    };
+
+    const created = await new AccountsService(repo).createAccount("Картка");
+
+    expect(created.isDefault).toBe(false);
+    expect(inserted).toHaveLength(1);
+    expect(inserted[0].name).toBe("Картка");
+  });
+
+  // @trace FR-ACCT-04
   it("creates a non-default account and switches the default, keeping exactly one", async () => {
     const def = await service.ensureSeededDefault();
     const card = await service.createAccount("Картка");
@@ -67,6 +105,25 @@ describe("AccountsService", () => {
     expect(active.find((a) => a.id === card.id)?.isDefault).toBe(true);
     expect(active.find((a) => a.id === def.id)?.isDefault).toBe(false);
     expect(await service.getDefaultAccountId()).toBe(card.id);
+  });
+
+  // @trace FR-ACCT-04
+  it("keeps the current in-memory default when asked to default an archived account", async () => {
+    const cash = await repos.accounts.insert(account("Готівка", true));
+    const archived = await repos.accounts.insert(account("Архів", false, new Date()));
+
+    await repos.accounts.setDefault(archived.id);
+
+    expect((await repos.accounts.findDefault())?.id).toBe(cash.id);
+  });
+
+  // @trace FR-ACCT-04
+  it("rejects inserting a second default account in the in-memory repository", async () => {
+    await repos.accounts.insert(account("Готівка", true));
+
+    await expect(repos.accounts.insert(account("Картка", true))).rejects.toThrow(
+      "default-account-conflict",
+    );
   });
 
   // @trace FR-ACCT-03

@@ -516,6 +516,9 @@
         "src/domain/account.test.ts",
         "src/modules/accounts/accounts.smoke.test.ts",
         "src/modules/accounts/service.test.ts",
+        "src/modules/accounts/service.test.ts",
+        "src/modules/accounts/service.test.ts",
+        "src/modules/accounts/service.test.ts",
         "src/modules/accounts/service.test.ts"
       ],
       "recordings": []

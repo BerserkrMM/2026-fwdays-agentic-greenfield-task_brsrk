@@ -48,7 +48,7 @@ Result: PASS, 106 warning(s)
 | FR-ACCT-01 | yes | yes | 5 | - |
 | FR-ACCT-02 | yes | yes | - | - |
 | FR-ACCT-03 | yes | yes | 5 | - |
-| FR-ACCT-04 | yes | yes | 4 | - |
+| FR-ACCT-04 | yes | yes | 7 | - |
 | FR-ACCT-05 | yes | yes | 7 | - |
 | FR-ACCT-06 | yes | yes | 4 | - |
 | FR-CAT-01 | yes | yes | 1 | - |
