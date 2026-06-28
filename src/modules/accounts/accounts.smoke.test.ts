@@ -31,8 +31,8 @@ describe("accounts boundary smoke (in-memory fallback, TC-DATA-01)", () => {
     // the now-non-default seed can be archived; the last active account cannot
     await service.archiveAccount(seeded.id);
     expect((await service.listActive()).map((a) => a.id)).toEqual([card.id]);
-    await expect(service.archiveAccount(card.id)).rejects.toBeInstanceOf(
-      AccountError,
-    );
+    await expect(service.archiveAccount(card.id)).rejects.toMatchObject({
+      code: "cannot-archive-last",
+    } satisfies Partial<AccountError>);
   });
 });

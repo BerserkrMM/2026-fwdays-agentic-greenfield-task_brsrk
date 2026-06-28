@@ -80,11 +80,23 @@ class PgAccountRepository implements AccountRepository {
   }
 
   async setDefault(id: string): Promise<void> {
-    // Clear-all-then-set inside one transaction so the partial-unique index
-    // never sees two defaults (D2).
+    // Validate and lock the target inside the transaction before changing any
+    // default flags. If the target is gone/archived, the UPDATE touches no rows
+    // and the previous active default remains in place.
     await this.sql.begin(async (tx) => {
-      await tx`UPDATE accounts SET is_default = false WHERE is_default`;
-      await tx`UPDATE accounts SET is_default = true WHERE id = ${id}`;
+      await tx`
+        WITH target AS (
+          SELECT id
+            FROM accounts
+           WHERE id = ${id}
+             AND archived_at IS NULL
+           FOR UPDATE
+        )
+        UPDATE accounts AS a
+           SET is_default = (a.id = target.id)
+          FROM target
+         WHERE a.archived_at IS NULL
+           AND (a.is_default OR a.id = target.id)`;
     });
   }
 }

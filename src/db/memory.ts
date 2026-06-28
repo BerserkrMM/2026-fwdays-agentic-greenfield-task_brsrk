@@ -47,6 +47,9 @@ class MemoryAccountRepository implements AccountRepository {
   }
 
   async insert(account: Account): Promise<Account> {
+    if (account.isDefault && this.active().some((a) => a.isDefault)) {
+      throw new Error("default-account-conflict");
+    }
     this.store.set(account.id, { ...account });
     return { ...account };
   }
@@ -57,11 +60,12 @@ class MemoryAccountRepository implements AccountRepository {
   }
 
   async setDefault(id: string): Promise<void> {
+    const target = this.store.get(id);
+    if (!target || target.archivedAt !== null) return;
     for (const [key, account] of this.store) {
       if (account.isDefault) this.store.set(key, { ...account, isDefault: false });
     }
-    const target = this.store.get(id);
-    if (target) this.store.set(id, { ...target, isDefault: true });
+    this.store.set(id, { ...target, isDefault: true });
   }
 }
 

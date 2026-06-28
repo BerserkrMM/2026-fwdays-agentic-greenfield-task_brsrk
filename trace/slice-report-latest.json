@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-28T19:22:48.126Z",
+  "generatedAt": "2026-06-28T20:01:21.283Z",
   "generatedBy": "scripts/slice-report.mjs",
   "slice": "add-accounts",
   "commands": {
@@ -41,7 +41,7 @@
     "traceWarnings": 106,
     "trajectoryFailures": 0,
     "trajectoryWarnings": 2,
-    "changedFiles": 34,
+    "changedFiles": 44,
     "evalBaseline": {
       "ua-ux-clarity": 95,
       "explicit-state-clarity": 96,
@@ -55,7 +55,7 @@
     },
     "reviewFindings": "clean",
     "rawReviewEvidenceRefs": 4,
-    "sliceTrailerCommits": 3,
+    "sliceTrailerCommits": 4,
     "refs": [
       "FR-ACCT-01",
       "FR-ACCT-03",

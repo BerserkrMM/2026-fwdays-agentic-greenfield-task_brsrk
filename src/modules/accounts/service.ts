@@ -97,7 +97,15 @@ export class AccountsService implements AccountsPort {
       archivedAt: null,
       createdAt: new Date(),
     };
-    return this.repo.insert(account);
+    try {
+      return await this.repo.insert(account);
+    } catch (error) {
+      // Race on an empty store: another request may have inserted the first
+      // default between findDefault() and insert(). If so, keep this account as
+      // non-default instead of surfacing a raw unique/default conflict.
+      if (!account.isDefault || !(await this.repo.findDefault())) throw error;
+      return this.repo.insert({ ...account, isDefault: false });
+    }
   }
 
   /** Renames an active account, keeping it UAH (FR-ACCT-03). */

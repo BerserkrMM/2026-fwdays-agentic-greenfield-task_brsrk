@@ -4,6 +4,43 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-28 20:01 UTC — CodeRabbit data-integrity fixes + fallow audit
+
+**What was done**
+- Addressed the substantive CodeRabbit findings for `add-accounts`: DB name length bound, truly deferrable account FK, safer in-memory/Postgres `setDefault`, conflict-aware first-default account creation, stricter RED-waiver behavior, and a concrete smoke-test error-code assertion.
+- Re-ran local verification and fallow audit before pushing.
+
+**Scope delivered**
+- Accounts data-integrity hardening only; no UI behavior or FR-ACCT-02 balance work was added.
+
+**Scope NOT delivered**
+- Historical RED evidence is still waived, not reconstructed.
+- Course submission metadata/demo remains outside this slice and should be handled in final submission artifacts or PR description.
+
+**Process evidence produced**
+- Local checks: `npm run test:run`, `npm run lint`, `npx tsc --noEmit`, `npm run build`, `npm run check:red-green`, `node scripts/check-trajectory.mjs --check-fresh`, `npx openspec validate --all --strict`.
+- Fallow audit command: `FALLOW_AGENT_SOURCE=pi npx fallow audit --base origin/dev --format json --quiet --explain 2>/dev/null || true`.
+- Fallow result: verdict `fail` with advisory findings — 4 dead-code issues (eval case and accounts port file reported as unused, plus unused exports `MAX_ACCOUNT_NAME_LENGTH` and `NewAccount`), 1 introduced duplication group in test env setup, and 1 inherited/moderate complexity finding in `check-red-green-evidence.mjs`. No circular deps, unresolved imports, unlisted deps, or dependency issues reported.
+
+**Process evidence NOT produced**
+- No trajectory-eval run in this step.
+- Fallow findings were reviewed but not all remediated because several are intentional process/module artifacts rather than runtime dead code.
+
+**Deferred work**
+- Optionally add fallow suppressions/config for intentional eval/module-boundary artifacts, or refactor shared test env setup later.
+- Decide whether to run trajectory-eval before merging PR #3.
+
+**Current state**
+- Local deterministic checks listed above pass; fallow remains advisory and reports the issues summarized here.
+
+**Next steps**
+- Commit and push the CodeRabbit fixes, then wait for PR #3 CI.
+
+**Open questions / blockers**
+- None.
+
+---
+
 ## 2026-06-28 19:21 UTC — add-accounts evidence retrofit + CI fix
 
 **What was done**
