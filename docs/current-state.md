@@ -4,6 +4,26 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-28 12:49 UTC
+
+**What was done**
+- Prepared a separate `chore-add-process-artifacts` branch from `dev` to land process artifacts outside the `add-accounts` feature branch.
+- Added `.github/*` to `.gitignore` while explicitly keeping `.github/pull_request_template.md`, so local Copilot/workflow/prompt files do not pollute feature PRs.
+- Staged process evidence/tooling intended for `dev`: `docs/`, `evals/`, `scripts/`, and related `package.json` npm scripts.
+
+**Current state**
+- Working branch is `chore-add-process-artifacts` during this handoff entry.
+- Goal is to fast-forward merge this chore branch into `dev`, then rebase/switch back to `add-accounts` for feature work.
+
+**Next steps**
+- Commit/push/merge the process artifacts into `dev`.
+- Return to `add-accounts` and continue the accounts capability work.
+
+**Open questions / blockers**
+- None.
+
+---
+
 ## 2026-06-28 12:13 UTC
 
 **What was done**
