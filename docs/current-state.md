@@ -4,6 +4,25 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-28 16:38 UTC
+
+**What was done**
+- Re-ran push after GitHub token received `workflow` scope.
+- Pushed `chore-prepare-project-factory` to origin and opened PR #2 targeting `dev`: https://github.com/BerserkrMM/2026-fwdays-agentic-greenfield-task_brsrk/pull/2
+
+**Current state**
+- Branch is published and PR #2 is open.
+- Local branch tracks `origin/chore-prepare-project-factory`.
+
+**Next steps**
+- Wait for GitHub CI / review on PR #2 and merge into `dev`.
+- After merge, start slice 2 `add-accounts` through Project Factory with tests-first, `@trace`, and an eval case from the start.
+
+**Open questions / blockers**
+- None.
+
+---
+
 ## 2026-06-28 16:35 UTC
 
 **What was done**
