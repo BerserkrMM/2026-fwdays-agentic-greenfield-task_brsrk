@@ -2,10 +2,12 @@
 // the app runs on a clean checkout (TC-DATA-01). They implement the same domain
 // repository ports as the postgres-backed repositories.
 
+import type { Account } from "@/src/domain/account";
 import type { InputEvent, NewInputEvent } from "@/src/domain/input-event";
 import type { LedgerItem } from "@/src/domain/ledger-item";
 import type { NewParserRun, ParserRun } from "@/src/domain/parser-run";
 import type {
+  AccountRepository,
   InputEventRepository,
   LedgerItemRepository,
   ParserRunRepository,
@@ -14,6 +16,57 @@ import type {
 
 function newId(): string {
   return globalThis.crypto.randomUUID();
+}
+
+class MemoryAccountRepository implements AccountRepository {
+  private readonly store = new Map<string, Account>();
+
+  private active(): Account[] {
+    return [...this.store.values()].filter((a) => a.archivedAt === null);
+  }
+
+  async list(opts?: { includeArchived?: boolean }): Promise<Account[]> {
+    const all = [...this.store.values()];
+    return (opts?.includeArchived ? all : all.filter((a) => a.archivedAt === null)).map(
+      (a) => ({ ...a }),
+    );
+  }
+
+  async findById(id: string): Promise<Account | null> {
+    const found = this.store.get(id);
+    return found ? { ...found } : null;
+  }
+
+  async findDefault(): Promise<Account | null> {
+    const found = this.active().find((a) => a.isDefault);
+    return found ? { ...found } : null;
+  }
+
+  async countActive(): Promise<number> {
+    return this.active().length;
+  }
+
+  async insert(account: Account): Promise<Account> {
+    if (account.isDefault && this.active().some((a) => a.isDefault)) {
+      throw new Error("default-account-conflict");
+    }
+    this.store.set(account.id, { ...account });
+    return { ...account };
+  }
+
+  async update(account: Account): Promise<Account> {
+    this.store.set(account.id, { ...account });
+    return { ...account };
+  }
+
+  async setDefault(id: string): Promise<void> {
+    const target = this.store.get(id);
+    if (!target || target.archivedAt !== null) return;
+    for (const [key, account] of this.store) {
+      if (account.isDefault) this.store.set(key, { ...account, isDefault: false });
+    }
+    this.store.set(id, { ...target, isDefault: true });
+  }
 }
 
 class MemoryInputEventRepository implements InputEventRepository {
@@ -78,5 +131,6 @@ export function createInMemoryRepositories(): Repositories {
     inputEvents: new MemoryInputEventRepository(),
     parserRuns: new MemoryParserRunRepository(),
     ledgerItems: new MemoryLedgerItemRepository(),
+    accounts: new MemoryAccountRepository(),
   };
 }

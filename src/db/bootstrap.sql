@@ -14,6 +14,26 @@ CREATE TABLE IF NOT EXISTS input_events (
   created_at  timestamptz NOT NULL DEFAULT now()
 );
 
+-- Accounts — owned by the `accounts` capability. The table, the single-default
+-- index, and the deferred ledger_items FK below are introduced as a coordination
+-- change to the shared schema (openspec/changes/add-accounts). v1: UAH-only,
+-- single-user (BC-SCOPE-01/02). NO opening balance is stored — account balance is
+-- derived from non-deleted ledger_items only (FR-ACCT-06, FR-LEDGER-05).
+CREATE TABLE IF NOT EXISTS accounts (
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  name        text NOT NULL CHECK (length(btrim(name)) > 0 AND length(btrim(name)) <= 60),
+  currency    text NOT NULL DEFAULT 'UAH' CHECK (currency = 'UAH'),
+  is_default  boolean NOT NULL DEFAULT false,
+  archived_at timestamptz,
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
+
+-- At most one default account (FR-ACCT-01). The "at least one" half is kept by the
+-- accounts service (seed at first run + archive guards). Partial index: only rows
+-- with is_default = true participate, so multiple non-defaults are unconstrained.
+CREATE UNIQUE INDEX IF NOT EXISTS ux_accounts_single_default
+  ON accounts (is_default) WHERE is_default;
+
 -- One parse attempt over an input_event (FR-PARSE-08). Foundation owns the table
 -- only; the `parsing` capability owns the run behavior.
 CREATE TABLE IF NOT EXISTS parser_runs (
@@ -60,3 +80,15 @@ CREATE TABLE IF NOT EXISTS ledger_items (
 -- constrained against each other. The upsert behavior is owned by `bank-imports`.
 CREATE UNIQUE INDEX IF NOT EXISTS ux_ledger_items_input_event_row
   ON ledger_items (input_event_id, import_row_number);
+
+-- Deferred FK from ledger_items.account_id to accounts. Foundation created the
+-- NOT NULL column but left the FK for the `accounts` coordination change (this
+-- one). Idempotent: skip silently if it already exists so re-running bootstrap.sql
+-- is safe.
+DO $$ BEGIN
+  ALTER TABLE ledger_items
+    ADD CONSTRAINT ledger_items_account_id_fkey
+    FOREIGN KEY (account_id) REFERENCES accounts (id)
+    DEFERRABLE INITIALLY DEFERRED;
+EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;

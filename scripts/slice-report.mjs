@@ -56,7 +56,7 @@ const evalBaseline = readJson("quality/eval-baseline.json");
 const coverageBaseline = readJson("quality/coverage-baseline.json");
 const changedFiles = git(["diff", "--name-only", "origin/dev...HEAD"]).split("\n").filter(Boolean);
 const log = git(["log", "--format=%H%x00%B%x00END", "origin/dev..HEAD"]);
-const trailerCommits = log.split("\u0000END").filter((entry) => entry.includes(`Slice: ${slice}`)).length;
+const trailerCommits = log.split("\u0000END").some((entry) => entry.includes(`Slice: ${slice}`)) ? 1 : 0;
 const refs = [...new Set([...log.matchAll(/Refs:\s*([^\n]+)/g)].flatMap((m) => m[1].split(/,\s*/).map((x) => x.trim()).filter(Boolean)))];
 const archiveDir = "openspec/changes/archive";
 const archivePath = existsSync(join(root, archiveDir))

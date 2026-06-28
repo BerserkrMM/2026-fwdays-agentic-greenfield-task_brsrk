@@ -1,0 +1,7 @@
+{
+  "command": "npm run test:run",
+  "exitCode": 0,
+  "gitHead": "731f0beedf9f583cbfe7cd408040b12e85abcb62",
+  "timestamp": "2026-06-28T20:01:13.550Z",
+  "notes": "Post-retrofit GREEN run only; does not prove historical RED ordering."
+}

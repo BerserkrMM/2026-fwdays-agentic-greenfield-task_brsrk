@@ -106,7 +106,7 @@ for (const slice of slices) {
     if (ok) {
       const files = new Set();
       for (const line of out.split("\n")) {
-        if (line.startsWith("commit ")) trailerCommits += 1;
+        if (line.startsWith("commit ")) trailerCommits = 1;
         else if (line.trim()) files.add(line.trim());
       }
       for (const f of files) {

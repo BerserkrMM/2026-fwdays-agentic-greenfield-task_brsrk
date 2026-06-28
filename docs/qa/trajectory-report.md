@@ -6,12 +6,13 @@ trailers, and module scope.
 It does NOT verify test-first ordering or test integrity (not derivable from
 one-commit-per-slice history) — those are graded by the trajectory-eval workflow.
 
-Scope: 1 archived slice(s).
+Scope: 2 archived slice(s).
 Result: PASS, 2 warning(s)
 
 | Slice | Review evidence | Raw review refs | Trailer commits | design+tasks | lib domains touched |
 |---|---|---|---|---|---|
 | 2026-06-26-add-foundation-shell | **missing** | missing | **0** | yes | - |
+| 2026-06-28-add-accounts | clean | 4 linked | 1 | yes | - |
 
 ## Cross-slice module overlap
 
