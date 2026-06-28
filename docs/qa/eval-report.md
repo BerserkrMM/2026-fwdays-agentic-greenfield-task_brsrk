@@ -2,14 +2,15 @@
 
 The quality BAR for graded behavior. Recordings illustrate these cases for humans; this report decides pass/fail. Guarded in CI by `node scripts/check-eval-ratchet.mjs` against `quality/eval-baseline.json`.
 
-- Cases: 2 (2 pass, 0 fail)
+- Cases: 3 (3 pass, 0 fail)
 - Pass mark: 70/100 per case; CRITICAL rubric misses fail a case outright.
-- Per-dimension score (ratcheted): {"ua-ux-clarity":95,"explicit-state-clarity":96}
+- Per-dimension score (ratcheted): {"ua-ux-clarity":95,"explicit-state-clarity":96,"ua-error-clarity":93}
 
 | Case | Dimension | Proves | Score | Verdict | Judges |
 |---|---|---|---|---|---|
 | eval-foundation-imports-hub-clarity | ua-ux-clarity | FR-IMPORT-01, FR-SHELL-03, NFR-I18N-01 | 95 | pass | 1 |
 | eval-foundation-placeholder-state-clarity | explicit-state-clarity | FR-SHELL-03, BC-BRAND-01, NFR-I18N-01 | 96 | pass | 2 |
+| eval-accounts-error-clarity | ua-error-clarity | FR-ACCT-05, FR-ACCT-01, NFR-I18N-01 | 93 | pass | 1 |
 
 ## Per-case notes
 
@@ -18,3 +19,6 @@ All three critical criteria are satisfied with directly quotable spans: the page
 
 ### eval-foundation-placeholder-state-clarity — 96/100 (pass)
 All three critical criteria are explicitly evidenced: each screen surfaces an explicit «Скоро» state, every string is Ukrainian, and «Цей розділ зараз у розробці й з’явиться незабаром» honestly frames the section as under construction. Tone is calm and terse, and each route carries a distinct, capability-specific title and description. Minor deduction: the development sentence is shared boilerplate across the four screens. | Every screen renders an explicit «Скоро» state (not blank/404), the copy is entirely Ukrainian, and the message honestly frames the section as under development rather than implying absent data. Tone is calm and concise, and each of the four routes carries a distinct, capability-specific title and description. Negligible deduction for the uniform shared body line.
+
+### eval-accounts-error-clarity — 93/100 (pass)
+All three CRITICAL criteria satisfied by quotable spans: every visible string is Ukrainian (the only Latin token is the currency code UAH, glossed as «у гривні»); the archive-rejection messages state cause and remedy («Не можна архівувати типовий рахунок. Спершу зробіть типовим інший рахунок» and «…останній активний рахунок — має лишатися щонайменше один»); the default account is labelled «Типовий» unambiguously and reused in the set-default action. Tone is calm and finance-oriented; messages are situation-specific rather than generic. Minor non-gating nit: the last-account message states the invariant rather than spelling out the explicit next step.

@@ -1,0 +1,69 @@
+{
+  "clean": true,
+  "slice": "add-accounts",
+  "reviewedAt": "2026-06-28T17:22:00Z",
+  "method": "maker≠checker — fresh project-factory reviewers over the working-tree diff (implementer did not review)",
+  "reviewers": ["code-reviewer", "security-reviewer", "spec-compliance-auditor", "eval-judge"],
+  "verdict": "clean — all confirmed findings resolved or deferred-with-rationale; no blockers",
+  "specCompliance": {
+    "scenarios": 10,
+    "implemented": 10,
+    "missing": 0,
+    "contradicted": 0,
+    "note": "FR-ACCT-02 live balance figures correctly deferred to the ledger slice (documented), not dropped"
+  },
+  "eval": { "case": "eval-accounts-error-clarity", "dimension": "ua-error-clarity", "score": 93, "pass": true },
+  "resolvedFindings": [
+    {
+      "id": "SEC-1",
+      "source": "security-reviewer",
+      "severity": "minor",
+      "summary": "Malformed (non-UUID) id could produce a raw 500 in Postgres mode, contradicting the no-500 error-surface contract.",
+      "resolution": "Added a UUID guard in AccountsService.requireActive: a malformed id resolves to AccountError('not-found') on both backends. Regression test added."
+    },
+    {
+      "id": "CODE-4",
+      "source": "code-reviewer",
+      "severity": "non-blocking (low confidence)",
+      "summary": "ensureSeededDefault cold-start race: two concurrent first renders could both insert the seed, tripping the single-default index.",
+      "resolution": "Seed insert is now race-tolerant — on insert failure it re-reads findDefault() and returns the winner instead of throwing."
+    },
+    {
+      "id": "CODE-5",
+      "source": "code-reviewer",
+      "severity": "nit",
+      "summary": "EmptyState branch on the accounts page is unreachable given the preceding seed.",
+      "resolution": "Kept as the screen's required empty state (FR-SHELL-03) with a comment noting it is a defensive guard."
+    },
+    {
+      "id": "SPEC-3",
+      "source": "spec-compliance-auditor",
+      "severity": "minor",
+      "summary": "Name-length validation lacked a backing spec scenario.",
+      "resolution": "Added the 'empty or over-long account name is rejected' scenario to the accounts spec."
+    },
+    {
+      "id": "SPEC-1",
+      "source": "spec-compliance-auditor",
+      "severity": "minor",
+      "summary": "tasks.md checkboxes were all unchecked despite a complete implementation.",
+      "resolution": "All tasks ticked before archive."
+    }
+  ],
+  "deferredFindings": [
+    {
+      "id": "SEC-2",
+      "source": "security-reviewer",
+      "severity": "minor",
+      "summary": "No upper bound on the number of accounts (unbounded growth via the unauthenticated action).",
+      "rationale": "Low real-world risk for a single-user local PWA (v1, BC-SCOPE-01); revisit when multi-user lands."
+    },
+    {
+      "id": "CODE-6",
+      "source": "code-reviewer",
+      "severity": "nit",
+      "summary": "Redirect-based error surface discards the user's typed input on a validation failure.",
+      "rationale": "Accepted v1 UX cost of the ?formError= pattern (master playbook); name-too-long is unreachable via the 60-char input cap anyway."
+    }
+  ]
+}

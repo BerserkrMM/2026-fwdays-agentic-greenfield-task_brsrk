@@ -10,6 +10,15 @@ import type { LedgerItemStatus } from "@/src/domain/ledger-item";
 import type { OperationType } from "@/src/domain/money";
 import type { ParserRunStatus } from "@/src/domain/parser-run";
 
+export interface AccountRow {
+  id: string;
+  name: string;
+  currency: string;
+  is_default: boolean;
+  archived_at: Date | null;
+  created_at: Date;
+}
+
 export interface InputEventRow {
   id: string;
   source: InputEventSource;

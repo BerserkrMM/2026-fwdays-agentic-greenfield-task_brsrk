@@ -4,6 +4,72 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-28 17:25 UTC — Slice 2 `add-accounts` shipped (Project Factory, tests-first)
+
+**What was done** — built the `accounts` capability end-to-end through the
+Project Factory per-slice loop on branch `add-accounts` (forked from `dev`).
+- **Spec (4a):** `openspec/changes/add-accounts/` (proposal/design/tasks + spec
+  delta). The delta uses `## MODIFIED Requirements` because the baseline accounts
+  spec was already backfilled (OpenSpec rejects `ADDED` for existing requirements);
+  added a name-validation scenario. `openspec validate add-accounts --strict` ✓.
+- **Tests-first (4b):** `src/domain/account.test.ts`,
+  `src/modules/accounts/service.test.ts`, `accounts.smoke.test.ts` (boundary smoke
+  through `getRepositories()`), each `@trace FR-ACCT-*` — confirmed RED before
+  implementation. Plus `evals/cases/accounts.eval.ts` (dimension `ua-error-clarity`).
+- **Implement (4c):** framework-free `src/domain/account.ts` (validation, single
+  `AccountError` + codes; no balance field). DB **coordination change** to the
+  Foundation-owned boundary: `accounts` table + `ux_accounts_single_default`
+  partial index + the deferred `ledger_items.account_id` FK (idempotent DO block);
+  `AccountRepository` added to `Repositories` with in-memory + Postgres impls.
+  `AccountsService` (seed `Готівка`, list, create, rename, switch-default,
+  soft-archive with default/last-active guards; implements `AccountsPort`).
+  Server actions with the reusable inline `?formError=` surface; real `/accounts`
+  screen (Ukrainian-first, `fin-*` tokens, server component — TC-STACK-02).
+- **Review gate (4e, maker≠checker):** fresh code-, security-, and
+  spec-compliance reviewers + eval-judge. Spec audit 10/10 scenarios, no drift.
+  Fixed confirmed findings: UUID guard so a malformed id → `not-found` (no raw 500
+  in PG mode), race-tolerant seed insert, name-validation scenario in the spec,
+  ticked tasks.md. Deferred with rationale (single-user local v1): account-count
+  cap, form-input retention on validation error.
+
+**Current state**
+- Battery green: `lint`, `tsc`, `test` (34, was 17), `build` (`/accounts` dynamic),
+  `openspec validate --all --strict` 11/11, `check:trace` **0 failures**.
+- Ratchets bumped + committed: coverage → lines/stmts 29.84, fns 49.5,
+  branches 71.87; eval baseline gains `ua-error-clarity: 93` (judge pass).
+- FR-ACCT-01/03/04/05/06 + FR-ITEM-06 (default resolution) delivered with tests.
+- **FR-ACCT-02 (live per-account balance figures) is deferred** to the `ledger`
+  slice (needs ledger queries); the no-stored-opening-balance guarantee ships now.
+
+**Next steps**
+- Archive `add-accounts` and commit with `Slice:`/`Refs:` trailers (in progress).
+- Slice 3 `add-ledger-queries` (ledger): balance/aggregate queries; closes the
+  deferred FR-ACCT-02 balance view and FR-LEDGER-05 archived-items-still-count test.
+
+**Open questions / blockers**
+- None blocking. Future hardening noted above (account cap, input retention) is
+  out of scope for single-user local v1.
+
+---
+
+
+## 2026-06-28 17:05 UTC
+
+**What was done**
+- Read the GitHub Actions CI logs under `crash_course/ci_log/verify` and summarized the `verify` job flow for the user.
+- No code or configuration was changed.
+
+**Current state**
+- The captured CI run is green overall: install, lint, typecheck, traceability, trajectory, OpenSpec validation, production audit gate, coverage/tests, coverage ratchet, integration tests, placeholder E2E, build, and artifact upload all completed without failing the job.
+- Remaining log notes are warnings only: missing test/recording trace evidence for not-yet-built FRs, two trajectory warnings for archived slice metadata, known moderate Next/PostCSS advisory, Playwright installed via `npx`, and Node 20 deprecation warnings for GitHub actions.
+
+**Next steps**
+- If desired, reduce warnings later by adding more `@trace` tests/recording manifests, storing review evidence/trailers for future slices, and adding Playwright as a proper project dependency before real E2E tests.
+
+**Open questions / blockers**
+- None.
+
+---
 ## 2026-06-28 16:41 UTC
 
 **What was done**

@@ -2,10 +2,41 @@
 // knows about column names and DB coercions (TC-STACK-04).
 
 import { CURRENCY } from "@/src/domain/money";
+import type { Account } from "@/src/domain/account";
 import type { InputEvent } from "@/src/domain/input-event";
 import type { LedgerItem } from "@/src/domain/ledger-item";
 import type { ParserRun } from "@/src/domain/parser-run";
-import type { InputEventRow, LedgerItemRow, ParserRunRow } from "./rows";
+import type {
+  AccountRow,
+  InputEventRow,
+  LedgerItemRow,
+  ParserRunRow,
+} from "./rows";
+
+export function toAccount(row: AccountRow): Account {
+  if (row.currency !== CURRENCY) {
+    throw new Error(`Unexpected accounts.currency: ${row.currency}`);
+  }
+  return {
+    id: row.id,
+    name: row.name,
+    currency: CURRENCY,
+    isDefault: row.is_default,
+    archivedAt: row.archived_at,
+    createdAt: row.created_at,
+  };
+}
+
+export function fromAccount(account: Account): AccountRow {
+  return {
+    id: account.id,
+    name: account.name,
+    currency: account.currency,
+    is_default: account.isDefault,
+    archived_at: account.archivedAt,
+    created_at: account.createdAt,
+  };
+}
 
 export function toInputEvent(row: InputEventRow): InputEvent {
   return {

@@ -3,6 +3,7 @@
 // module's `src/modules/*/ports.ts`. Implementations live in `src/db` (repos)
 // and `src/modules/*` (services).
 
+import type { Account } from "./account";
 import type { InputEvent, NewInputEvent } from "./input-event";
 import type { LedgerItem } from "./ledger-item";
 import type { NewParserRun, ParserRun } from "./parser-run";
@@ -13,6 +14,25 @@ import type { ParsedLedgerItemDraft } from "./parsed-draft";
 export interface InputEventRepository {
   create(event: NewInputEvent): Promise<InputEvent>;
   findById(id: string): Promise<InputEvent | null>;
+}
+
+/**
+ * Persistence primitives for accounts. Invariants (single default, archive
+ * guards) are owned by the accounts service, not the repository, except the
+ * single-default *write* which `setDefault` performs atomically.
+ */
+export interface AccountRepository {
+  /** Active accounts by default; pass `includeArchived` to list everything. */
+  list(opts?: { includeArchived?: boolean }): Promise<Account[]>;
+  findById(id: string): Promise<Account | null>;
+  /** The current default among active accounts, or null. */
+  findDefault(): Promise<Account | null>;
+  /** Count of active (non-archived) accounts. */
+  countActive(): Promise<number>;
+  insert(account: Account): Promise<Account>;
+  update(account: Account): Promise<Account>;
+  /** Atomically make `id` the only default among active accounts. */
+  setDefault(id: string): Promise<void>;
 }
 
 export interface ParserRunRepository {
@@ -29,6 +49,7 @@ export interface Repositories {
   inputEvents: InputEventRepository;
   parserRuns: ParserRunRepository;
   ledgerItems: LedgerItemRepository;
+  accounts: AccountRepository;
 }
 
 // --- Accounts port (default-account resolution; owned by `accounts` later) ---

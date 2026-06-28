@@ -1,14 +1,5 @@
-# accounts
+## MODIFIED Requirements
 
-## Purpose
-
-The Accounts capability owns account metadata, full account management (create,
-edit, archive), and the single default account for Finup v1. It establishes the
-UAH-only account records that ledger item creation can reference. Accounts have no
-stored opening balance: balance display is coordinated with the Ledger capability
-because balances are derived from non-deleted `ledger_items`, not stored
-independently.
-## Requirements
 ### Requirement: Account list and default account
 
 The system SHALL let the user list accounts and SHALL maintain exactly one default
@@ -110,4 +101,3 @@ derived only from non-deleted ledger items. (FR-ACCT-06, FR-LEDGER-05)
 - **WHEN** an account balance is displayed
 - **THEN** it is computed from non-deleted ledger items only
 - **AND** no stored opening-balance value contributes to it
-

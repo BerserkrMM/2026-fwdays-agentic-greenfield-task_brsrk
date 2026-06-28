@@ -3,17 +3,91 @@
 // its own client.
 
 import type { Sql } from "postgres";
+import type { Account } from "@/src/domain/account";
 import type { InputEvent, NewInputEvent } from "@/src/domain/input-event";
 import type { LedgerItem } from "@/src/domain/ledger-item";
 import type { NewParserRun, ParserRun } from "@/src/domain/parser-run";
 import type {
+  AccountRepository,
   InputEventRepository,
   LedgerItemRepository,
   ParserRunRepository,
   Repositories,
 } from "@/src/domain/ports";
-import { fromLedgerItem, toInputEvent, toLedgerItem, toParserRun } from "./mappers";
-import type { InputEventRow, LedgerItemRow, ParserRunRow } from "./rows";
+import {
+  fromAccount,
+  fromLedgerItem,
+  toAccount,
+  toInputEvent,
+  toLedgerItem,
+  toParserRun,
+} from "./mappers";
+import type {
+  AccountRow,
+  InputEventRow,
+  LedgerItemRow,
+  ParserRunRow,
+} from "./rows";
+
+class PgAccountRepository implements AccountRepository {
+  constructor(private readonly sql: Sql) {}
+
+  async list(opts?: { includeArchived?: boolean }): Promise<Account[]> {
+    const rows = opts?.includeArchived
+      ? await this.sql<AccountRow[]>`SELECT * FROM accounts ORDER BY created_at`
+      : await this.sql<AccountRow[]>`
+          SELECT * FROM accounts WHERE archived_at IS NULL ORDER BY created_at`;
+    return rows.map(toAccount);
+  }
+
+  async findById(id: string): Promise<Account | null> {
+    const [row] = await this.sql<AccountRow[]>`
+      SELECT * FROM accounts WHERE id = ${id}`;
+    return row ? toAccount(row) : null;
+  }
+
+  async findDefault(): Promise<Account | null> {
+    const [row] = await this.sql<AccountRow[]>`
+      SELECT * FROM accounts WHERE archived_at IS NULL AND is_default LIMIT 1`;
+    return row ? toAccount(row) : null;
+  }
+
+  async countActive(): Promise<number> {
+    const [row] = await this.sql<{ n: number }[]>`
+      SELECT count(*)::int AS n FROM accounts WHERE archived_at IS NULL`;
+    return row?.n ?? 0;
+  }
+
+  async insert(account: Account): Promise<Account> {
+    const r = fromAccount(account);
+    const [row] = await this.sql<AccountRow[]>`
+      INSERT INTO accounts (id, name, currency, is_default, archived_at, created_at)
+      VALUES (${r.id}, ${r.name}, ${r.currency}, ${r.is_default}, ${r.archived_at},
+              ${r.created_at})
+      RETURNING *`;
+    return toAccount(row);
+  }
+
+  async update(account: Account): Promise<Account> {
+    const r = fromAccount(account);
+    const [row] = await this.sql<AccountRow[]>`
+      UPDATE accounts
+         SET name = ${r.name}, currency = ${r.currency}, is_default = ${r.is_default},
+             archived_at = ${r.archived_at}
+       WHERE id = ${r.id}
+      RETURNING *`;
+    return toAccount(row);
+  }
+
+  async setDefault(id: string): Promise<void> {
+    // Clear-all-then-set inside one transaction so the partial-unique index
+    // never sees two defaults (D2).
+    await this.sql.begin(async (tx) => {
+      await tx`UPDATE accounts SET is_default = false WHERE is_default`;
+      await tx`UPDATE accounts SET is_default = true WHERE id = ${id}`;
+    });
+  }
+}
 
 class PgInputEventRepository implements InputEventRepository {
   constructor(private readonly sql: Sql) {}
@@ -84,5 +158,6 @@ export function createPostgresRepositories(sql: Sql): Repositories {
     inputEvents: new PgInputEventRepository(sql),
     parserRuns: new PgParserRunRepository(sql),
     ledgerItems: new PgLedgerItemRepository(sql),
+    accounts: new PgAccountRepository(sql),
   };
 }
