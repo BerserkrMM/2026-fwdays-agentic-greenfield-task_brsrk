@@ -3,12 +3,16 @@
 // or 404 (FR-IMPORT-01, FR-SHELL-03).
 
 import { PageHeader } from "./PageHeader";
+import {
+  PLACEHOLDER_DEFAULT_NOTE,
+  PLACEHOLDER_STATE_TITLE,
+} from "./placeholder-content";
 import { EmptyState } from "./states";
 
 export function PlaceholderScreen({
   title,
   description,
-  note = "Цей розділ зараз у розробці й з’явиться незабаром.",
+  note = PLACEHOLDER_DEFAULT_NOTE,
 }: {
   title: string;
   description?: string;
@@ -17,7 +21,7 @@ export function PlaceholderScreen({
   return (
     <>
       <PageHeader title={title} description={description} />
-      <EmptyState title="Скоро" description={note} />
+      <EmptyState title={PLACEHOLDER_STATE_TITLE} description={note} />
     </>
   );
 }

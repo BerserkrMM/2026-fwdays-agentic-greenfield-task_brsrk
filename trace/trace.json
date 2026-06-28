@@ -113,6 +113,8 @@
       ],
       "planned": true,
       "tests": [
+        "src/modules/foundation/ui/content.test.ts",
+        "src/modules/foundation/ui/content.test.ts",
         "evals/cases/foundation.eval.ts"
       ],
       "recordings": []
@@ -133,6 +135,7 @@
       ],
       "planned": true,
       "tests": [
+        "src/modules/foundation/ui/content.test.ts",
         "evals/cases/foundation.eval.ts"
       ],
       "recordings": []

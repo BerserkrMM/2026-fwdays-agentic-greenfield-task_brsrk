@@ -1,10 +1,10 @@
 import { PlaceholderScreen } from "@/src/modules/foundation/ui/PlaceholderScreen";
+import { placeholderFor } from "@/src/modules/foundation/ui/placeholder-content";
+
+const copy = placeholderFor("/dashboard");
 
 export default function DashboardPage() {
   return (
-    <PlaceholderScreen
-      title="Огляд"
-      description="Баланс, доходи й витрати, розподіл за категоріями та тренди."
-    />
+    <PlaceholderScreen title={copy.title} description={copy.description} />
   );
 }

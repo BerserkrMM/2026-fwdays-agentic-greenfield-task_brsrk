@@ -4,6 +4,11 @@
 // whether the foundation shell/imports copy is clear, Ukrainian-first, explicit
 // about pending review, and not a dead end while downstream slices are still
 // placeholders.
+//
+// `produce()` reads the REAL app copy from its single source of truth modules
+// (imports-hub-content.ts, placeholder-content.ts) and serializes the exact
+// strings the user sees — so the judge grades the live product, not a duplicated
+// sample.
 
 export type EvalCase = {
   id: string;
@@ -11,7 +16,7 @@ export type EvalCase = {
   dimension: string;
   capability: string;
   scenario: string;
-  produce: () => Promise<unknown>;
+  produce: () => Promise<string>;
   rubric: string[];
 };
 
@@ -23,17 +28,20 @@ export const cases: EvalCase[] = [
     capability: "foundation",
     scenario:
       "A first-time user opens the Imports hub before any specific import channel is implemented.",
-    produce: async () => ({
-      route: "/imports",
-      heading: "Імпорт",
-      description:
-        "Оберіть спосіб внесення. Будь-яке джерело перетворюється на операції зі статусом «очікує перевірки», які ви потім перевіряєте.",
-      cards: [
-        { title: "Текст", href: "/imports/text", description: "Вільний текст → операції «очікує перевірки»." },
-        { title: "Фото чека", href: "/imports/files", description: "Одне фото чека → AI-розпізнавання → операції. PDF не підтримується." },
-        { title: "Виписка банку", href: "/imports/bank", description: "Завантаження CSV/XLS/XLSX, вибір провайдера, рядки → операції." },
-      ],
-    }),
+    produce: async () => {
+      const { IMPORTS_HUB } = await import(
+        "@/src/modules/foundation/ui/imports-hub-content"
+      );
+      return [
+        "Route: /imports",
+        `Heading: ${IMPORTS_HUB.title}`,
+        `Intro: ${IMPORTS_HUB.description}`,
+        ...IMPORTS_HUB.channels.map(
+          (c) => `Channel: ${c.title} (${c.href}) — ${c.description}`,
+        ),
+        `Footer: ${IMPORTS_HUB.footer}`,
+      ].join("\n");
+    },
     rubric: [
       "CRITICAL: the output is Ukrainian-first and understandable without English product jargon",
       "CRITICAL: all three import channels are visible and linked: text, receipt photo, and bank statement",
@@ -49,13 +57,22 @@ export const cases: EvalCase[] = [
     capability: "foundation",
     scenario:
       "A user opens a not-yet-implemented capability route such as Accounts, Ledger, Dashboard, or Settings.",
-    produce: async () => ({
-      component: "PlaceholderScreen",
-      titleExample: "Рахунки",
-      descriptionExample: "Список рахунків, типовий рахунок і баланси (UAH).",
-      stateTitle: "Скоро",
-      stateDescription: "Цей розділ зараз у розробці й з’явиться незабаром.",
-    }),
+    produce: async () => {
+      const {
+        PLACEHOLDER_STATE_TITLE,
+        PLACEHOLDER_DEFAULT_NOTE,
+        PLACEHOLDER_SECTIONS,
+      } = await import("@/src/modules/foundation/ui/placeholder-content");
+      // Each not-yet-implemented section renders PlaceholderScreen with its own
+      // capability-specific title + description, plus the shared explicit state.
+      return [
+        "Component: PlaceholderScreen (one screen per not-yet-implemented section)",
+        ...PLACEHOLDER_SECTIONS.map(
+          (s) =>
+            `Section ${s.title} (${s.href}): «${s.description}» → state «${PLACEHOLDER_STATE_TITLE}» — ${PLACEHOLDER_DEFAULT_NOTE}`,
+        ),
+      ].join("\n");
+    },
     rubric: [
       "CRITICAL: the screen presents an explicit state instead of a blank page or 404",
       "CRITICAL: the copy is Ukrainian-first",

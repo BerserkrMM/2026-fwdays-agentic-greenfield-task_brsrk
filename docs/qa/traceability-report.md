@@ -10,9 +10,9 @@ Result: PASS, 110 warning(s)
 |---|---|---|---|---|
 | FR-SHELL-01 | yes | yes | - | - |
 | FR-SHELL-02 | yes | yes | - | - |
-| FR-SHELL-03 | yes | yes | 1 | - |
+| FR-SHELL-03 | yes | yes | 3 | - |
 | FR-SHELL-04 | yes | yes | - | - |
-| FR-IMPORT-01 | yes | yes | 1 | - |
+| FR-IMPORT-01 | yes | yes | 2 | - |
 | FR-IMPORT-02 | yes | yes | 1 | - |
 | FR-TEXT-01 | yes | yes | - | - |
 | FR-TEXT-02 | yes | yes | - | - |

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-28T15:36:34Z",
+  "generatedAt": "2026-06-28T16:10:46Z",
   "kind": "eval",
   "results": [
     {
@@ -13,7 +13,7 @@
       "id": "eval-foundation-placeholder-state-clarity",
       "dimension": "explicit-state-clarity",
       "proof": "FR-SHELL-03, BC-BRAND-01, NFR-I18N-01",
-      "score": 94,
+      "score": 96,
       "pass": true
     }
   ]

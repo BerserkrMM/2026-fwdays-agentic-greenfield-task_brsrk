@@ -1,39 +1,17 @@
 import Link from "next/link";
 import { PageHeader } from "@/src/modules/foundation/ui/PageHeader";
+import { IMPORTS_HUB } from "@/src/modules/foundation/ui/imports-hub-content";
 
 // Imports hub (FR-IMPORT-01): links the three input channels and explains the
-// pipeline. The channels themselves ship later as their own capabilities.
-
-const CHANNELS = [
-  {
-    href: "/imports/text",
-    glyph: "✎",
-    title: "Текст",
-    description: "Напишіть витрати словами, напр. «40 грн ковбаса, 20 грн хліб».",
-  },
-  {
-    href: "/imports/bank",
-    glyph: "↥",
-    title: "Виписка банку",
-    description: "Завантажте виписку Monobank або PrivatBank (CSV/XLS/XLSX).",
-  },
-  {
-    href: "/imports/files",
-    glyph: "▣",
-    title: "Фото чека",
-    description: "Сфотографуйте один чек — система розпізнає операції.",
-  },
-] as const;
+// pipeline. The channels themselves ship later as their own capabilities. Copy
+// is the single source of truth in `imports-hub-content.ts`.
 
 export default function ImportsHubPage() {
   return (
     <>
-      <PageHeader
-        title="Імпорт"
-        description="Оберіть спосіб внесення. Будь-яке джерело перетворюється на операції зі статусом «очікує перевірки», які ви потім перевіряєте."
-      />
+      <PageHeader title={IMPORTS_HUB.title} description={IMPORTS_HUB.description} />
       <ul className="grid gap-4 sm:grid-cols-2">
-        {CHANNELS.map((c) => (
+        {IMPORTS_HUB.channels.map((c) => (
           <li key={c.href}>
             <Link
               href={c.href}
@@ -50,10 +28,7 @@ export default function ImportsHubPage() {
           </li>
         ))}
       </ul>
-      <p className="mt-6 text-xs text-fin-fg-subtle">
-        Потік: джерело → операції «очікує перевірки» → перевірка. Імпорт PDF поки
-        не підтримується.
-      </p>
+      <p className="mt-6 text-xs text-fin-fg-subtle">{IMPORTS_HUB.footer}</p>
     </>
   );
 }
