@@ -1,12 +1,5 @@
-# ledger
+## MODIFIED Requirements
 
-## Purpose
-
-The Ledger capability owns read-side balance and aggregate queries over the
-foundation-owned `ledger_items` schema. It treats `ledger_items` as the single
-source of truth for balances and exposes reusable query behavior for Accounts and
-Dashboard without mutating items.
-## Requirements
 ### Requirement: Ledger item is the atomic financial row
 
 The system SHALL treat a `ledger_item` as the atomic financial row in v1. There
@@ -91,4 +84,3 @@ no other module SHALL compute or persist an independent balance source.
 - **WHEN** Accounts or Dashboard needs balance data
 - **THEN** it uses Ledger capability queries
 - **AND** it does not duplicate balance calculation logic independently
-

@@ -16,6 +16,14 @@
       "trailerCommits": 1,
       "libDomains": [],
       "processComplete": true
+    },
+    {
+      "slice": "2026-06-28-add-ledger-queries",
+      "reviewEvidence": "clean",
+      "rawReviewEvidence": "3 linked",
+      "trailerCommits": 1,
+      "libDomains": [],
+      "processComplete": true
     }
   ],
   "overlaps": [],

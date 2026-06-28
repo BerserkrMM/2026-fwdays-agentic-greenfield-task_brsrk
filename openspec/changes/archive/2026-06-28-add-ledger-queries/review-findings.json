@@ -1,0 +1,79 @@
+{
+  "clean": true,
+  "slice": "add-ledger-queries",
+  "reviewedAt": "2026-06-28T20:56:44Z",
+  "method": "maker≠checker — fresh project-factory reviewers over the staged working-tree diff (git diff --cached); the implementer did not review",
+  "reviewers": [
+    "code-reviewer",
+    "security-reviewer",
+    "spec-compliance-auditor"
+  ],
+  "evalJudge": "not run — no eval case exists for this slice (numeric ledger queries are deterministic; see eval-decision.md)",
+  "verdict": "clean — code reviewer APPROVE (no blockers/majors), security reviewer PASS (no findings), spec-compliance 9/9 scenarios implemented; all confirmed actionable findings fixed or accepted-with-rationale",
+  "specCompliance": {
+    "scenarios": 9,
+    "implemented": 9,
+    "missing": 0,
+    "contradicted": 0,
+    "note": "Spec delta uses ## MODIFIED Requirements against the backfilled ledger baseline; FR-ACCT-02 per-account balance now closed via ledger queries."
+  },
+  "resolvedFindings": [
+    {
+      "id": "CODE-1",
+      "source": "code-reviewer",
+      "severity": "minor",
+      "summary": "Postgres listNonDeleted ORDER BY created_at has no tiebreaker, so the first-seen group order in computeAccountBalances/computeCategoryTotals is non-deterministic when a bulk import shares one now() timestamp.",
+      "resolution": "Changed to ORDER BY created_at, id in src/db/postgres.ts so group order is deterministic and matches the documented first-seen contract."
+    },
+    {
+      "id": "CODE-2",
+      "source": "code-reviewer",
+      "severity": "minor",
+      "summary": "The accounts page awaited the balance read together with the account list, so a thrown ledger read (e.g. a corrupt amount_minor) would break the whole account-management screen.",
+      "resolution": "Isolated the balance read in app/accounts/page.tsx: the account list is fetched first, the balance read is wrapped in try/catch, and on failure each account shows a calm 'Баланс недоступний' indicator instead of a blank/500 page (FR-SHELL-03 explicit error state)."
+    },
+    {
+      "id": "CODE-4",
+      "source": "code-reviewer",
+      "severity": "nit",
+      "summary": "formatUahMinor comment said 'uk-UA style' while using a plain ASCII space.",
+      "resolution": "Reworded the comment in src/domain/money.ts to state the ASCII space is chosen for deterministic, locale-independent output (not the uk-UA non-breaking space)."
+    },
+    {
+      "id": "SPEC-1",
+      "source": "spec-compliance-auditor",
+      "severity": "major",
+      "summary": "At audit time no reviews/ directory or review-findings.json existed, while the trajectory-eval waiver referenced review evidence.",
+      "resolution": "Timing artifact: the auditor ran before the review step persisted its outputs. Raw reviewer outputs are now under reviews/ and linked from rawEvidence below; this review-findings.json is the summary. The deterministic check-trajectory will see clean review evidence after archive."
+    },
+    {
+      "id": "SPEC-2",
+      "source": "spec-compliance-auditor",
+      "severity": "minor",
+      "summary": "Category-totals behavior was tested but not annotated @trace FR-CAT-04, leaving a trace test-coverage warning.",
+      "resolution": "Added @trace FR-CAT-04 to the category-totals tests in ledger-query.test.ts and service.test.ts; the FR-CAT-04 test-trace warning is gone. FR-CAT-04 is not added to this slice's Refs (its UI ownership stays with ledger-items/dashboard); the tests only record that the enabling computation is exercised."
+    },
+    {
+      "id": "SPEC-3",
+      "source": "spec-compliance-auditor",
+      "severity": "minor",
+      "summary": "tasks.md checkboxes were all unchecked despite the work being complete.",
+      "resolution": "Ticked all completed task checkboxes in the change tasks.md."
+    }
+  ],
+  "acceptedFindings": [
+    {
+      "id": "CODE-3",
+      "source": "code-reviewer",
+      "severity": "minor",
+      "summary": "LedgerQueryService re-reads the full non-deleted table on every method (one listNonDeleted per call).",
+      "rationale": "Accepted for v1 (documented as design D1). The accounts page makes a single call, so there is no current N-scan defect. The LedgerQueryPort shape lets a future dashboard slice add a one-pass fold without changing callers. No release-blocking impact."
+    }
+  ],
+  "securityFindings": "none — security reviewer PASS: no injection (no interpolation/user input in listNonDeleted), no sensitive data exposure beyond intended balances, server-only DB boundary preserved (TC-STACK-04), no unhandled-500 path on empty/missing data, no new dependency or secret.",
+  "rawEvidence": [
+    "reviews/code-reviewer.md",
+    "reviews/security-reviewer.md",
+    "reviews/spec-compliance-auditor.md"
+  ]
+}
