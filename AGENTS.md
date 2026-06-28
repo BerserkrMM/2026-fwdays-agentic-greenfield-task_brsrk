@@ -27,3 +27,20 @@ Maintain `docs/current-state.md` as a running handoff log so the next agent (or 
   - **Open questions / blockers**, if any.
 - Append new entries with the most recent at the top; keep older entries for history.
 - Create the file if it does not exist.
+
+# Project Factory evidence discipline
+
+Do not turn process claims into prose-only assertions. For final slice/PR handoffs:
+
+- **Do not hand-write final metrics.** Generate them with `npm run slice:report -- --slice <slice>` after archive/verification, then paste the generated block if metrics are needed.
+- **Update `docs/current-state.md` last** for meaningful work, after archive/PR/verification status is known. Run `npm run check:handoff` before finishing.
+- **RED/GREEN proof is an artifact, not a memory.** Future tests-first slices should save `evidence/red-run.json` and `evidence/green-run.json` under the OpenSpec change and run `npm run check:red-green -- --slice <slice> --strict` before archive.
+- **Maker ≠ checker proof needs raw evidence.** Store raw reviewer outputs under `reviews/` and link them from `review-findings.json.rawEvidence`; the summary file alone is not enough for strong claims.
+- **Do not claim “full”, “complete”, “entire loop”, “end-to-end”, or “all done” unless:** no owned/dependent scope is deferred; RED/GREEN evidence exists; raw review evidence exists; deterministic trajectory is green; and trajectory-eval is PASS or explicitly waived.
+- Every final handoff/PR summary that uses completion language must include:
+  - **Scope delivered**
+  - **Scope NOT delivered**
+  - **Process evidence produced**
+  - **Process evidence NOT produced**
+  - **Deferred work**
+- Prefer precise wording: “deterministic G4 checks passed” is not the same as “entire Project Factory loop complete”. Run `npm run check:claims` before finishing.

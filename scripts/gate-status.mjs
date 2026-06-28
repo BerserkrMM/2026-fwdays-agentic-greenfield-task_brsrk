@@ -29,6 +29,10 @@ const check = (n, args = []) => (scriptExists(n) ? run("node", [`scripts/${n}.mj
 const checks = {
   traceability: check("check-traceability"),
   trajectory: check("check-trajectory"),
+  trajectoryEval: trajectoryEvalStatus(),
+  redGreen: check("check-red-green-evidence"),
+  handoff: check("check-handoff-fresh"),
+  claims: check("check-claims"),
   recordings: check("check-recordings"),
   coverage: check("check-coverage-ratchet"),
   evals: check("check-eval-ratchet"),
@@ -40,15 +44,20 @@ const GATES = [
   ["G1", "requirements signed off", () => (has("docs/requirements.md") ? "needs sign-off" : "FAIL")],
   ["G2", "baseline specs", () => checks.traceability.status],
   ["G3", "capability plan signed off", () => (has("docs/mvp-capability-plan.md") ? "needs sign-off" : "FAIL")],
-  ["G4", "per-slice (trace + trajectory)", () => worst(checks.traceability.status, checks.trajectory.status)],
+  ["G4", "per-slice deterministic (trace + trajectory + evidence shape)", () => worst(checks.traceability.status, checks.trajectory.status, checks.redGreen.status, checks.handoff.status, checks.claims.status)],
   ["G5", "hardening (coverage)", () => checks.coverage.status],
   ["G6", "QA proof (recordings + evals)", () => worst(checks.recordings.status, checks.evals.status)],
   ["G7", "release (trace --release + recordings)", () => worst(checks.traceability.status, checks.recordings.status)],
   ["G8", "UAT (trace regressions)", () => checks.traceability.status],
 ];
+function trajectoryEvalStatus() {
+  if (has("docs/qa/trajectory-eval-report.md") && has("evals/results/trajectory-latest.json")) return { status: "PASS", out: "trajectory-eval artifacts present" };
+  return { status: "NEEDS-RUN", out: "trajectory-eval artifacts not present; deterministic trajectory does not prove test-first/order integrity" };
+}
 function worst(...s) {
   if (s.includes("FAIL")) return "FAIL";
   if (s.includes("needs sign-off")) return "needs sign-off";
+  if (s.includes("NEEDS-RUN")) return "NEEDS-RUN";
   if (s.every((x) => x === "SKIP" || x === "n/a")) return "SKIP";
   return "PASS";
 }
@@ -69,6 +78,6 @@ if (retrofit?.slices?.length) {
   console.log(`  ${retrofit.slices.join(", ")}`);
   console.log("  Historical red-first slice history cannot be reconstructed for legacy code; treat as documented baseline, not proof of process.");
 }
-console.log("\n(Reviews, sign-offs, and vision-verify are judgment gates — confirm them in docs/qa + the gate checklist.)");
+console.log("\n(Reviews, sign-offs, trajectory-eval, and vision-verify are judgment gates — confirm them in docs/qa + the gate checklist.)");
 const anyFail = Object.values(checks).some((c) => c.status === "FAIL");
 process.exit(anyFail ? 1 : 0);

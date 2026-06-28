@@ -25,6 +25,26 @@ Video:
      - що вирішував(ла) ти, а що — агент -->
 
 
+## Scope delivered
+<!-- Що саме доставлено в цьому PR/slice -->
+
+
+## Scope NOT delivered
+<!-- Які FR/частини scope deferred або не входять у цей PR. Пиши "None" лише якщо справді нічого не deferred. -->
+
+
+## Process evidence produced
+<!-- Команди/артефакти: slice-report, RED/GREEN evidence, review raw outputs, evals, trace, trajectory. Не вписуй метрики вручну — встав generated slice-report block. -->
+
+
+## Process evidence NOT produced
+<!-- Напр. trajectory-eval not run, recordings not expected yet, raw transcripts unavailable. Не залишай порожнім. -->
+
+
+## Deferred work
+<!-- Що має підхопити наступний slice/agent -->
+
+
 ## (Опційно) Посилання на код
 <!-- Якщо проєкт живе в окремому репозиторії — встав посилання -->
 

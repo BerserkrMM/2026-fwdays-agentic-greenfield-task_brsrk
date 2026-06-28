@@ -4,6 +4,7 @@
     {
       "slice": "2026-06-26-add-foundation-shell",
       "reviewEvidence": "missing",
+      "rawReviewEvidence": "missing",
       "trailerCommits": 0,
       "libDomains": [],
       "processComplete": true
