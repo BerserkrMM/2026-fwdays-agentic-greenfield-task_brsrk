@@ -77,3 +77,15 @@ next-env.d.ts
 .claude/skills/
 .pi/skills/
 skills-lock.json
+
+# Local agent/editor state and vendored factory/tooling
+.claude/settings.json
+.claude/agents/
+.claude/workflows/
+.codex/
+.cursor/
+.project-factory/
+.github/prompts/
+.githooks/
+automations/
+trace/
