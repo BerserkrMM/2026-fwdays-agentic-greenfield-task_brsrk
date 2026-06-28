@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-28T20:01:21.283Z",
+  "generatedAt": "2026-06-28T20:04:24.936Z",
   "generatedBy": "scripts/slice-report.mjs",
   "slice": "add-accounts",
   "commands": {
@@ -55,13 +55,13 @@
     },
     "reviewFindings": "clean",
     "rawReviewEvidenceRefs": 4,
-    "sliceTrailerCommits": 4,
+    "sliceTrailerCommits": 1,
     "refs": [
       "FR-ACCT-01",
-      "FR-ACCT-03",
       "FR-ACCT-04",
       "FR-ACCT-05",
       "FR-ACCT-06",
+      "FR-ACCT-03",
       "FR-ITEM-06"
     ]
   }

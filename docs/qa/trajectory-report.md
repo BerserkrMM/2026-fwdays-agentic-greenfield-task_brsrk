@@ -12,7 +12,7 @@ Result: PASS, 2 warning(s)
 | Slice | Review evidence | Raw review refs | Trailer commits | design+tasks | lib domains touched |
 |---|---|---|---|---|---|
 | 2026-06-26-add-foundation-shell | **missing** | missing | **0** | yes | - |
-| 2026-06-28-add-accounts | clean | 4 linked | 4 | yes | - |
+| 2026-06-28-add-accounts | clean | 4 linked | 1 | yes | - |
 
 ## Cross-slice module overlap
 
