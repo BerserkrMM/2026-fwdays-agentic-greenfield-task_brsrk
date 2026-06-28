@@ -24,9 +24,11 @@ if (!sliceDirs.length && !sliceArg) warnings.push("no OpenSpec slices found to c
 
 for (const s of sliceDirs) {
   const red = readJson(join(s.dir, "evidence/red-run.json"));
+  const redWaiver = existsSync(join(s.dir, "evidence/red-run-waiver.md"));
   const green = readJson(join(s.dir, "evidence/green-run.json"));
-  if (!red) failOrWarn(`${s.name}: missing evidence/red-run.json`);
+  if (!red && !redWaiver) failOrWarn(`${s.name}: missing evidence/red-run.json`);
   if (!green) failOrWarn(`${s.name}: missing evidence/green-run.json`);
+  if (redWaiver && !red) warnings.push(`${s.name}: RED evidence waived for historical slice; not valid for new strict slices`);
   if (red) {
     if (red.exitCode === 0) failOrWarn(`${s.name}: red-run exitCode must be non-zero`);
     if (!red.command || !red.gitHead || !red.timestamp) failOrWarn(`${s.name}: red-run must include command, gitHead, timestamp`);

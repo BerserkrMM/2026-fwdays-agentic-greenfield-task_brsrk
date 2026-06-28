@@ -3,7 +3,12 @@
   "slice": "add-accounts",
   "reviewedAt": "2026-06-28T17:22:00Z",
   "method": "maker≠checker — fresh project-factory reviewers over the working-tree diff (implementer did not review)",
-  "reviewers": ["code-reviewer", "security-reviewer", "spec-compliance-auditor", "eval-judge"],
+  "reviewers": [
+    "code-reviewer",
+    "security-reviewer",
+    "spec-compliance-auditor",
+    "eval-judge"
+  ],
   "verdict": "clean — all confirmed findings resolved or deferred-with-rationale; no blockers",
   "specCompliance": {
     "scenarios": 10,
@@ -12,7 +17,12 @@
     "contradicted": 0,
     "note": "FR-ACCT-02 live balance figures correctly deferred to the ledger slice (documented), not dropped"
   },
-  "eval": { "case": "eval-accounts-error-clarity", "dimension": "ua-error-clarity", "score": 93, "pass": true },
+  "eval": {
+    "case": "eval-accounts-error-clarity",
+    "dimension": "ua-error-clarity",
+    "score": 93,
+    "pass": true
+  },
   "resolvedFindings": [
     {
       "id": "SEC-1",
@@ -65,5 +75,11 @@
       "summary": "Redirect-based error surface discards the user's typed input on a validation failure.",
       "rationale": "Accepted v1 UX cost of the ?formError= pattern (master playbook); name-too-long is unreachable via the 60-char input cap anyway."
     }
+  ],
+  "rawEvidence": [
+    "reviews/code-reviewer.jsonl",
+    "reviews/security-reviewer.jsonl",
+    "reviews/spec-compliance-auditor.jsonl",
+    "reviews/eval-judge.jsonl"
   ]
 }

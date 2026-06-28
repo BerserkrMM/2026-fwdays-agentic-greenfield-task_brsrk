@@ -12,8 +12,8 @@
     {
       "slice": "2026-06-28-add-accounts",
       "reviewEvidence": "clean",
-      "rawReviewEvidence": "missing",
-      "trailerCommits": 3,
+      "rawReviewEvidence": "4 linked",
+      "trailerCommits": 4,
       "libDomains": [],
       "processComplete": true
     }
