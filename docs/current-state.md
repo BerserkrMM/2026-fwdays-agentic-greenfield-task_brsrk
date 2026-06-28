@@ -4,6 +4,28 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-28 19:02 UTC — Project Factory evidence hardening branch
+
+**What was done**
+- Started `harden-project-factory-evidence` from `dev` as a separate process/tooling branch, leaving `add-accounts`/PR #3 untouched.
+- Added deterministic evidence helpers: `slice-report`, `check:red-green`, `check:handoff`, and `check:claims`.
+- Updated `gate:status` to show `trajectoryEval NEEDS-RUN` separately from deterministic trajectory checks.
+- Updated Project Factory docs, `AGENTS.md`, and the PR template so final reports use generated metrics, explicit NOT-delivered / NOT-produced sections, raw review evidence, and handoff-last discipline.
+
+**Current state**
+- New scripts parse successfully and local checks for claim hygiene / red-green evidence / gate status run.
+- `check:red-green` warns for the historical foundation slice only; it is strict for future slices via `--slice <slice> --strict`.
+- `docs/qa/trajectory-report.md` and `trace/trajectory.json` were regenerated for the new raw-review-evidence column.
+
+**Next steps**
+- Run the verification battery, commit this branch with `Slice:` / `Refs:` trailers, push it, and open a PR to `dev`.
+- After that PR is merged, update `add-accounts` from `dev` and retrofit that branch to the new evidence rules.
+
+**Open questions / blockers**
+- None.
+
+---
+
 ## 2026-06-28 16:41 UTC
 
 **What was done**

@@ -22,6 +22,21 @@ const commands = [
     args: ["scripts/check-trajectory.mjs"],
   },
   {
+    name: "red-green-evidence",
+    command: "node",
+    args: ["scripts/check-red-green-evidence.mjs"],
+  },
+  {
+    name: "handoff-freshness",
+    command: "node",
+    args: ["scripts/check-handoff-fresh.mjs"],
+  },
+  {
+    name: "claim-hygiene",
+    command: "node",
+    args: ["scripts/check-claims.mjs"],
+  },
+  {
     // Real recordings gate: video artifacts exist + asserted + vision met
     // (graceful before Phase 6 — warns, never fails, when no manifest yet).
     name: "recordings",
