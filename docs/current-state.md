@@ -4,6 +4,68 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-28 11:08 UTC
+
+**What was done**
+- Applied the minimal safe PR cleanup for CodeRabbit's 150-file limit.
+- Added local agent skill/tool package ignores to `.gitignore`: `.agents/skills/`, `.claude/skills/`, `.pi/skills/`, and `skills-lock.json`.
+- Removed those already-tracked vendored skill files from the git index with `git rm --cached`, leaving local files available but excluding them from the PR.
+- Recomputed the staged PR file list against `dev`: it is now 86 files and no longer includes the ignored skill paths.
+
+**Current state**
+- PR #1 cleanup is staged locally and should bring CodeRabbit below the file-count limit once committed/pushed.
+- The video demo link is still `TODO`.
+- Unrelated local work remains untracked/modified (e.g. Project Factory artifacts and `package.json`) and was not part of this cleanup.
+
+**Next steps**
+- Commit and push the cleanup, then trigger CodeRabbit review again.
+- Record the final 1–2 minute demo video when the product is ready and update the PR body.
+
+**Open questions / blockers**
+- None.
+
+---
+
+## 2026-06-28 10:56 UTC
+
+**What was done**
+- Read the homework `README.md`, PR #1 metadata/body, and the CodeRabbit comments.
+- Confirmed CodeRabbit skipped the review because PR #1 selected 183 files, 33 over the 150-file limit.
+- Identified that many counted files are vendored/installed agent tooling and skills under `.agents/skills/**`, `.claude/**`, and `.pi/**`, not product implementation code.
+
+**Current state**
+- PR #1 is open from `add-foudation` into `dev` and already has the real author name and Agentic Engineering process description.
+- The video demo link is still `TODO`.
+- CodeRabbit has not provided substantive review feedback yet due to the file-count limit.
+
+**Next steps**
+- Remove or ignore vendored agent/tooling directories from the PR so CodeRabbit can review the actual product/process artifacts.
+- Prefer small capability PRs after the foundation PR is fixed.
+- Record one final 1–2 minute demo video when the product is ready, then update the PR body.
+
+**Open questions / blockers**
+- None.
+
+---
+
+## 2026-06-27 09:05 UTC
+
+**What was done**
+- Investigated a stuck Next.js dev server on port 3000.
+- Confirmed PID `86034` was a defunct child, then stopped its parent `86023` and related build worker `86137` with SIGKILL after SIGTERM did not clear them.
+
+**Current state**
+- No remaining Next.js/node processes for this project were found.
+- Port 3000 has no listener and should be available for a fresh dev server start.
+
+**Next steps**
+- Start the dev server again with the project npm script.
+
+**Open questions / blockers**
+- None.
+
+---
+
 ## 2026-06-27 08:05 UTC
 
 **What was done**

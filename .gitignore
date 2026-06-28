@@ -68,3 +68,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Project Factory: recording scratch (QA proof under docs/qa/ IS committed)
+**/raw/
+
+# Local agent skills/tool packages (do not vendor into homework PRs)
+.agents/skills/
+.claude/skills/
+.pi/skills/
+skills-lock.json
