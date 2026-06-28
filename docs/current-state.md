@@ -24,6 +24,27 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-28 12:24 UTC
+
+**What was done**
+- Fetched `origin` after PR #1 was merged into `dev`.
+- Stashed unrelated local Project Factory/automation artifacts and `package.json` changes as `local project-factory artifacts before add-accounts` to keep the next feature branch clean.
+- Fast-forwarded local `dev` to `origin/dev` at merge commit `40aa47b`.
+- Created the new feature branch `add-accounts` from updated `dev`.
+
+**Current state**
+- Current branch: `add-accounts`.
+- Working tree is clean except this handoff-log update.
+- PR #1 foundation work is now part of `dev`.
+
+**Next steps**
+- Start the `add-accounts` OpenSpec proposal/implementation: account metadata, exactly one default account, and the concrete `AccountsPort` implementation.
+
+**Open questions / blockers**
+- None.
+
+---
+
 ## 2026-06-28 12:13 UTC
 
 **What was done**
