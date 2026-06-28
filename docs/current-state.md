@@ -4,6 +4,24 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-28 16:41 UTC
+
+**What was done**
+- Investigated failing GitHub CI on PR #2.
+- Root cause: CI failed at `npx openspec validate --all --strict` because OpenSpec was available locally/global in the dev environment but not installed as a project dependency in GitHub Actions.
+- Added `@fission-ai/openspec@1.5.0` as a dev dependency and verified `npx openspec validate --all --strict` locally.
+
+**Current state**
+- Local verification after the fix: lint, typecheck, tests, coverage ratchet, eval ratchet, and production dependency audit pass (audit only reports known moderate Next/PostCSS advisory, non-gating under `--audit-level=high`).
+
+**Next steps**
+- Commit/push the OpenSpec dev-dependency fix to PR #2 and wait for CI rerun.
+
+**Open questions / blockers**
+- None.
+
+---
+
 ## 2026-06-28 16:38 UTC
 
 **What was done**
