@@ -20,6 +20,10 @@
     "check:coverage": "node scripts/check-coverage-ratchet.mjs",
     "check:eval": "node scripts/check-eval-ratchet.mjs",
     "check:trajectory": "node scripts/check-trajectory.mjs",
+    "check:red-green": "node scripts/check-red-green-evidence.mjs",
+    "check:handoff": "node scripts/check-handoff-fresh.mjs",
+    "check:claims": "node scripts/check-claims.mjs",
+    "slice:report": "node scripts/slice-report.mjs",
     "check:recordings": "node scripts/check-recordings.mjs",
     "check:a11y": "node scripts/check-a11y.mjs",
     "gate:status": "node scripts/gate-status.mjs"

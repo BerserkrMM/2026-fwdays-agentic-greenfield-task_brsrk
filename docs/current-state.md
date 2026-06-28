@@ -4,6 +4,47 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-28 19:05 UTC — add-accounts updated from hardened `dev`
+
+**What was done**
+- Merged `origin/dev` into `add-accounts` after PR #4 (`harden-project-factory-evidence`) landed in `dev`.
+- Resolved generated artifact conflicts by keeping both archived slices in the trajectory report and regenerating `docs/qa/trajectory-report.md` / `trace/trajectory.json` with the new raw-review-evidence column.
+- Kept the prior `add-accounts` evidence-correction handoff entries for audit history.
+
+**Current state**
+- `add-accounts` now contains the new Project Factory evidence tooling (`slice-report`, `check:red-green`, `check:handoff`, `check:claims`) plus updated `AGENTS.md`, PR template, and gate docs.
+- Existing `add-accounts` evidence still needs retrofit to the new rules where practical: durable RED/GREEN JSON, raw review output files, generated slice-report block, and claim-hygiene shaped final summary.
+
+**Next steps**
+- Run the new checks on this branch, add/retrofit the missing evidence artifacts where possible, then push the merge commit to PR #3.
+
+**Open questions / blockers**
+- Historical RED ordering can be documented but not reconstructed from current commits alone; decide whether to create a waiver or rerun trajectory-eval before merge.
+
+---
+
+## 2026-06-28 19:02 UTC — Project Factory evidence hardening branch
+
+**What was done**
+- Started `harden-project-factory-evidence` from `dev` as a separate process/tooling branch, leaving `add-accounts`/PR #3 untouched.
+- Added deterministic evidence helpers: `slice-report`, `check:red-green`, `check:handoff`, and `check:claims`.
+- Updated `gate:status` to show `trajectoryEval NEEDS-RUN` separately from deterministic trajectory checks.
+- Updated Project Factory docs, `AGENTS.md`, and the PR template so final reports use generated metrics, explicit NOT-delivered / NOT-produced sections, raw review evidence, and handoff-last discipline.
+
+**Current state**
+- New scripts parse successfully and local checks for claim hygiene / red-green evidence / gate status run.
+- `check:red-green` warns for the historical foundation slice only; it is strict for future slices via `--slice <slice> --strict`.
+- `docs/qa/trajectory-report.md` and `trace/trajectory.json` were regenerated for the new raw-review-evidence column.
+
+**Next steps**
+- Run the verification battery, commit this branch with `Slice:` / `Refs:` trailers, push it, and open a PR to `dev`.
+- After that PR is merged, update `add-accounts` from `dev` and retrofit that branch to the new evidence rules.
+
+**Open questions / blockers**
+- None.
+
+---
+
 ## 2026-06-28 17:40 UTC — add-accounts: finalized + corrected reporting per review
 
 **What was done** — addressed the PR-evidence review (17:33 entry) and brought the
@@ -110,7 +151,6 @@ Project Factory per-slice loop on branch `add-accounts` (forked from `dev`).
 
 ---
 
-
 ## 2026-06-28 17:05 UTC
 
 **What was done**
@@ -128,6 +168,7 @@ Project Factory per-slice loop on branch `add-accounts` (forked from `dev`).
 - None.
 
 ---
+
 ## 2026-06-28 16:41 UTC
 
 **What was done**
