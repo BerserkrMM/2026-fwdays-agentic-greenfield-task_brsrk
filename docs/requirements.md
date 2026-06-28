@@ -77,6 +77,12 @@ type ParsedLedgerItemDraft = {
 }
 ```
 
+While `occurredAt` is optional on the parser **draft**, the persisted
+`LedgerItem.occurred_at` is mandatory: when the parser returns no date, the
+item-creation contract defaults it to the entry time (the `input_event`/creation
+timestamp, `Europe/Kyiv`). The ledger list sorts newest-first by
+`LedgerItem.occurred_at`.
+
 ## Functional requirements
 
 ### Shell & navigation (Epic 0 — Foundation / App Shell)
@@ -124,7 +130,7 @@ type ParsedLedgerItemDraft = {
 | FR-BANK-03  | Provider-specific deterministic normalization only removes obvious non-transaction rows/columns and prepares clean rows with source row numbers for AI parsing; it does not categorize, infer final item types, create items, or write to the ledger | proposed |
 | FR-BANK-04  | The clean rows are passed to the AI parser; the parser is expected to return at most one ledger item per source row, and the document result creates one `pending` ledger item per parsed statement row | proposed |
 | FR-BANK-05  | Bank-statement imports do not require a separate preview step; the user reviews, approves, edits, or deletes resulting items later | proposed |
-| FR-BANK-06  | `(input_event_id, import_row_number)` is unique, so retrying a parse does not duplicate statement rows            | proposed |
+| FR-BANK-06  | `(input_event_id, import_row_number)` is unique. Retrying a parse is insert-if-absent: rows that already produced a ledger item (in any status — `pending`, `approved`, or `deleted`) are skipped, so no row is duplicated and no existing item is overwritten | proposed |
 
 ### AI parsing (Epic 5, capability `parsing`)
 
@@ -158,8 +164,11 @@ type ParsedLedgerItemDraft = {
 | FR-ACCT-01  | User can list accounts; exactly one account is the default                                                        | proposed |
 | FR-ACCT-02  | Each account shows its balance, sourced from non-deleted ledger items                                            | proposed |
 | FR-ACCT-03  | Account metadata can be edited as needed for v1 (UAH only)                                                        | proposed |
+| FR-ACCT-04  | User can create accounts and switch which account is the default; exactly one default is always maintained        | proposed |
+| FR-ACCT-05  | Deleting an account is a soft archive: the account is hidden from the active list and default selection, but its ledger items and their balance contribution are retained. The single default account and the last remaining active account cannot be archived | proposed |
+| FR-ACCT-06  | A seeded default account (`Готівка`, UAH) exists at first run so item creation works before the user creates any account; it is editable/renameable. Accounts have no stored opening balance in v1 — balance derives only from non-deleted ledger items (see FR-LEDGER-05) | proposed |
 
-### Category text (Epic 9, capability `settings` / `ledger-items`)
+### Category text (capability `ledger-items`)
 
 | ID         | Description                                                                                                        | Status   |
 | ---------- | ------------------------------------------------------------------------------------------------------------------ | -------- |
@@ -172,8 +181,9 @@ type ParsedLedgerItemDraft = {
 
 | ID         | Description                                                                                                        | Status   |
 | ---------- | ------------------------------------------------------------------------------------------------------------------ | -------- |
-| FR-SET-01  | Settings screen manages technical configuration                                                                   | proposed |
-| FR-SET-02  | AI provider settings are configurable if needed                                                                   | proposed |
+| FR-SET-01  | Settings screen manages technical configuration; in v1 this is scoped to AI-provider configuration and data export | proposed |
+| FR-SET-02  | AI provider settings are configurable; the API key is stored in the database and edited in Settings. The stored key is write-only over the wire — it is never returned to the client in responses, only its configured/not-configured status | proposed |
+| FR-SET-03  | User can export ledger items to a CSV file from Settings. v1 has no destructive data-reset/clear action            | proposed |
 
 ### Ledger (Epic 7, capability `ledger`)
 
@@ -266,14 +276,17 @@ current repository. Agents should handle them as follows:
 
 Current known risks and open questions:
 
-- **Parser-run retry and idempotency.** A failed parser run keeps the original
-  `input_event` so parsing can be retried. Retried bank-statement parses use
-  upsert by `(input_event_id, import_row_number)` to avoid duplicate items and
-  must not overwrite `approved` items without explicit user action. Relates to
-  FR-PARSE-08, FR-BANK-06.
-- **Multi-item imports are not atomic.** Creating many ledger items from one parse
-  can partially fail. Candidate fixes: batch atomicity, idempotency keys, or
-  explicit partial-success UI. Relates to FR-BANK-04, FR-FILE-05.
+- **Parser-run retry and idempotency.** _Resolved (2026-06-28)._ A failed parser
+  run keeps the original `input_event` so parsing can be retried. Retried
+  bank-statement parses are **insert-if-absent** by `(input_event_id,
+  import_row_number)`: any row that already produced an item (in any status) is
+  skipped, so nothing is duplicated and no existing item is overwritten. Relates
+  to FR-PARSE-08, FR-BANK-06.
+- **Multi-item imports are not atomic.** _Resolved (2026-06-28)._ Creating many
+  ledger items from one parse uses **partial success**: every valid draft is
+  saved, and the import result reports how many items were created and how many
+  failed. The `input_event` and `parser_run` are preserved for retry. Relates to
+  FR-BANK-04, FR-FILE-05.
 - **Free-form AI categories may be messy.** v1 stores the category text returned
   by AI as-is, or `Без категорії` when AI returns no category. Later product
   decisions may constrain categories or add a category-mapping review flow.
@@ -283,3 +296,20 @@ Current known risks and open questions:
   patch/override before production.
 - **UI token consistency.** Accounts and File Imports still use raw Tailwind colors
   in places; migrate to `fin-*` tokens without changing behavior. Relates to TC-UI-01.
+
+## Sign-off
+
+This PRD is the source of truth for v1 scope and requirements (gate **G1**). Note:
+`gate:status` prints `needs sign-off` for G1 by design — it only checks the file
+exists; the sign-off is the human record below.
+
+| Role | Name | Decision | Date |
+|------|------|----------|------|
+| Product owner | Andriy | ☑ approved | 2026-06-28 |
+| Tech lead | Andriy | ☑ approved | 2026-06-28 |
+
+**Sign-off notes:** Approved including the 2026-06-28 additions — FR-ACCT-04/05/06
+(account create / switch-default / soft-archive, seeded default, no opening
+balance), FR-BANK-06 insert-if-absent retry, FR-SET-02 (AI key in DB, write-only)
+and FR-SET-03 (CSV export, no destructive reset), and the mandatory `occurred_at`
+rule. Companion plan: [docs/mvp-capability-plan.md](mvp-capability-plan.md).

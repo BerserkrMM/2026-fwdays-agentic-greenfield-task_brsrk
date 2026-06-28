@@ -4,6 +4,296 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-28 15:40 UTC
+
+**What was done**
+- Completed Step 5: installed matching `@vitest/coverage-v8@2.1.9`, configured Vitest to emit `coverage/coverage-summary.json`, and created `quality/coverage-baseline.json`.
+- Completed Step 6: replaced the placeholder sample eval with real Foundation eval cases, wrote eval result artifacts, and created `quality/eval-baseline.json`.
+- Added `.github/workflows/ci.yml` back into Git tracking via `.gitignore` exceptions for `.github/workflows/` and adjusted the CI audit to gate production dependencies (`npm audit --omit=dev --audit-level=high`).
+- Added `coverage/**` to ESLint global ignores so generated coverage HTML does not pollute local lint runs.
+
+**Current state**
+- `npm run gate:status` now reports G5 PASS and G6 PASS; deterministic checks are PASS for traceability, trajectory, recordings, coverage, and evals.
+- Full verification run passed: OpenSpec strict validation, trace freshness/check, test coverage + coverage ratchet, eval ratchet, gate status, lint, typecheck, unit tests, build, and production dependency audit (with only the known moderate Next/PostCSS advisory reported non-gating).
+- Planning/sign-off records remain in the docs; `gate:status` still prints G1/G3 as `needs sign-off` by design because it cannot judge human approval.
+
+**Next steps**
+- Commit the Project Factory preparation branch.
+- Start `add-accounts` from the prepared baseline, using tests-first with `@trace` from the start.
+
+**Open questions / blockers**
+- None for the factory-preparation baseline. The production audit still reports the known moderate Next/PostCSS advisory; keep tracking for a safe upstream fix.
+
+---
+
+## 2026-06-28 15:12 UTC
+
+**What was done**
+- Reviewed Step 4 `@trace` backfill in existing tests and the traceability scanner regex fix.
+- Ran `npm run check:trace`, `npm run test`, `npm run gate:status`, `npm run lint`, `npx tsc --noEmit`, and `npm run build`.
+
+**Current state**
+- `@trace` backfill is working: traceability report now shows test evidence for 8 MVP FRs (`FR-IMPORT-02`, `FR-BANK-06`, `FR-ITEM-04`, `FR-ITEM-06`, `FR-ACCT-01`, `FR-CAT-01`, `FR-CAT-02`, `FR-CAT-03`).
+- The categorized-id regex fix in `scripts/check-traceability.mjs` is valid and required.
+- Verification passed: traceability 0 failures / 112 warnings, tests 10/10, lint/typecheck/build green, gate status unchanged except trace evidence is improved.
+
+**Next steps**
+- Optional small cleanup: retag `src/db/no-client-db-import.test.ts` from `TC-STACK-02` to the more precise `TC-STACK-04` and/or `TC-MOD-02` because it checks client-side DB-boundary imports, not the server-actions/no-separate-backend constraint.
+- Continue with coverage baseline setup (`@vitest/coverage-v8`) or start `add-accounts` with `@trace` from the first tests.
+
+**Open questions / blockers**
+- Coverage baseline remains blocked until `@vitest/coverage-v8` is installed.
+
+---
+
+## 2026-06-28 16:45 UTC
+
+**What was done** — Step 4: backfilled `@trace` into existing tests + fixed a
+traceability regex bug.
+- `src/modules/foundation/item-creation.test.ts`: per-test `@trace` for FR-ITEM-04,
+  FR-ITEM-06, FR-ACCT-01, FR-CAT-01, FR-CAT-02, FR-CAT-03, FR-BANK-06, FR-IMPORT-02,
+  NFR-PRIV-02.
+- `src/db/client.test.ts`: `@trace TC-DATA-01, TC-STACK-04`.
+- `src/db/no-client-db-import.test.ts`: `@trace TC-STACK-02`.
+- Fixed `scripts/check-traceability.mjs`: the `@trace` scanner used `[A-Z]+-\d+`,
+  which silently dropped categorized ids like `FR-ITEM-06`. Replaced it with the
+  same id grammar as `idsIn()` (`(?:FR|NFR|TC|BC|BUG)-(?:[A-Z0-9]+-)?\d+`), so
+  categorized `@trace` ids now register. Plain ids (FR-9) still match.
+
+**Current state**
+- `npm run test` → 10/10 pass; `npm run lint` clean; `npx tsc --noEmit` OK.
+- `npm run check:trace` → 0 failure(s); warnings 120 → 112 (8 MVP FRs now carry a
+  test trace: FR-ITEM-04/06, FR-CAT-01/02/03, FR-BANK-06, FR-ACCT-01, FR-IMPORT-02).
+  Report shows test counts for categorized ids (e.g. FR-ITEM-06 = 2).
+- Remaining warnings are missing recordings and FRs without tests yet (expected —
+  only the foundation slice is built).
+
+**Next steps**
+- Install `@vitest/coverage-v8` to unblock the coverage baseline.
+- Start slice 2 `add-accounts` (tests-first, `@trace` from the start).
+
+**Open questions / blockers**
+- `@vitest/coverage-v8` still missing → coverage baseline blocked.
+
+---
+
+## 2026-06-28 16:20 UTC
+
+**What was done**
+- Recorded human sign-off for G1 and G3 (Andriy, both product-owner and tech-lead
+  roles, 2026-06-28):
+  - G1: added a `## Sign-off` block at the end of `docs/requirements.md`.
+  - G3: filled the §7 sign-off table in `docs/mvp-capability-plan.md` and set its
+    top status line to `approved 2026-06-28 by Andriy`.
+
+**Current state**
+- `npm run check:trace` → 0 failure(s), 60 MVP FRs (sign-off tables do not affect
+  FR parsing).
+- `npm run gate:status` → G1/G3 still print `needs sign-off` **by design** (the
+  script only checks file presence; the sign-off is the human record in the docs).
+  G2 PASS. Planning phase (Steps 1–2) is complete and signed.
+
+**Next steps**
+- Start slice 2 `add-accounts` (FR-ACCT-01..06) via the OpenSpec loop, tests-first.
+- Backfill `@trace` annotations on foundation tests; install `@vitest/coverage-v8`
+  to unblock the coverage baseline.
+
+**Open questions / blockers**
+- `@vitest/coverage-v8` still missing → coverage baseline blocked.
+
+---
+
+## 2026-06-28 16:05 UTC
+
+**What was done** — applied the three pre-sign-off corrections:
+- Synced `docs/capabilities.md`: capability map now lists FR-ACCT-01..06 under
+  `accounts` (with FR-ACCT-02 owned by `accounts`, depends on `ledger`) and
+  FR-SET-01..03 under `settings`; removed FR-ACCT-02 from `ledger`'s owned set;
+  updated the phased steps and OpenSpec change sequence to match.
+- Fixed the stale heading in `docs/requirements.md`:
+  `### Category text (Epic 9, capability settings / ledger-items)` →
+  `### Category text (capability ledger-items)`.
+- Converted the critical-path DAG in `docs/mvp-capability-plan.md` from an ASCII
+  block to a Mermaid `graph TD` (solid = hard deps, dashed = soft `settings→parsing`).
+
+**Current state**
+- `npx openspec validate --all --strict` → 10 passed, 0 failed.
+- `npm run check:trace` → 0 failure(s); plan owns all 60 MVP FRs.
+- Planning artifacts (`requirements.md`, `capabilities.md`, `mvp-capability-plan.md`,
+  10 specs) are now mutually consistent and ready for G1/G3 human sign-off.
+
+**Next steps**
+- Fill the G3 sign-off table in `docs/mvp-capability-plan.md` §7 and a G1 sign-off
+  block in `docs/requirements.md` (judgment gates — `gate:status` will still read
+  `needs sign-off` by design).
+- Then start slice 2 `add-accounts`.
+
+**Open questions / blockers**
+- `@vitest/coverage-v8` still missing → coverage baseline blocked.
+
+---
+
+## 2026-06-28 14:44 UTC
+
+**What was done**
+- Reviewed the user's Step 1 refinements and Step 2 `docs/mvp-capability-plan.md` implementation.
+- Ran validation: `npx openspec validate --all --strict`, `npm run check:trace`, `npm run gate:status`, `npm run lint`, `npx tsc --noEmit`, `npm run test`, and `npm run build`.
+- Asked a reviewer subagent to cross-check planning artifacts for consistency.
+
+**Current state**
+- Automated G1-G3 structure is healthy: 10 OpenSpec specs validate, traceability has 60 MVP FRs with 0 failures, G2 is PASS, G3 is `needs sign-off` only.
+- No blocker found for automated G1-G3 checks.
+- Review findings to address before sign-off: `docs/capabilities.md` is stale versus the updated requirements/plan; `docs/requirements.md` has a stale category heading; the plan DAG is a plain code block rather than Mermaid.
+
+**Next steps**
+- Sync `docs/capabilities.md` with FR-ACCT-04/05/06, FR-SET-03, and the final FR-ACCT-02 ownership/delivery wording.
+- Fix the category heading in `docs/requirements.md` and consider converting the DAG in `docs/mvp-capability-plan.md` to a Mermaid block.
+- Then fill G1/G3 human sign-off fields.
+
+**Open questions / blockers**
+- Decide whether FR-ACCT-02 is owned by `accounts` with dependency on `ledger` (as the plan says) or owned/delivered by `ledger` (as stale `docs/capabilities.md` says). Prefer the plan's one-owner model unless product/architecture says otherwise.
+
+---
+
+## 2026-06-28 15:40 UTC
+
+**What was done**
+- Created `docs/mvp-capability-plan.md` (Step 2): a one-owner-per-FR ownership
+  matrix covering all 60 MVP FRs (incl. the new FR-ACCT-04/05/06 and FR-SET-03),
+  the critical-path DAG, the 10-slice phased order, v1 scope in/out (the 18
+  clarified decisions), a per-slice Definition of Done, open blockers, and human
+  sign-off placeholders.
+
+**Current state**
+- `npm run check:trace` → `0 failure(s)`; `plan-ownership` now satisfied for every
+  MVP FR (warnings are the expected missing `@trace` tests + recordings).
+- `npm run gate:status` → G2 PASS; **G3 moved FAIL → `needs sign-off`** (plan
+  present, awaiting human sign-off). G1 also `needs sign-off`.
+
+**Next steps**
+- Obtain human sign-off on `docs/requirements.md` (G1) and
+  `docs/mvp-capability-plan.md` (G3) — fill the sign-off table.
+- Then start slice 2 `add-accounts` (covers FR-ACCT-01..06) via the OpenSpec loop.
+- Backfill `@trace` annotations + install `@vitest/coverage-v8` for the coverage
+  baseline.
+
+**Open questions / blockers**
+- `@vitest/coverage-v8` still missing → coverage baseline blocked.
+
+---
+
+## 2026-06-28 15:10 UTC
+
+**What was done**
+- Ran a clarification loop on the 9 backfilled baseline specs to make them ready
+  for automated development. Captured 18 product/behavior decisions and encoded
+  them into the specs + synced the PRD (source of truth).
+- `docs/requirements.md`: added FR-ACCT-04 (create + switch default), FR-ACCT-05
+  (delete = soft archive), FR-ACCT-06 (seeded `Готівка` default, no opening
+  balance); reworded FR-BANK-06 to insert-if-absent retry; clarified FR-SET-01/02
+  (AI key in DB, write-only over the wire) and added FR-SET-03 (CSV export, no
+  destructive reset); added the mandatory-`occurred_at` rule (defaults to entry
+  time); marked the parser-retry and multi-item-atomicity known risks resolved.
+- Specs updated: `accounts` (CRUD/archive/seed/no-opening-balance), `ledger-items`
+  (newest-first + incremental pagination, full filter/search, edit keeps
+  `approved`, mandatory `occurred_at`, partial-success batch creation), `ledger`
+  (archived-account items still count), `parsing` (confidence stored but not shown
+  in v1 UI), `manual-input`/`file-imports`/`bank-imports` (partial-success,
+  redirect-to-ledger with created/failed summary, explicit parse-error + retry,
+  mime-type validation with no hard size limit; bank retry = skip rows that
+  already produced an item), `dashboard` (all-time scope, monthly trends with a
+  ≥2-months threshold), `settings` (AI provider + CSV export, write-only key).
+
+**Current state**
+- `npx openspec validate --all --strict` passes for all 10 specs.
+- `npm run check:trace` reports `0 failure(s)` over 60 MVP FRs (warnings are the
+  expected missing recordings/`@trace` test annotations).
+- Note: OpenSpec strict validation rejects a requirement whose leading sentence is
+  a conditional with a parenthetical before the first SHALL; phrase requirements
+  as "The system SHALL ..." with SHALL in the first clause.
+
+**Next steps**
+- Implement Step 2: create `docs/mvp-capability-plan.md` (one-owner-per-FR, DAG,
+  scope, DoD, sign-off) — now covering the new FR-ACCT-04/05/06 and FR-SET-03.
+- Begin capability slices from the phased order; `accounts` is unblocked.
+
+**Open questions / blockers**
+- `@vitest/coverage-v8` still missing → coverage baseline blocked.
+
+---
+
+## 2026-06-28 13:46 UTC
+
+**What was done**
+- Renamed the working branch from `add-accounts` to `chore-prepare-project-factory`.
+- Implemented Step 1 manually by backfilling baseline OpenSpec specs for the nine non-foundation capabilities:
+  - `openspec/specs/accounts/spec.md`
+  - `openspec/specs/ledger/spec.md`
+  - `openspec/specs/ledger-items/spec.md`
+  - `openspec/specs/parsing/spec.md`
+  - `openspec/specs/manual-input/spec.md`
+  - `openspec/specs/bank-imports/spec.md`
+  - `openspec/specs/file-imports/spec.md`
+  - `openspec/specs/dashboard/spec.md`
+  - `openspec/specs/settings/spec.md`
+- Used a reviewer subagent to confirm capability-to-FR ownership and pitfalls before writing the specs.
+- Regenerated `docs/qa/traceability-report.md` via `npm run check:trace`.
+
+**Current state**
+- `npx openspec validate --all --strict` passes for 10 specs.
+- `npm run check:trace` now reports `0 failure(s)`; remaining warnings are expected for missing `docs/mvp-capability-plan.md`, missing `@trace` test annotations, and missing recording references.
+- `npm run gate:status` now shows G2 PASS; G3 still FAIL because the canonical MVP capability plan has not been created yet.
+
+**Next steps**
+- Implement Step 2: create `docs/mvp-capability-plan.md` with one-owner-per-FR mapping, critical path DAG, scope in/out, DoD, and human sign-off placeholders.
+- Then backfill `@trace` annotations into existing foundation tests and address coverage baseline setup.
+
+**Open questions / blockers**
+- `@vitest/coverage-v8` is still missing, so coverage baseline creation remains blocked until the dev dependency is installed.
+
+---
+
+## 2026-06-28 13:28 UTC
+
+**What was done**
+- Ran current deterministic gates for the Project Factory remediation discussion.
+- `npm run gate:status` currently reports G0 PASS, G1/G3 need sign-off or plan, G2/G4/G7/G8 FAIL, G5 SKIP, G6 PASS/SKIP-backed.
+- `npm run check:trace` generated the traceability report showing 46 missing spec citations and no `docs/mvp-capability-plan.md`.
+- `npx openspec validate --all --strict` passes for the existing single `foundation` spec.
+- `npm run test:coverage` currently fails because `@vitest/coverage-v8` is not installed.
+
+**Current state**
+- No remediation artifacts were added yet.
+- Manual remediation path is clear: baseline specs, canonical MVP capability plan, sign-offs, trace backfill, then coverage/eval baselines.
+
+**Next steps**
+- Create/verify baseline specs for all non-foundation capabilities.
+- Create `docs/mvp-capability-plan.md` and get human plan sign-off.
+- Install/configure Vitest coverage provider before creating the coverage baseline.
+
+**Open questions / blockers**
+- Whether to generate the missing specs manually in this session or via the Project Factory/spec-pipeline workflow.
+
+---
+
+## 2026-06-28 13:19 UTC
+
+**What was done**
+- Read `crash_course/` slide decks and mapped the external audit terminology to the Project Factory material.
+- Confirmed the audit is about missing canonical process artifacts/tracing, not missing product implementation code.
+
+**Current state**
+- No product code changed.
+- Key referenced slides are in `crash_course/25.06_Запускаємо фабрику проєктів.pdf`, especially slides/pages 12–20 and 26–30.
+
+**Next steps**
+- If proceeding with the audit remediation, run the Project Factory/OpenSpec flow to generate the missing baseline specs and canonical MVP capability plan, then backfill `@trace` and coverage/eval baselines.
+
+**Open questions / blockers**
+- Need the exact Project Factory command/workflow invocation available in this environment before executing the remediation.
+
+---
+
 ## 2026-06-28 12:49 UTC
 
 **What was done**

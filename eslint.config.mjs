@@ -11,6 +11,7 @@ const eslintConfig = defineConfig([
     ".next/**",
     "out/**",
     "build/**",
+    "coverage/**",
     "next-env.d.ts",
     // Vendored design reference (dc-runtime prototype, not app source) — see DESIGN.md §11.
     "docs/**",

@@ -1,0 +1,32 @@
+{
+  "generatedAt": "2026-06-28T15:36:34Z",
+  "threshold": 70,
+  "dimensions": {
+    "explicit-state-clarity": 94,
+    "ua-ux-clarity": 95
+  },
+  "cases": [
+    {
+      "id": "eval-foundation-imports-hub-clarity",
+      "dimension": "ua-ux-clarity",
+      "trace": ["FR-IMPORT-01", "FR-SHELL-03", "NFR-I18N-01"],
+      "capability": "foundation",
+      "score": 95,
+      "pass": true,
+      "judges": 1,
+      "disagreement": false,
+      "notes": "Manual baseline: imports hub copy is Ukrainian-first, exposes all three channels, and clearly explains that imported data becomes pending ledger operations for later review."
+    },
+    {
+      "id": "eval-foundation-placeholder-state-clarity",
+      "dimension": "explicit-state-clarity",
+      "trace": ["FR-SHELL-03", "BC-BRAND-01", "NFR-I18N-01"],
+      "capability": "foundation",
+      "score": 94,
+      "pass": true,
+      "judges": 1,
+      "disagreement": false,
+      "notes": "Manual baseline: placeholder screens show an explicit Ukrainian state, honestly indicate the section is in development, and avoid blank/dead-end routes."
+    }
+  ]
+}

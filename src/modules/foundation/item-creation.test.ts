@@ -39,6 +39,7 @@ async function seedInputEvent(): Promise<string> {
 }
 
 describe("ItemCreationService", () => {
+  // @trace FR-ITEM-04, NFR-PRIV-02
   it("creates a pending item linked to its input event", async () => {
     const inputEventId = await seedInputEvent();
     const service = new ItemCreationService(repos, accountsPort("acc-1"));
@@ -59,6 +60,7 @@ describe("ItemCreationService", () => {
     expect(await repos.ledgerItems.findById(item.id)).not.toBeNull();
   });
 
+  // @trace FR-ITEM-06, FR-ACCT-01
   it("resolves the default account when none is supplied (FR-ITEM-06)", async () => {
     const inputEventId = await seedInputEvent();
     const service = new ItemCreationService(repos, accountsPort("default-acc"));
@@ -68,6 +70,7 @@ describe("ItemCreationService", () => {
     expect(item.accountId).toBe("default-acc");
   });
 
+  // @trace FR-ITEM-06
   it("fails cleanly when no account is available", async () => {
     const inputEventId = await seedInputEvent();
     const service = new ItemCreationService(repos, accountsPort(null));
@@ -77,6 +80,7 @@ describe("ItemCreationService", () => {
     ).rejects.toBeInstanceOf(NoDefaultAccountError);
   });
 
+  // @trace FR-CAT-03
   it("defaults the category to «Без категорії» when empty (FR-CAT-03)", async () => {
     const inputEventId = await seedInputEvent();
     const service = new ItemCreationService(repos, accountsPort("acc-1"));
@@ -89,6 +93,7 @@ describe("ItemCreationService", () => {
     expect(item.category).toBe("Без категорії");
   });
 
+  // @trace FR-CAT-01, FR-CAT-02
   it("trims category text before saving", async () => {
     const inputEventId = await seedInputEvent();
     const service = new ItemCreationService(repos, accountsPort("acc-1"));
@@ -101,6 +106,7 @@ describe("ItemCreationService", () => {
     expect(item.category).toBe("Їжа");
   });
 
+  // @trace NFR-PRIV-02, FR-IMPORT-02
   it("rejects a reference to a missing input event", async () => {
     const service = new ItemCreationService(repos, accountsPort("acc-1"));
 
@@ -109,6 +115,7 @@ describe("ItemCreationService", () => {
     ).rejects.toBeInstanceOf(MissingInputEventError);
   });
 
+  // @trace FR-BANK-06
   it("carries the bank source row number onto the item (FR-BANK-06)", async () => {
     const inputEventId = await seedInputEvent();
     const service = new ItemCreationService(repos, accountsPort("acc-1"));
