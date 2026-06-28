@@ -46,7 +46,9 @@ self.addEventListener("fetch", (event) => {
         .then((response) => {
           if (SHELL_ROUTES.has(url.pathname)) {
             const copy = response.clone();
-            caches.open(CACHE).then((cache) => cache.put(request, copy));
+            event.waitUntil(
+              caches.open(CACHE).then((cache) => cache.put(request, copy)),
+            );
           }
           return response;
         })

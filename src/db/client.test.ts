@@ -8,13 +8,13 @@ import {
 
 const original = process.env.DATABASE_URL;
 
-beforeEach(() => {
-  resetDbBoundaryForTests();
+beforeEach(async () => {
+  await resetDbBoundaryForTests();
   delete process.env.DATABASE_URL;
 });
 
-afterEach(() => {
-  resetDbBoundaryForTests();
+afterEach(async () => {
+  await resetDbBoundaryForTests();
   if (original === undefined) delete process.env.DATABASE_URL;
   else process.env.DATABASE_URL = original;
 });

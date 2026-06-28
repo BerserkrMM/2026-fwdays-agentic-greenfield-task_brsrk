@@ -4,6 +4,45 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-28 12:13 UTC
+
+**What was done**
+- Applied the two valid remaining CodeRabbit code fixes: service-worker shell cache writes now use `event.waitUntil(...)`, and `resetDbBoundaryForTests()` now closes an existing postgres client via `await client.end()` before clearing cached singletons.
+- Kept the CodeRabbit vendor/tooling filters intentionally and added a config comment explaining that `.claude/commands/**`, `.pi/prompts/**`, and `docs/design/support.js` are not product review surface.
+- Verification run: `npm run lint` ✓, `npx tsc --noEmit` ✓, `npm run test` ✓ (10/10), `npm run build` ✓.
+
+**Current state**
+- Remaining CodeRabbit feedback is expected to be either addressed or an intentional config tradeoff.
+- Final submission still needs the 1–2 minute demo video URL in the PR body.
+
+**Next steps**
+- Commit/push the final CodeRabbit follow-up and trigger/await CodeRabbit.
+- Add final demo video URL before submitting the homework PR link.
+
+**Open questions / blockers**
+- None.
+
+---
+
+## 2026-06-28 12:09 UTC
+
+**What was done**
+- Re-read the latest CodeRabbit review after commit `261243a`.
+- Confirmed only three unresolved current issues remain: CodeRabbit path filters for tooling prompts, service-worker cache write lifetime, and async closing of the postgres client in the test reset helper.
+
+**Current state**
+- Two remaining issues are valid quick product-code fixes (`public/sw.js` `event.waitUntil`, async `resetDbBoundaryForTests()` with `client.end()`).
+- The path-filter issue is a tradeoff: CodeRabbit wants process artifacts reviewed, while the project owner intentionally treats `.claude/commands/**` and `.pi/prompts/**` as vendor/tooling and not product code.
+
+**Next steps**
+- Apply the two code quick fixes.
+- Decide whether to keep the `.claude/commands/**` / `.pi/prompts/**` CodeRabbit filters intentionally, or remove those files from the PR entirely if they are not meant as submission artifacts.
+
+**Open questions / blockers**
+- Whether the command/prompt files should be considered homework evidence or local tooling/vendor artifacts.
+
+---
+
 ## 2026-06-28 11:55 UTC
 
 **What was done**

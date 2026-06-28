@@ -18,9 +18,11 @@ let sql: Sql | null = null;
 let repositories: Repositories | null = null;
 
 /** Clears process-local DB singletons for tests that change DATABASE_URL. */
-export function resetDbBoundaryForTests(): void {
+export async function resetDbBoundaryForTests(): Promise<void> {
+  const client = sql;
   sql = null;
   repositories = null;
+  if (client) await client.end();
 }
 
 /** True when a real Postgres connection is configured. */
