@@ -269,7 +269,7 @@ BC-SCOPE-03, NFR-PRIV-02)
 
 The Foundation capability SHALL define the item-creation contract that every import
 channel uses to create `pending` ledger items from `ParsedLedgerItemDraft` values.
-The contract SHALL accept an optional `account_id`; when none is supplied it SHALL
+The contract SHALL accept an optional app-level `accountId`; when none is supplied it SHALL
 require the default account to be resolved (via the accounts port) before the item
 is persisted, and SHALL store category text as-is or `Без категорії` when absent.
 The contract SHALL be the only sanctioned write path for ledger items; the parser

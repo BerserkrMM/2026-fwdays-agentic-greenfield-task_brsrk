@@ -1,13 +1,20 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import { getRepositories, getSql, isPostgresConfigured } from "./client";
+import {
+  getRepositories,
+  getSql,
+  isPostgresConfigured,
+  resetDbBoundaryForTests,
+} from "./client";
 
 const original = process.env.DATABASE_URL;
 
 beforeEach(() => {
+  resetDbBoundaryForTests();
   delete process.env.DATABASE_URL;
 });
 
 afterEach(() => {
+  resetDbBoundaryForTests();
   if (original === undefined) delete process.env.DATABASE_URL;
   else process.env.DATABASE_URL = original;
 });

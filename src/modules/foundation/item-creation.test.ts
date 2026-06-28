@@ -89,6 +89,18 @@ describe("ItemCreationService", () => {
     expect(item.category).toBe("Без категорії");
   });
 
+  it("trims category text before saving", async () => {
+    const inputEventId = await seedInputEvent();
+    const service = new ItemCreationService(repos, accountsPort("acc-1"));
+
+    const item = await service.createPendingItem({
+      draft: { ...draft, category: "  Їжа  " },
+      inputEventId,
+    });
+
+    expect(item.category).toBe("Їжа");
+  });
+
   it("rejects a reference to a missing input event", async () => {
     const service = new ItemCreationService(repos, accountsPort("acc-1"));
 

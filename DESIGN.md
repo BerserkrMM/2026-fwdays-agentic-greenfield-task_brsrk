@@ -162,7 +162,7 @@ Adapted from the bundled 10-screen list. **Renamed/removed items are intentional
 5. **Імпорт / Imports hub** (`/imports`) — pick a channel: Текст, Виписка банку,
    Фото чек. Explain the pipeline: `input → pending ledger items → review`. PDF is
    out of scope (label it).
-6. **Текст / Manual text input** (`/imports/text`, FR-MAN-*) — large textarea, UA
+6. **Текст / Manual text input** (`/imports/text`, FR-TEXT-01..05) — large textarea, UA
    example placeholder (`"40 грн ковбаса, 20 грн хліб"`), CTA
    **"Розпізнати і створити операції"**, success/error messages, link to review
    the new pending items in Журнал.

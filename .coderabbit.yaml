@@ -14,6 +14,10 @@ reviews:
   auto_review:
     enabled: true
     drafts: false
+  path_filters:
+    - "!.claude/commands/**"
+    - "!.pi/prompts/**"
+    - "!docs/design/support.js"
   path_instructions:
     - path: "**"
       instructions: >-

@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS parser_runs (
   normalized_payload text,
   result_json        jsonb,
   error              text,
-  created_at         timestamptz NOT NULL DEFAULT now()
+  created_at         timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (id, input_event_id)
 );
 
 -- The atomic financial row and single source of truth for balances
@@ -34,17 +35,23 @@ CREATE TABLE IF NOT EXISTS ledger_items (
   id                uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   account_id        uuid NOT NULL,
   input_event_id    uuid NOT NULL REFERENCES input_events (id),
-  parser_run_id     uuid REFERENCES parser_runs (id),
+  parser_run_id     uuid,
   description       text NOT NULL,
   amount_minor      bigint NOT NULL,
   currency          text NOT NULL DEFAULT 'UAH' CHECK (currency = 'UAH'),
   type              text NOT NULL CHECK (type IN ('expense', 'income')),
+  CONSTRAINT ledger_items_amount_sign_chk CHECK (
+    (type = 'expense' AND amount_minor < 0) OR
+    (type = 'income' AND amount_minor > 0)
+  ),
   category          text NOT NULL DEFAULT 'Без категорії',
   status            text NOT NULL DEFAULT 'pending'
                       CHECK (status IN ('pending', 'approved', 'deleted')),
   import_row_number integer,
   occurred_at       timestamptz,
-  created_at        timestamptz NOT NULL DEFAULT now()
+  created_at        timestamptz NOT NULL DEFAULT now(),
+  FOREIGN KEY (parser_run_id, input_event_id)
+    REFERENCES parser_runs (id, input_event_id)
 );
 
 -- Bank-row idempotency (FR-BANK-06): a retried bank parse cannot duplicate a

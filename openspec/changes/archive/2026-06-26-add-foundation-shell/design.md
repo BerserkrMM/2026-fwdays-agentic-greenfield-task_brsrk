@@ -169,9 +169,8 @@ in-memory fallback means there is no database state to migrate back.
 
 ## Open Questions
 
-- **Unit test runner (NFR-DX-01 "chosen unit runner").** Not yet selected. Propose
-  Vitest (Vite/TS-native, fast) and lock it in this change so later capabilities
-  have a runner; confirm during apply if a different runner is preferred.
+- **Unit test runner (NFR-DX-01 "chosen unit runner").** Vitest is selected and
+  configured for this change so later capabilities have a shared runner.
 - **Service-worker scope for a Next.js 16 PWA** — exact registration pattern to be
   confirmed against the bundled PWA guide during implementation (may differ from
   older `next-pwa` patterns).

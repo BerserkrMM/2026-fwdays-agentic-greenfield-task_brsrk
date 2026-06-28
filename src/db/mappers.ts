@@ -37,16 +37,26 @@ export function toParserRun(row: ParserRunRow): ParserRun {
 }
 
 export function toLedgerItem(row: LedgerItemRow): LedgerItem {
+  const amountMinor =
+    typeof row.amount_minor === "string"
+      ? Number(row.amount_minor)
+      : row.amount_minor;
+
+  if (!Number.isSafeInteger(amountMinor)) {
+    throw new Error(`Invalid ledger_items.amount_minor: ${row.amount_minor}`);
+  }
+
+  if (row.currency !== CURRENCY) {
+    throw new Error(`Unexpected ledger_items.currency: ${row.currency}`);
+  }
+
   return {
     id: row.id,
     accountId: row.account_id,
     inputEventId: row.input_event_id,
     parserRunId: row.parser_run_id,
     description: row.description,
-    amountMinor:
-      typeof row.amount_minor === "string"
-        ? Number(row.amount_minor)
-        : row.amount_minor,
+    amountMinor,
     currency: CURRENCY,
     type: row.type,
     category: row.category,

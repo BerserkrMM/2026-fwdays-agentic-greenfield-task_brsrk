@@ -20,9 +20,10 @@ class PgInputEventRepository implements InputEventRepository {
 
   async create(event: NewInputEvent): Promise<InputEvent> {
     const [row] = await this.sql<InputEventRow[]>`
-      INSERT INTO input_events (source, provider, raw_text, storage_uri, mime_type)
-      VALUES (${event.source}, ${event.provider}, ${event.rawText},
-              ${event.storageUri}, ${event.mimeType})
+      INSERT INTO input_events (id, source, provider, raw_text, storage_uri, mime_type)
+      VALUES (${event.id ?? globalThis.crypto.randomUUID()}, ${event.source},
+              ${event.provider}, ${event.rawText}, ${event.storageUri},
+              ${event.mimeType})
       RETURNING *`;
     return toInputEvent(row);
   }
@@ -39,9 +40,10 @@ class PgParserRunRepository implements ParserRunRepository {
 
   async create(run: NewParserRun): Promise<ParserRun> {
     const [row] = await this.sql<ParserRunRow[]>`
-      INSERT INTO parser_runs (input_event_id, status, normalized_payload, result_json, error)
-      VALUES (${run.inputEventId}, ${run.status}, ${run.normalizedPayload},
-              ${run.resultJson}, ${run.error})
+      INSERT INTO parser_runs (id, input_event_id, status, normalized_payload, result_json, error)
+      VALUES (${run.id ?? globalThis.crypto.randomUUID()}, ${run.inputEventId},
+              ${run.status}, ${run.normalizedPayload}, ${run.resultJson},
+              ${run.error})
       RETURNING *`;
     return toParserRun(row);
   }

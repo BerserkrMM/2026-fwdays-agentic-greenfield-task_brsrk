@@ -35,6 +35,7 @@ export class ItemCreationService implements ItemCreationContract {
     const accountId =
       input.accountId ?? (await this.accounts.getDefaultAccountId());
     if (!accountId) throw new NoDefaultAccountError();
+    const category = draft.category?.trim() || DEFAULT_CATEGORY;
 
     const item: LedgerItem = {
       id: newId(),
@@ -45,7 +46,7 @@ export class ItemCreationService implements ItemCreationContract {
       amountMinor: draft.amountMinor,
       currency: draft.currency,
       type: draft.type,
-      category: draft.category?.trim() ? draft.category : DEFAULT_CATEGORY,
+      category,
       status: "pending",
       importRowNumber: draft.sourceRef?.rowNumber ?? null,
       occurredAt: draft.occurredAt ? new Date(draft.occurredAt) : null,

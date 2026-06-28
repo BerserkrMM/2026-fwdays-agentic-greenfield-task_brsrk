@@ -4,6 +4,7 @@
 // shell assets. Versioned cache; old caches are cleared on activate.
 
 const CACHE = "finup-shell-v1";
+const SHELL_ROUTES = new Set(["/", "/dashboard"]);
 const PRECACHE = ["/", "/dashboard", "/manifest.webmanifest", "/icon-192.png"];
 
 self.addEventListener("install", (event) => {
@@ -43,8 +44,10 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(request)
         .then((response) => {
-          const copy = response.clone();
-          caches.open(CACHE).then((cache) => cache.put(request, copy));
+          if (SHELL_ROUTES.has(url.pathname)) {
+            const copy = response.clone();
+            caches.open(CACHE).then((cache) => cache.put(request, copy));
+          }
           return response;
         })
         .catch(() =>

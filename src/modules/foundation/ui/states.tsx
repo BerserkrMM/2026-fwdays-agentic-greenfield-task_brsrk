@@ -110,7 +110,7 @@ export function OfflineState({
       glyph="⚡"
       title={title}
       description={description}
-      role="status"
+      role="alert"
     />
   );
 }

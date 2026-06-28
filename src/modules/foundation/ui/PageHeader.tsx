@@ -17,7 +17,7 @@ export function PageHeader({
         <h1 className="text-2xl font-semibold tracking-tight text-fin-fg">
           {title}
         </h1>
-        {description ? (
+        {description !== undefined ? (
           <p className="text-sm text-fin-fg-muted">{description}</p>
         ) : null}
       </div>

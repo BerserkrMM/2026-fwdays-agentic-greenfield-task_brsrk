@@ -152,8 +152,8 @@ Key constraints from the PRD that drive the order:
 Propose one change per capability (split large ones if a single change exceeds a
 reasonable review size):
 
-1. `add-foundation-shell` — includes the `ledger_items` + `input_event` schema and
-   the item-creation contract (TC-MOD-02 owner).
+1. `add-foundation-shell` — includes the `ledger_items`, `input_events`, and
+   `parser_runs` shared schema plus the item-creation contract (TC-MOD-02 owner).
 2. `add-accounts` — metadata + default account (no balance display yet).
 3. `add-ledger-queries` — balance/aggregate queries; also delivers the
    `accounts` balance view (FR-ACCT-02).

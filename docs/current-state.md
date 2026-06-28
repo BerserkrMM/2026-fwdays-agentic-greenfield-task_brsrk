@@ -4,6 +4,85 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-28 11:55 UTC
+
+**What was done**
+- Applied the valid CodeRabbit product-code/documentation fixes while leaving vendor/tooling files unchanged.
+- Added CodeRabbit path filters for `.claude/commands/**`, `.pi/prompts/**`, and `docs/design/support.js`.
+- Fixed service-worker navigation caching to write only allowlisted shell routes, DB schema sign/provenance constraints, `bootstrap.sql` output tracing, mapper validation, DB singleton test reset, stronger client-component DB import scanning, Postgres optional-id parity, trimmed item categories, and small UI accessibility/prop handling issues.
+- Synced supporting docs/specs (`DESIGN.md`, `docs/capabilities.md`, `docs/requirements.md`, OpenSpec foundation specs/design) with the implementation.
+- Verification run: `npm run lint` ✓, `npx tsc --noEmit` ✓, `npm run test` ✓ (10/10), `npm run build` ✓. Also ran `npx fallow audit --base dev --format json --quiet` for changed-code intelligence; it mainly reported existing/vendor/untracked complexity/dead-code signals outside this focused cleanup.
+
+**Current state**
+- CodeRabbit-addressing fixes are ready to commit/push.
+- The PR still needs the final 1–2 minute video link before final submission.
+- Unrelated local artifacts (`package.json`, Project Factory/automation files, trace/QA outputs) remain unstaged and were not part of this cleanup.
+
+**Next steps**
+- Commit and push the cleanup, then let CodeRabbit re-review the new commit.
+- Add final demo video URL to PR body/current-state when available.
+
+**Open questions / blockers**
+- None.
+
+---
+
+## 2026-06-28 11:43 UTC
+
+**What was done**
+- Reviewed the completed CodeRabbit review for PR #1 after the file-count cleanup.
+- Categorized the 28 inline issues into project-code fixes, documentation/submission evidence items, and vendor/tooling items that should not be edited unless intentionally owned.
+- Key valid project-code fixes identified: service-worker cache allowlist, DB schema invariants, mapper validation, test singleton reset, standalone tracing for `bootstrap.sql`, tighter DB boundary structural test, id contract mismatch, category trim, and ARIA/prop microfixes.
+
+**Current state**
+- CodeRabbit now reviews the PR successfully below the file limit.
+- Several comments are duplicated/misplaced submission-evidence reminders: real author name is already present; video link is still TODO.
+- Vendor/tooling files such as `.pi/prompts/**`, `.claude/commands/**`, and `docs/design/support.js` should generally be ignored or removed from review scope rather than modified as product code.
+
+**Next steps**
+- Apply only the valid product-code quick wins first, then decide whether to ignore/remove committed vendor/tooling prompt/runtime files from CodeRabbit scope.
+- Add the final demo video link before final submission.
+
+**Open questions / blockers**
+- None.
+
+---
+
+## 2026-06-28 11:30 UTC
+
+**What was done**
+- Clarified how workshop-provided Project Factory, OpenSpec, custom agents, workflows, Codex prompts, and fallow-style skills are meant to be invoked and by whom.
+- Inspected local `.claude/`, `.codex/`, `.github/prompts/`, and `.project-factory/` artifacts to ground the explanation in this repository.
+- No product code was changed.
+
+**Current state**
+- Repo contains Claude-native OpenSpec commands/skills, Claude custom agents/workflows, Codex/GitHub prompt shims for Project Factory, and the vendored `.project-factory/` canonical playbook.
+
+**Next steps**
+- For the next product slice, manually choose the capability and ask the orchestrator/agent to run the OpenSpec/factory loop; use fresh checker agents or review-gate before accepting the slice.
+
+**Open questions / blockers**
+- None.
+
+---
+
+## 2026-06-28 11:20 UTC
+
+**What was done**
+- Reviewed the course/project-factory process artifacts to explain the manual per-capability workflow versus automated agent/factory responsibilities.
+- No product code was changed.
+
+**Current state**
+- Repository remains in the same implementation state as before this clarification task.
+
+**Next steps**
+- Continue with the next capability slice when ready, using the OpenSpec/project-factory gated loop.
+
+**Open questions / blockers**
+- None.
+
+---
+
 ## 2026-06-28 11:08 UTC
 
 **What was done**

@@ -13,10 +13,10 @@ export type AmountMinor = number;
 /** Default category text when none is provided (FR-CAT-03). */
 export const DEFAULT_CATEGORY = "Без категорії" as const;
 
-/** Sign convention check: an expense amount must be <= 0, income >= 0. */
+/** Sign convention check: an expense amount must be < 0, income > 0. */
 export function amountMatchesType(
   amountMinor: AmountMinor,
   type: OperationType,
 ): boolean {
-  return type === "expense" ? amountMinor <= 0 : amountMinor >= 0;
+  return type === "expense" ? amountMinor < 0 : amountMinor > 0;
 }

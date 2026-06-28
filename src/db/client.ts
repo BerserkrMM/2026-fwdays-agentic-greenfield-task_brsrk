@@ -17,6 +17,12 @@ import { createPostgresRepositories } from "./postgres";
 let sql: Sql | null = null;
 let repositories: Repositories | null = null;
 
+/** Clears process-local DB singletons for tests that change DATABASE_URL. */
+export function resetDbBoundaryForTests(): void {
+  sql = null;
+  repositories = null;
+}
+
 /** True when a real Postgres connection is configured. */
 export function isPostgresConfigured(): boolean {
   return Boolean(process.env.DATABASE_URL);

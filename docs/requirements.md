@@ -213,7 +213,7 @@ type ParsedLedgerItemDraft = {
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------- | -------- |
 | TC-STACK-01   | Next.js App Router (16.x) + React 19 + TypeScript (strict); installable PWA                                                     | accepted |
 | TC-STACK-02   | Backend via Next.js Server Actions and Route Handlers; no separate backend service in v1                                        | accepted |
-| TC-STACK-03   | PostgreSQL is the database; schema should be derived from this PRD until a dedicated bootstrap SQL file exists                  | accepted |
+| TC-STACK-03   | PostgreSQL is the database; the authoritative bootstrap schema lives in `src/db/bootstrap.sql` and is applied through `src/db/client.ts::ensureSchema()` | accepted |
 | TC-STACK-04   | DB access via the `postgres` client behind a shared boundary (`src/db/client.ts`, `mappers.ts`, `rows.ts`); modules must not create their own client | accepted |
 | TC-STACK-05   | AI parsing uses the OpenAI API with an adapter boundary reserved for a future local LLM                                         | accepted |
 | TC-DATA-01    | `DATABASE_URL` configures Postgres; modules may fall back to named in-memory repos when unset                                  | accepted |
@@ -227,10 +227,9 @@ type ParsedLedgerItemDraft = {
 Some older instructions or comments may mention files that are not present in the
 current repository. Agents should handle them as follows:
 
-- Missing `docs/finup/bootstrap.sql`: derive schema from this PRD's domain model
-  (`input_events`, `parser_runs`, `ledger_items`, accounts, and required category
-  text stored on `ledger_items`) instead of failing or inventing a legacy
-  pending/posted transaction schema or a separate category table.
+- Missing legacy `docs/finup/bootstrap.sql`: use the current authoritative schema
+  in `src/db/bootstrap.sql` instead of inventing a legacy pending/posted
+  transaction schema or a separate category table.
 - Missing `docs/finup/module-boundaries.md` or `epic-plan.md`: use this PRD's
   functional sections as module boundaries and coordinate shared schema/contracts.
 - Missing `docs/finup/app-routes.md`: infer routes from this PRD (`/imports`,
