@@ -91,4 +91,3 @@ no other module SHALL compute or persist an independent balance source.
 - **WHEN** Accounts or Dashboard needs balance data
 - **THEN** it uses Ledger capability queries
 - **AND** it does not duplicate balance calculation logic independently
-

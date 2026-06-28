@@ -4,6 +4,47 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-28 21:28 UTC — PR #5 review hygiene fixes
+
+**What was done**
+- Suppressed the intentional `src/modules/ledger/ports.ts` fallow unused-file finding with an explicit reason: it is the TC-MOD-01 ledger module port surface for upcoming `dashboard`/`ledger-items` consumers.
+- Removed the extra blank line at EOF from `openspec/specs/ledger/spec.md` so the working-tree diff check is clean.
+- Re-ran verification for the follow-up changes: `npm run lint`, `npx tsc --noEmit`, `npm run test:run`, `npm run check:claims`, `npm run check:handoff`, and `FALLOW_AGENT_SOURCE=pi npx fallow audit --base origin/dev --format json --quiet --explain 2>/dev/null || true`.
+
+**Current state**
+- Tests remain green (11 files / 51 tests), lint/typecheck pass, and claim/handoff checks pass.
+- Fallow no longer reports dead-code/unused-file for `src/modules/ledger/ports.ts`. Remaining fallow `verdict: fail` is limited to the already-accepted moderate accounts server-component CRAP finding and duplicated DB-boundary test setup.
+
+**Next steps**
+- Push the follow-up commit and trigger CodeRabbit on PR #5.
+- Continue to treat the remaining fallow findings as accepted/deferred unless CI policy requires a green fallow audit.
+
+**Open questions / blockers**
+- None for these hygiene fixes.
+
+---
+
+## 2026-06-28 21:17 UTC — reviewer audit of PR #5 add-ledger-queries
+
+**What was done**
+- Reviewed PR #5 (`add-ledger-queries` → `dev`) against Project Factory evidence rules and code-quality expectations.
+- Re-ran local verification: `check:red-green --slice add-ledger-queries --strict`, `check:claims`, `check:handoff`, `openspec validate --all --strict`, `check:trace`, `check:trajectory`, `test:run`, `lint`, `tsc --noEmit`, `next build`, `slice:report`, `git diff --check`, `fallow audit`, and `fallow review`.
+- Used subagent review for code-quality inspection; the Project Factory audit subagent timed out, so parent verification was performed directly from artifacts.
+
+**Current state**
+- Deterministic gates remain green: tests 51/51, lint/tsc/build pass, OpenSpec validates 10 specs, red/green evidence check passes, handoff/claim checks pass.
+- Fallow still reports `verdict: fail` for the same advisory new-only findings already documented: unused intentional ledger port barrel, moderate CRAP on the accounts server component render path, and duplicated DB-boundary test setup.
+- Additional reviewer-only issue: `git diff --check origin/dev...HEAD` reports one whitespace warning (`openspec/specs/ledger/spec.md:94` blank line at EOF).
+
+**Next steps**
+- For PR hygiene, remove the trailing blank line in `openspec/specs/ledger/spec.md` before merge.
+- Optionally suppress or defer the intentional `src/modules/ledger/ports.ts` fallow finding; extract DB test setup later if duplication grows.
+
+**Open questions / blockers**
+- No merge-blocking code correctness issue found in the ledger query implementation during this review. Fallow is not green, so do not describe the fallow audit as passed; describe it as run with accepted/advisory findings.
+
+---
+
 ## 2026-06-28 21:00 UTC — add-ledger-queries slice (ledger read side; FR-ACCT-02 closed)
 
 **What was done**
