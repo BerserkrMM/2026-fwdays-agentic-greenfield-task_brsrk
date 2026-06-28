@@ -1,10 +1,10 @@
 import { PlaceholderScreen } from "@/src/modules/foundation/ui/PlaceholderScreen";
+import { placeholderFor } from "@/src/modules/foundation/ui/placeholder-content";
+
+const copy = placeholderFor("/accounts");
 
 export default function AccountsPage() {
   return (
-    <PlaceholderScreen
-      title="Рахунки"
-      description="Список рахунків, типовий рахунок і баланси (UAH)."
-    />
+    <PlaceholderScreen title={copy.title} description={copy.description} />
   );
 }

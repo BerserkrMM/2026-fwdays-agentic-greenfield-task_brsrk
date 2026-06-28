@@ -82,6 +82,8 @@ skills-lock.json
 .github/*
 !.github/
 !.github/pull_request_template.md
+!.github/workflows/
+!.github/workflows/ci.yml
 .claude/settings.json
 .claude/agents/
 .claude/workflows/
@@ -91,4 +93,9 @@ skills-lock.json
 .github/prompts/
 .githooks/
 /automations/
-trace/
+trace/*
+!trace/
+!trace/*.json
+
+# Local course slide decks
+crash_course

@@ -19,6 +19,7 @@ afterEach(async () => {
   else process.env.DATABASE_URL = original;
 });
 
+// @trace TC-DATA-01, TC-STACK-04
 describe("db boundary fallback selection (TC-DATA-01)", () => {
   it("uses the in-memory fallback when DATABASE_URL is unset", () => {
     expect(isPostgresConfigured()).toBe(false);

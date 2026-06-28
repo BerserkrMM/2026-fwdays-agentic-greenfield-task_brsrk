@@ -2,8 +2,9 @@ import { readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { describe, expect, it } from "vitest";
 
-// Structural enforcement of TC-STACK-02: a "use client" component must never
-// import the server-only db boundary or the raw `postgres` client.
+// Structural enforcement of TC-STACK-04 (DB access stays behind the shared
+// boundary): a "use client" component must never import the server-only db
+// boundary or the raw `postgres` client.
 
 const ROOT = join(__dirname, "..", "..");
 const SCAN_DIRS = ["app", "src"].map((d) => join(ROOT, d));
@@ -57,7 +58,8 @@ function importsBannedDbBoundary(src: string, file: string): boolean {
   });
 }
 
-describe("TC-STACK-02 — no client-side database access", () => {
+// @trace TC-STACK-04, TC-MOD-02
+describe("TC-STACK-04 — DB access stays behind the shared boundary (no client-side DB access)", () => {
   it("no \"use client\" file imports the db boundary or postgres", () => {
     const offenders: string[] = [];
     for (const dir of SCAN_DIRS) {

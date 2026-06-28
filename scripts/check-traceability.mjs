@@ -145,7 +145,11 @@ const isTestFile = (f) => /\.(test|spec|eval)\.(ts|tsx|js|mjs)$/.test(f) || /int
 for (const dir of PATHS.testDirs) {
   for (const file of walk(dir, isTestFile)) {
     const text = read(file) ?? "";
-    for (const m of text.matchAll(/@trace\s+([A-Z]+-\d+(?:\s*,\s*[A-Z]+-\d+)*)/g)) {
+    // Ids may be plain (FR-9) or categorized (FR-ITEM-06) — match the same id
+    // grammar as idsIn() so categorized @trace ids are not silently dropped.
+    const TRACE_ID = String.raw`(?:FR|NFR|TC|BC|BUG)-(?:[A-Z0-9]+-)?\d+`;
+    const traceRe = new RegExp(String.raw`@trace\s+(${TRACE_ID}(?:\s*,\s*${TRACE_ID})*)`, "g");
+    for (const m of text.matchAll(traceRe)) {
       for (const id of m[1].split(/\s*,\s*/)) {
         if (!testTraces.has(id)) testTraces.set(id, []);
         testTraces.get(id).push(file.replaceAll("\\", "/"));

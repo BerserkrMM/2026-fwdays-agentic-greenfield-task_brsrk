@@ -1,0 +1,40 @@
+{
+  "generatedAt": "2026-06-28T16:10:46Z",
+  "threshold": 70,
+  "dimensions": {
+    "ua-ux-clarity": 95,
+    "explicit-state-clarity": 96
+  },
+  "cases": [
+    {
+      "id": "eval-foundation-imports-hub-clarity",
+      "dimension": "ua-ux-clarity",
+      "trace": [
+        "FR-IMPORT-01",
+        "FR-SHELL-03",
+        "NFR-I18N-01"
+      ],
+      "capability": "foundation",
+      "score": 95,
+      "pass": true,
+      "judges": 1,
+      "disagreement": false,
+      "notes": "All three critical criteria are satisfied with directly quotable spans: the page is fully Ukrainian, exposes and links all three import channels, and explicitly states imports become operations with status «очікує перевірки» that the user later reviews. The non-critical criteria are also met — the screen is populated and actionable rather than blank, and the tone is calm and finance-oriented. The footer proactively clarifies PDF is not yet supported."
+    },
+    {
+      "id": "eval-foundation-placeholder-state-clarity",
+      "dimension": "explicit-state-clarity",
+      "trace": [
+        "FR-SHELL-03",
+        "BC-BRAND-01",
+        "NFR-I18N-01"
+      ],
+      "capability": "foundation",
+      "score": 96,
+      "pass": true,
+      "judges": 2,
+      "disagreement": false,
+      "notes": "All three critical criteria are explicitly evidenced: each screen surfaces an explicit «Скоро» state, every string is Ukrainian, and «Цей розділ зараз у розробці й з’явиться незабаром» honestly frames the section as under construction. Tone is calm and terse, and each route carries a distinct, capability-specific title and description. Minor deduction: the development sentence is shared boilerplate across the four screens. | Every screen renders an explicit «Скоро» state (not blank/404), the copy is entirely Ukrainian, and the message honestly frames the section as under development rather than implying absent data. Tone is calm and concise, and each of the four routes carries a distinct, capability-specific title and description. Negligible deduction for the uniform shared body line."
+    }
+  ]
+}

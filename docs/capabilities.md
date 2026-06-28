@@ -17,15 +17,15 @@ back to the PRD — do not restate requirements here, reference them.
 | Capability       | PRD epic | Requirements covered                                  | Purpose |
 | ---------------- | -------- | ----------------------------------------------------- | ------- |
 | `foundation`     | Epic 0   | FR-SHELL-01..04, FR-IMPORT-01..02, TC-MOD-02, TC-STACK-*, TC-PURE-01, TC-DATA-01 | App shell, navigation, PWA, design tokens, DB boundary, domain contracts, **`ledger_items` schema + item-creation contract**, `input_event` storage, imports hub skeleton. Owns all shared/cross-cutting code and schema (TC-MOD-02). |
-| `accounts`       | Epic 6   | FR-ACCT-01, FR-ACCT-03, FR-ITEM-06 (default account)  | Account metadata, default account, UAH metadata. Default account must exist before any ledger item is saved. (Balance display, FR-ACCT-02, lands after `ledger` — see note.) |
-| `ledger`         | Epic 7   | FR-LEDGER-01..05, FR-ACCT-02 (account balances)       | Read/query domain: balance + income/expense aggregate queries over `ledger_items`, single source of truth for balances. Owns read queries, not the schema. |
+| `accounts`       | Epic 6   | FR-ACCT-01, FR-ACCT-02, FR-ACCT-03, FR-ACCT-04, FR-ACCT-05, FR-ACCT-06, FR-ITEM-06 (default account) | Account metadata, default account, full CRUD + default switching, soft-archive delete, seeded default (`Готівка`), no stored opening balance. Default account must exist before any ledger item is saved. **Owns** the balance display (FR-ACCT-02) but **depends on** `ledger` queries for the figures — so the balance view lands with/after `ledger`. |
+| `ledger`         | Epic 7   | FR-LEDGER-01..05       | Read/query domain: balance + income/expense aggregate queries over `ledger_items`, single source of truth for balances. Owns read queries, not the schema. `accounts` (FR-ACCT-02) and `dashboard` consume these queries. |
 | `ledger-items`   | Epic 1   | FR-ITEM-01..07, FR-CAT-01..04                          | Review/write use-cases over the existing schema/contract: list/filter/search, edit, approve, delete, retry; category text on item. |
 | `parsing`        | Epic 5   | FR-PARSE-01..08, NFR-PRIV-01..02, NFR-COST-01, TC-STACK-05 | Parser port + result contract, OpenAI adapter, `parser_run` log, **parsing-level** deterministic keyless privacy/noise normalization (FR-PARSE-05); returns drafts only, writes nothing. |
 | `manual-input`   | Epic 2   | FR-TEXT-01..05                                         | `/imports/text` free-form text → input_event → parsing → pending items. First end-to-end slice. Owns source-specific text normalization. |
 | `bank-imports`   | Epic 3   | FR-BANK-01..06                                         | `/imports/bank` CSV/XLS/XLSX, provider-specific deterministic normalization, row idempotency, **at most one pending item per parsed source row** (FR-BANK-04). |
 | `file-imports`   | Epic 4   | FR-FILE-01..05                                         | `/imports/files` single receipt photo, source-specific deterministic image preprocessing, AI vision parse → pending items. |
 | `dashboard`      | Epic 8   | FR-DASH-01..05                                         | Read-only balance summary, income/expense totals, category breakdown, trends. |
-| `settings`       | Epic 9   | FR-SET-01..02, NFR-COST-01                             | Technical config screen, configurable AI provider settings. |
+| `settings`       | Epic 9   | FR-SET-01, FR-SET-02, FR-SET-03, NFR-COST-01          | Technical config screen scoped to AI provider settings (key stored in DB, write-only over the wire) and ledger-item CSV export; no destructive reset in v1. |
 
 Notes:
 - **Category text** (FR-CAT-*) is not a standalone capability — it is data stored
@@ -105,8 +105,10 @@ Key constraints from the PRD that drive the order:
 > files and shared schema (TC-MOD-02).
 
 ### Phase 2 — Core domain
-2. **`accounts` (metadata)** — list, default account, UAH metadata. Balance
-   display is deferred (it needs `ledger` queries).
+2. **`accounts` (metadata)** — list, default account, UAH metadata, create/switch
+   default, soft-archive delete, seeded default (`Готівка`), no opening balance.
+   Balance display (FR-ACCT-02) is deferred — `accounts` owns it but it needs
+   `ledger` queries.
 3. **`ledger`** — balance + income/expense aggregate queries over the
    `foundation`-owned `ledger_items` schema (single source of truth). Unblocks
    the `accounts` balance view (FR-ACCT-02) and the dashboard.
@@ -139,7 +141,8 @@ Key constraints from the PRD that drive the order:
 
 ### Phase 5 — Read & configure
 9. **`dashboard`** — read-only summary, totals, category breakdown, trends.
-10. **`settings`** — technical config + AI provider settings.
+10. **`settings`** — technical config: AI provider settings (key in DB, write-only)
+    + ledger-item CSV export. No destructive reset.
 
 > Rationale: `dashboard` needs real data from the ledger/import phases to be
 > meaningful. `settings` is low-coupling and can land last (or earlier if AI
@@ -154,7 +157,8 @@ reasonable review size):
 
 1. `add-foundation-shell` — includes the `ledger_items`, `input_events`, and
    `parser_runs` shared schema plus the item-creation contract (TC-MOD-02 owner).
-2. `add-accounts` — metadata + default account (no balance display yet).
+2. `add-accounts` — metadata + default account, create/switch-default/soft-archive
+   (FR-ACCT-04/05/06), seeded default; balance display (FR-ACCT-02) lands with/after `ledger`.
 3. `add-ledger-queries` — balance/aggregate queries; also delivers the
    `accounts` balance view (FR-ACCT-02).
 4. `add-ledger-items-review`
@@ -163,6 +167,7 @@ reasonable review size):
 7. `add-bank-statement-imports`
 8. `add-receipt-photo-imports`
 9. `add-dashboard`
-10. `add-settings` — config UI over the existing parsing config.
+10. `add-settings` — config UI over the existing parsing config (AI key in DB,
+    write-only) plus ledger-item CSV export (FR-SET-03).
 
 Each change references its FR/NFR/TC IDs so the PRD traceability stays intact.
