@@ -4,6 +4,62 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-28 17:40 UTC — add-accounts: finalized + corrected reporting per review
+
+**What was done** — addressed the PR-evidence review (17:33 entry) and brought the
+handoff in line with the actual final state. `add-accounts` is archived, committed
+(`33ed02c` + `9373d63` trajectory refresh), pushed, and **PR #3 → `dev` is open**
+(no active OpenSpec changes remain).
+
+**Corrections to earlier claims (honesty over polish):**
+- **OpenSpec count:** the post-archive count is **10/10** specs, not `11/11`. The
+  11 was the mid-slice number while the active `add-accounts` change counted as an
+  extra item; it drops to 10 after archive. Fixed in the 17:25 entry.
+- **Gate scope:** only **G4 (per-slice: trace + trajectory deterministic checks)**
+  is genuinely exercised by this slice. `gate:status` prints G5–G8 PASS, but those
+  rest on **placeholder/warning-only** layers (no real demo recordings or E2E for
+  accounts yet; integration is `--passWithNoTests`). Read "all gates green" as
+  "all deterministic checks green", NOT "QA proof / E2E complete".
+- **Tests-first RED:** the three new test files were observed failing on missing
+  modules before implementation (genuine red), but that ordering is **not captured
+  as a durable artifact**, and the LLM **trajectory-eval was not run** for this
+  slice — so test-first ordering is asserted by this log, not independently proven.
+
+**Current state**
+- Deterministic checks green on the branch; `qa:verify` passes locally.
+- Workflow evidence present for `add-accounts`: clean `review-findings.json`,
+  archived change, `Slice: add-accounts` trailer, ratcheted coverage/eval baselines.
+
+**Next steps**
+- Await CI on PR #3; if trajectory-eval is mandatory per-slice proof, run it before
+  merge. Optionally capture a demo recording for the accounts flow (Phase 6).
+- Slice 3 `add-ledger-queries` (closes deferred FR-ACCT-02 balance view +
+  FR-LEDGER-05).
+
+**Open questions / blockers**
+- Whether trajectory-eval + a demo recording are required before merging slice PRs,
+  or only for the final submission.
+
+---
+
+## 2026-06-28 17:33 UTC — Reviewed PR #3 Project Factory workflow evidence
+
+**What was done** — reviewed the `add-accounts` PR branch against the Project Factory workflow evidence: OpenSpec archive, trajectory artifacts, review-findings, trace/eval/recording reports, commit trailers, and local deterministic gates (`gate:status`, `check:trace`, `check-trajectory --check-fresh`, `openspec validate --all --strict`, `qa:verify`). No product/code files were intentionally changed.
+
+**Current state**
+- Deterministic checks are green for the PR branch; `qa:verify` passed locally.
+- The workflow evidence is mostly present for `add-accounts` (`review-findings.json` clean, archived change, one `Slice: add-accounts` commit, no active OpenSpec changes).
+- Process issues found: stale handoff log after archive/PR, missing durable proof of tests-first RED ordering / trajectory-eval, over-claiming gate status despite warning-only/placeholder gates, and an incorrect OpenSpec count claim (`11/11` vs actual `10` specs).
+
+**Next steps**
+- Before merge, refresh the handoff/PR summary to match the final archived state and actual validation counts.
+- Add or attach durable tests-first/trajectory-eval evidence for this slice, or weaken the claim from “entire Project Factory loop” to “deterministic G4 checks passed”.
+
+**Open questions / blockers**
+- Need CI result for PR #3 and, if the team treats trajectory-eval as mandatory per-slice proof, the missing trajectory-eval artifact should be generated/reviewed before merge.
+
+---
+
 ## 2026-06-28 17:25 UTC — Slice 2 `add-accounts` shipped (Project Factory, tests-first)
 
 **What was done** — built the `accounts` capability end-to-end through the
@@ -34,7 +90,9 @@ Project Factory per-slice loop on branch `add-accounts` (forked from `dev`).
 
 **Current state**
 - Battery green: `lint`, `tsc`, `test` (34, was 17), `build` (`/accounts` dynamic),
-  `openspec validate --all --strict` 11/11, `check:trace` **0 failures**.
+  `openspec validate --all --strict` **10/10 post-archive** (showed 11 mid-slice
+  while the active `add-accounts` change counted as an extra item), `check:trace`
+  **0 failures**.
 - Ratchets bumped + committed: coverage → lines/stmts 29.84, fns 49.5,
   branches 71.87; eval baseline gains `ua-error-clarity: 93` (judge pass).
 - FR-ACCT-01/03/04/05/06 + FR-ITEM-06 (default resolution) delivered with tests.
