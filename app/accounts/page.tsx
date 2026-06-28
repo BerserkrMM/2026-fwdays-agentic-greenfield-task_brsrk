@@ -5,7 +5,9 @@
 // states.
 
 import { getRepositories } from "@/src/db/client";
+import { formatUahMinor } from "@/src/domain/money";
 import { AccountsService } from "@/src/modules/accounts/service";
+import { LedgerQueryService } from "@/src/modules/ledger/service";
 import {
   ACCOUNTS_PAGE,
   accountErrorMessage,
@@ -29,9 +31,26 @@ export default async function AccountsPage({
   const { formError } = await searchParams;
   const errorMessage = accountErrorMessage(formError);
 
-  const service = new AccountsService(getRepositories().accounts);
+  const repos = getRepositories();
+  const service = new AccountsService(repos.accounts);
   await service.ensureSeededDefault();
+
   const accounts = await service.listActive();
+
+  // Balances are derived from non-deleted ledger items via the Ledger capability,
+  // never stored on the account (FR-ACCT-02, FR-LEDGER-03/05). Archived accounts'
+  // items still count, but only active accounts are listed here (FR-ACCT-05).
+  // The balance read is isolated: if it fails, account management still renders
+  // with a "balance unavailable" indicator instead of a blank/500 page (FR-SHELL-03).
+  const ledger = new LedgerQueryService(repos.ledgerItems);
+  let balancesAvailable = true;
+  let balanceByAccount = new Map<string, number>();
+  try {
+    const balances = await ledger.getAccountBalances();
+    balanceByAccount = new Map(balances.map((b) => [b.accountId, b.balanceMinor]));
+  } catch {
+    balancesAvailable = false;
+  }
 
   return (
     <>
@@ -106,7 +125,25 @@ export default async function AccountsPage({
                   ) : null}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-2">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span className="flex flex-col items-end leading-tight">
+                    <span className="text-xs text-fin-fg-subtle">
+                      {ACCOUNTS_PAGE.balanceLabel}
+                    </span>
+                    {balancesAvailable ? (
+                      <span className="text-base font-semibold tabular-nums text-fin-fg">
+                        {formatUahMinor(balanceByAccount.get(account.id) ?? 0)}
+                      </span>
+                    ) : (
+                      <span className="text-sm text-fin-fg-subtle">
+                        {ACCOUNTS_PAGE.balanceUnavailable}
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-3 flex flex-wrap items-center justify-end gap-2">
                   {account.isDefault ? null : (
                     <form action={setDefaultAccountAction}>
                       <input type="hidden" name="id" value={account.id} />
@@ -127,7 +164,6 @@ export default async function AccountsPage({
                       {ACCOUNTS_PAGE.archiveLabel}
                     </button>
                   </form>
-                </div>
               </div>
 
               <form

@@ -20,3 +20,19 @@ export function amountMatchesType(
 ): boolean {
   return type === "expense" ? amountMinor < 0 : amountMinor > 0;
 }
+
+/**
+ * Formats signed kopiyky as Ukrainian-first UAH for display (e.g. "-2 000,50 ₴").
+ * Deterministic and locale-independent (plain ASCII spaces, comma decimal),
+ * so it is safe to reuse anywhere a balance/aggregate is shown.
+ */
+export function formatUahMinor(amountMinor: AmountMinor): string {
+  const sign = amountMinor < 0 ? "-" : "";
+  const absMinor = Math.abs(amountMinor);
+  const hryvnia = Math.trunc(absMinor / 100);
+  const kopiyky = absMinor % 100;
+  // Thousands grouped with a plain ASCII space, chosen for deterministic,
+  // locale-independent output (not the uk-UA non-breaking space).
+  const grouped = String(hryvnia).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  return `${sign}${grouped},${String(kopiyky).padStart(2, "0")} ₴`;
+}

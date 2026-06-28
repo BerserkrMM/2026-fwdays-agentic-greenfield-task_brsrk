@@ -488,7 +488,11 @@
         "openspec/specs/ledger/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/domain/money.test.ts",
+        "src/modules/ledger/ledger.smoke.test.ts",
+        "src/modules/ledger/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -536,6 +540,7 @@
         "src/modules/accounts/service.test.ts",
         "src/modules/accounts/service.test.ts",
         "src/modules/accounts/service.test.ts",
+        "src/modules/ledger/ledger.smoke.test.ts",
         "evals/cases/accounts.eval.ts"
       ],
       "recordings": []
@@ -597,7 +602,10 @@
         "openspec/specs/ledger-items/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/domain/ledger-query.test.ts",
+        "src/modules/ledger/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -643,7 +651,11 @@
         "openspec/specs/ledger/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/domain/ledger-query.test.ts",
+        "src/modules/ledger/ledger.smoke.test.ts",
+        "src/modules/ledger/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -653,7 +665,14 @@
         "openspec/specs/ledger/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/domain/ledger-query.test.ts",
+        "src/domain/ledger-query.test.ts",
+        "src/domain/ledger-query.test.ts",
+        "src/modules/ledger/ledger.smoke.test.ts",
+        "src/modules/ledger/service.test.ts",
+        "src/modules/ledger/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -663,7 +682,12 @@
         "openspec/specs/ledger/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/domain/ledger-query.test.ts",
+        "src/domain/ledger-query.test.ts",
+        "src/modules/ledger/ledger.smoke.test.ts",
+        "src/modules/ledger/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -673,7 +697,10 @@
         "openspec/specs/ledger/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/domain/ledger-query.test.ts",
+        "src/modules/ledger/ledger.smoke.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -850,14 +877,6 @@
     },
     {
       "check": "test-trace",
-      "msg": "FR-ACCT-02 has no test annotated \"@trace FR-ACCT-02\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-CAT-04 has no test annotated \"@trace FR-CAT-04\""
-    },
-    {
-      "check": "test-trace",
       "msg": "FR-SET-01 has no test annotated \"@trace FR-SET-01\""
     },
     {
@@ -871,22 +890,6 @@
     {
       "check": "test-trace",
       "msg": "FR-LEDGER-01 has no test annotated \"@trace FR-LEDGER-01\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-LEDGER-02 has no test annotated \"@trace FR-LEDGER-02\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-LEDGER-03 has no test annotated \"@trace FR-LEDGER-03\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-LEDGER-04 has no test annotated \"@trace FR-LEDGER-04\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-LEDGER-05 has no test annotated \"@trace FR-LEDGER-05\""
     },
     {
       "check": "test-trace",

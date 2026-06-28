@@ -4,6 +4,151 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-28 21:28 UTC — PR #5 review hygiene fixes
+
+**What was done**
+- Suppressed the intentional `src/modules/ledger/ports.ts` fallow unused-file finding with an explicit reason: it is the TC-MOD-01 ledger module port surface for upcoming `dashboard`/`ledger-items` consumers.
+- Removed the extra blank line at EOF from `openspec/specs/ledger/spec.md` so the working-tree diff check is clean.
+- Re-ran verification for the follow-up changes: `npm run lint`, `npx tsc --noEmit`, `npm run test:run`, `npm run check:claims`, `npm run check:handoff`, and `FALLOW_AGENT_SOURCE=pi npx fallow audit --base origin/dev --format json --quiet --explain 2>/dev/null || true`.
+
+**Current state**
+- Tests remain green (11 files / 51 tests), lint/typecheck pass, and claim/handoff checks pass.
+- Fallow no longer reports dead-code/unused-file for `src/modules/ledger/ports.ts`. Remaining fallow `verdict: fail` is limited to the already-accepted moderate accounts server-component CRAP finding and duplicated DB-boundary test setup.
+
+**Next steps**
+- Push the follow-up commit and trigger CodeRabbit on PR #5.
+- Continue to treat the remaining fallow findings as accepted/deferred unless CI policy requires a green fallow audit.
+
+**Open questions / blockers**
+- None for these hygiene fixes.
+
+---
+
+## 2026-06-28 21:17 UTC — reviewer audit of PR #5 add-ledger-queries
+
+**What was done**
+- Reviewed PR #5 (`add-ledger-queries` → `dev`) against Project Factory evidence rules and code-quality expectations.
+- Re-ran local verification: `check:red-green --slice add-ledger-queries --strict`, `check:claims`, `check:handoff`, `openspec validate --all --strict`, `check:trace`, `check:trajectory`, `test:run`, `lint`, `tsc --noEmit`, `next build`, `slice:report`, `git diff --check`, `fallow audit`, and `fallow review`.
+- Used subagent review for code-quality inspection; the Project Factory audit subagent timed out, so parent verification was performed directly from artifacts.
+
+**Current state**
+- Deterministic gates remain green: tests 51/51, lint/tsc/build pass, OpenSpec validates 10 specs, red/green evidence check passes, handoff/claim checks pass.
+- Fallow still reports `verdict: fail` for the same advisory new-only findings already documented: unused intentional ledger port barrel, moderate CRAP on the accounts server component render path, and duplicated DB-boundary test setup.
+- Additional reviewer-only issue: `git diff --check origin/dev...HEAD` reports one whitespace warning (`openspec/specs/ledger/spec.md:94` blank line at EOF).
+
+**Next steps**
+- For PR hygiene, remove the trailing blank line in `openspec/specs/ledger/spec.md` before merge.
+- Optionally suppress or defer the intentional `src/modules/ledger/ports.ts` fallow finding; extract DB test setup later if duplication grows.
+
+**Open questions / blockers**
+- No merge-blocking code correctness issue found in the ledger query implementation during this review. Fallow is not green, so do not describe the fallow audit as passed; describe it as run with accepted/advisory findings.
+
+---
+
+## 2026-06-28 21:00 UTC — add-ledger-queries slice (ledger read side; FR-ACCT-02 closed)
+
+**What was done**
+- Implemented the `ledger` capability's read side: a framework-free
+  `src/domain/ledger-query.ts` with the single canonical balance/aggregate
+  computations, a `LedgerQueryPort`, one `LedgerItemRepository.listNonDeleted()`
+  read primitive (in-memory + Postgres), and `LedgerQueryService` in
+  `src/modules/ledger/`. Added `formatUahMinor` to `src/domain/money.ts`.
+- Closed the deferred per-account-balance half of FR-ACCT-02: `/accounts` now
+  shows each account's real balance via ledger queries (derived, never stored),
+  with an isolated balance read that degrades to a "Баланс недоступний" indicator
+  rather than failing the whole screen.
+- Tests-first with durable RED→GREEN evidence; added a regression that archived
+  accounts' ledger items still count toward per-account and overall balance.
+- Maker≠checker review (fresh code + security + spec-compliance reviewers);
+  applied the actionable findings (deterministic SQL ordering, isolated balance
+  read, comment wording, `@trace FR-CAT-04`, ticked tasks); archived the change.
+
+**Scope delivered**
+- FR-LEDGER-02, FR-LEDGER-03, FR-LEDGER-04, FR-LEDGER-05, and the per-account
+  balance half of FR-ACCT-02 (wired through ledger queries). Archived-account
+  balance regression covered.
+
+**Scope NOT delivered**
+- Dashboard screen / summary / trends / category UI (FR-DASH-\*, owned by
+  `dashboard`, which will consume these queries).
+- Ledger-item list/filter/edit/delete UI (FR-ITEM-\*, owned by `ledger-items`).
+- CSV export (FR-SET-03). No SQL-side aggregate optimization (read-all-and-fold
+  kept for v1 — design D1).
+
+**Process evidence produced**
+- `openspec/changes/archive/2026-06-28-add-ledger-queries/evidence/red-run.json`
+  (real RED: non-zero exit, named failing suites, before implementation) and
+  `green-run.json`; verified by `check:red-green --slice add-ledger-queries --strict`.
+- Raw reviewer outputs under `.../reviews/` (code, security, spec-compliance),
+  summarized in `review-findings.json` (`clean: true`, `rawEvidence` linked).
+- `eval-decision.md` (no eval case — deterministic numeric queries) and
+  `trajectory-eval-waiver.md`.
+- Deterministic gates green: lint, `tsc --noEmit`, `next build`, 51 tests,
+  coverage ratchet, `openspec validate --all --strict`, `check:trace` (0 fail),
+  `check:trajectory` (0 fail), `check:handoff`, `check:claims`.
+
+**Process evidence NOT produced**
+- No LLM `trajectory-eval` run (waived — no runnable trajectory-eval workflow in
+  this repo; consistent with `add-accounts`). No `eval-judge` (no eval case).
+- No UI recording/vision proof for the accounts balance (recordings are a later
+  QA phase; FR-ACCT-02 balance display is covered by build + smoke tests).
+
+**Deferred work**
+- Dashboard and ledger-items UI consume these ledger queries in their own slices.
+- Optional one-pass aggregate method if a consumer needs balance + aggregates +
+  category totals together (code-review CODE-3, accepted for v1).
+
+**Fallow audit** — `FALLOW_AGENT_SOURCE=pi npx fallow audit --base origin/dev
+--format json --quiet --explain`. Verdict `fail` with advisory, intentional
+findings (new-only gate), no runtime defects:
+- 1 unused file: `src/modules/ledger/ports.ts` — the deliberate module port
+  re-export surface (TC-MOD-01) for downstream `dashboard`/`ledger-items`
+  consumers; same accepted pattern as `accounts/ports.ts`. Kept intentionally.
+- 1 complexity finding: `app/accounts/page.tsx` render arrow (cyclomatic 5,
+  cognitive 4) — flagged mainly by the "none" coverage tier (server-component JSX
+  is outside the vitest unit scope), not by genuine logic complexity. Accepted.
+- 1 duplication group: the DB-boundary test reset boilerplate shared by
+  `client.test.ts`, `accounts.smoke.test.ts`, and the new `ledger.smoke.test.ts`
+  — standard per-file test isolation; extracting a shared helper is deferred.
+
+<!-- slice-report:start -->
+### Generated slice report: add-ledger-queries
+
+Generated by `node scripts/slice-report.mjs --slice add-ledger-queries` at 2026-06-28T20:59:11.330Z. Do not hand-write these metrics.
+
+| Metric | Value |
+|---|---:|
+| OpenSpec validated specs | 10 |
+| Active OpenSpec changes | 0 |
+| Test files / tests passed | 11 / 51 |
+| Trace failures / warnings | 0 / 100 |
+| Trajectory failures / warnings | 0 / 2 |
+| Changed files vs origin/dev | 33 |
+| Review findings | clean |
+| Raw review evidence refs | 3 |
+| Slice trailer commits | 1 |
+| Refs | FR-LEDGER-02, FR-LEDGER-03, FR-LEDGER-04, FR-LEDGER-05, FR-ACCT-02 |
+
+Command exits: openspecValidate=0, openspecList=0, tests=0, trace=0, trajectory=0, evals=0, coverage=0.
+<!-- slice-report:end -->
+
+**Current state**
+- `add-ledger-queries` archived; ledger baseline spec updated (MODIFIED, no
+  drift). Branch `add-ledger-queries` committed with `Slice:`/`Refs:` trailers.
+  Deterministic gates green; review clean; RED→GREEN evidence durable.
+
+**Next steps**
+- Push branch and open PR to `dev`; address CI / CodeRabbit feedback.
+- Pick up `dashboard` (FR-DASH-\*) or `ledger-items` (FR-ITEM-\*) consuming these
+  queries next.
+
+**Open questions / blockers**
+- None. (Honest boundary: deterministic G4-style gates passed and maker≠checker
+  review is clean; the LLM trajectory-eval was waived, so this is not a claim that
+  the whole Project Factory loop ran.)
+
+---
+
 ## 2026-06-28 20:01 UTC — CodeRabbit data-integrity fixes + fallow audit
 
 **What was done**

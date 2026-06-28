@@ -163,6 +163,17 @@ class PgLedgerItemRepository implements LedgerItemRepository {
       SELECT * FROM ledger_items WHERE id = ${id}`;
     return row ? toLedgerItem(row) : null;
   }
+
+  async listNonDeleted(): Promise<LedgerItem[]> {
+    // Inclusion follows item status, not account archive state, so archived
+    // accounts' historical items are returned (FR-LEDGER-02/03, FR-ACCT-05).
+    // `id` tiebreaks `created_at` so the row order (and thus the first-seen group
+    // order in computeAccountBalances/computeCategoryTotals) is deterministic even
+    // when a bulk import shares one `now()` timestamp.
+    const rows = await this.sql<LedgerItemRow[]>`
+      SELECT * FROM ledger_items WHERE status <> 'deleted' ORDER BY created_at, id`;
+    return rows.map(toLedgerItem);
+  }
 }
 
 export function createPostgresRepositories(sql: Sql): Repositories {

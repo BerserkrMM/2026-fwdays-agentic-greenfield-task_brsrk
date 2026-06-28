@@ -6,6 +6,11 @@
 import type { Account } from "./account";
 import type { InputEvent, NewInputEvent } from "./input-event";
 import type { LedgerItem } from "./ledger-item";
+import type {
+  AccountBalance,
+  CategoryTotal,
+  LedgerAggregates,
+} from "./ledger-query";
 import type { NewParserRun, ParserRun } from "./parser-run";
 import type { ParsedLedgerItemDraft } from "./parsed-draft";
 
@@ -43,6 +48,13 @@ export interface ParserRunRepository {
 export interface LedgerItemRepository {
   insert(item: LedgerItem): Promise<LedgerItem>;
   findById(id: string): Promise<LedgerItem | null>;
+  /**
+   * All non-deleted items (`status <> 'deleted'`) across every account — the read
+   * primitive the Ledger capability folds into balances/aggregates. Independent
+   * of account archive state, so archived accounts' items are included
+   * (FR-LEDGER-02/03, FR-ACCT-05).
+   */
+  listNonDeleted(): Promise<LedgerItem[]>;
 }
 
 export interface Repositories {
@@ -61,6 +73,27 @@ export interface Repositories {
  */
 export interface AccountsPort {
   getDefaultAccountId(): Promise<string | null>;
+}
+
+// --- Ledger query port (read-side balances/aggregates; owned by `ledger`) ---
+
+/**
+ * The single balance/aggregate read API downstream modules (Accounts, Dashboard)
+ * depend on, so no module recomputes balances independently (FR-LEDGER-05). All
+ * results derive from non-deleted `ledger_items` (FR-LEDGER-02/03/04); nothing is
+ * stored (FR-ACCT-06). Implemented by the `ledger` capability.
+ */
+export interface LedgerQueryPort {
+  /** Sum of all non-deleted items across accounts. */
+  getOverallBalance(): Promise<number>;
+  /** Per-account balances over non-deleted items (includes archived accounts). */
+  getAccountBalances(): Promise<AccountBalance[]>;
+  /** One account's balance over its non-deleted items. */
+  getAccountBalance(accountId: string): Promise<number>;
+  /** Income/expense split over non-deleted items. */
+  getAggregates(): Promise<LedgerAggregates>;
+  /** Per-category totals over non-deleted items, by raw category text. */
+  getCategoryTotals(): Promise<CategoryTotal[]>;
 }
 
 // --- Item-creation contract (the only sanctioned ledger-item write path) ---

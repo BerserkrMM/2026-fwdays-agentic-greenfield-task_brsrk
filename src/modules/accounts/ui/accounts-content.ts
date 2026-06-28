@@ -18,10 +18,13 @@ export const ACCOUNTS_PAGE = {
   renameLabel: "Нова назва",
   renameSubmitLabel: "Перейменувати",
   archiveLabel: "Архівувати",
+  balanceLabel: "Баланс",
+  balanceUnavailable: "Баланс недоступний",
   emptyTitle: "Ще немає рахунків",
   emptyDescription:
     "Типовий рахунок «Готівка» створюється автоматично, щоб операції було куди записувати.",
-  balanceHint: "Баланс кожного рахунку зʼявиться разом із журналом операцій.",
+  balanceHint:
+    "Баланс кожного рахунку рахується з операцій журналу (окрім вилучених).",
 } as const;
 
 /** Canonical Ukrainian copy for each account error code, shown in the banner. */
