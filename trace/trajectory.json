@@ -37,7 +37,7 @@
       "slice": "2026-06-29-add-dashboard",
       "reviewEvidence": "clean",
       "rawReviewEvidence": "5 linked",
-      "trailerCommits": 0,
+      "trailerCommits": 1,
       "libDomains": [],
       "processComplete": true
     },
@@ -76,10 +76,6 @@
     {
       "check": "trailer",
       "msg": "2026-06-26-add-foundation-shell: no commit carries a \"Slice: add-foundation-shell\" trailer"
-    },
-    {
-      "check": "trailer",
-      "msg": "2026-06-29-add-dashboard: no commit carries a \"Slice: add-dashboard\" trailer"
     }
   ]
 }

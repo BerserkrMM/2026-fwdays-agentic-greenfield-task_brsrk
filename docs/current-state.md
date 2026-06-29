@@ -4,6 +4,58 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-29 23:54 UTC — add-dashboard slice SHIPPED (slice 9: `/dashboard` read-only overview)
+
+**What was done** — built slice 9 `add-dashboard` (capability `dashboard`, FR-DASH-01..05) on branch `add-dashboard` cut from `origin/dev` (it depends only on the merged `ledger` query capability, not on the still-open receipt-photo PR). Built in a separate git worktree because another agent is active in the main checkout. Replaced the foundation placeholder at `/dashboard` with the real read-only financial overview. Tests-first with durable RED→GREEN evidence; archived after a clean four-reviewer maker≠checker round and a graded eval.
+
+**Scope delivered** — FR-DASH-01..05:
+- FR-DASH-01: current balance summary from non-deleted items (`ledger_items where status != 'deleted'`); a genuinely-empty ledger shows an onboarding `EmptyState` with a CTA to `/imports` instead of zeroed figures.
+- FR-DASH-02: income/expense totals from non-deleted items (sign-split via the existing `getAggregates`).
+- FR-DASH-03: expense-by-category breakdown grouped by raw `LedgerItem.category` text (incl. «Без категорії»), no category-table join; spend-only, matching the design reference «Витрати за категоріями». The change spec's FR-DASH-03 was specialized to spend-only to match the design + implementation (reviewer SPEC-1).
+- FR-DASH-04: all-time monthly income/expense trend grouped by calendar month in `Europe/Kyiv` (effective date `occurredAt ?? createdAt`), shown only with ≥2 distinct months, else an explicit insufficient-data state. The trend aggregate (`computeMonthlyTrends` + `LedgerQueryPort.getMonthlyTrends`) was added to the canonical ledger query domain/port as a disclosed, additive-only coordination touch (FR-LEDGER-04/05), so the Dashboard never recomputes balances independently.
+- FR-DASH-05 / FR-SHELL-03: strictly read-only (only `next/link` navigation, `force-dynamic`, no mutations). Each ledger read is isolated (`Promise.all` of per-read try/catch) so a failed aggregate degrades to a per-section «unavailable» note + a partial banner, or a full error state with a retry, never a blank/500 page.
+
+**Scope NOT delivered (deferred, justified)** — no period filter (v1 is all-time, per the dashboard spec); no CSV export / AI-key config (Settings slice, FR-SET-*); no per-account name chips (kept the Dashboard's dependency to `LedgerQueryPort` only); no live-data screenshot/vision proof (later QA phase). Server-side logging of degraded reads was accepted-deferred (no shared logger; NFR-OBS-01 prefers a silent console; the per-section unavailable state already surfaces failure).
+
+**Process evidence produced** — real RED/GREEN JSON under the archived change (`check:red-green --strict` green); strict OpenSpec validate + archive (10 specs; MODIFIED delta on the backfilled `dashboard` baseline synced with no drift); eval case `evals/cases/dashboard.eval.ts` (dimension `ua-error-clarity`, graded **93/100 PASS** by a fresh eval-judge, on par with the sibling 93 baseline; recorded in `evals/results/latest.json`, ratchet green); clean maker≠checker review with **5** raw evidence files (`reviews/{code-reviewer,security-reviewer,spec-compliance-auditor,eval-judge}.md`, `reviews/eval-produced-output.txt`) and `review-findings.json` (`clean:true`, `rawEvidence` linked); regenerated trace/trajectory + slice report.
+
+**Process evidence NOT produced** — no live LLM trajectory-eval (waived; deterministic trajectory is green); no UI recording/vision proof of the rendered screen (later QA phase; the route is covered by build + page smoke/state tests). Honest boundary: deterministic G4 checks + a clean four-reviewer maker≠checker round + a graded eval all pass; this is **not** a claim that an end-to-end trajectory-eval ran.
+
+**Maker≠checker findings** — verdicts: code **APPROVE_WITH_NITS**, security **PASS** (clean), spec-compliance **PASS** (9/10 implemented, 1 partial reconciled), eval-judge **93/100 PASS**. Folded with regression coverage: a failed section read now renders an explicit «Не вдалося завантажити цей розділ» state instead of masquerading as empty/insufficient (code MINOR-1); the four ledger reads run via `Promise.all` (code MINOR-2); the FR-DASH-03 spec delta specialized to a spend breakdown to match the design + code (spec MAJOR); tasks.md test paths reconciled (spec MINOR). Accepted with rationale: degraded-read server logging (NFR-OBS-01 silent console; failure already surfaced to the user), the partial-state retry-wording nit, and the cosmetic rounded-percent-sum note.
+
+**Fallow audit** — `FALLOW_AGENT_SOURCE=pi npx fallow audit --base origin/dev`. Verdict `fail` (new-only gate) with **advisory-only** findings, no runtime defect: 1 unused file (`evals/cases/dashboard.eval.ts` — eval-runner-loaded, same accepted pattern as sibling eval cases); 1 introduced complexity (`app/dashboard/page.tsx:DashboardPage` cyclomatic 12 — the page's read-orchestration + state routing; the heavy card rendering is already extracted into `CategoryBreakdownCard`/`MonthlyTrendCard`); 1 duplication clone group (the shared `vi.mock` next/link/navigation test boilerplate). Reduced introduced complexity 3→1 and duplication 2→1 during the pass by extracting the two card components and factoring the shared `collectServerTreeText` test helper into `src/test-support/server-tree.ts`. Not a green fallow; accepted with rationale.
+
+<!-- slice-report:start -->
+### Generated slice report: add-dashboard
+
+Generated by `node scripts/slice-report.mjs --slice add-dashboard` at 2026-06-29T23:53:45.550Z. Do not hand-write these metrics.
+
+| Metric | Value |
+|---|---:|
+| OpenSpec validated specs | 10 |
+| Active OpenSpec changes | 0 |
+| Test files / tests passed | 37 / 199 |
+| Trace failures / warnings | 0 / 70 |
+| Trajectory failures / warnings | 0 / 2 |
+| Changed files vs origin/dev | 35 |
+| Review findings | clean |
+| Raw review evidence refs | 5 |
+| Slice trailer commits | 1 |
+| Refs | FR-DASH-01, FR-DASH-02, FR-DASH-03, FR-DASH-04, FR-DASH-05 |
+
+Command exits: openspecValidate=0, openspecList=0, tests=0, trace=0, trajectory=0, evals=0, coverage=0.
+<!-- slice-report:end -->
+
+**Current state** — slice archived; review clean; deterministic gates green: lint, `tsc --noEmit`, `test:run` (37 files / 199 tests), `next build` (`/dashboard` dynamic), coverage ratchet bumped (lines/stmts 53.88→64.21, fns 74.78→79.06, branches 89.24→89.49 — all above the origin/dev baseline), `openspec validate --all --strict` (10 specs), `check:trace` (0 failures), `check:trajectory` (0 failures, 2 inherited foundation-shell warnings), `check:red-green --strict`, `check:claims`, `check:eval`. Slice committed on `add-dashboard` with `Slice:`/`Refs:` trailers; ready to push and open a PR to `dev`.
+
+**Next steps** — push branch, open PR to `dev`, address CI / CodeRabbit. With slices 1–9 done, the remaining MVP work is slice 10 `add-settings` (FR-SET-*, incl. AI key storage + CSV export with formula-injection hardening). Note the receipt-photo PR (slice 8) may still be open against `dev`; this branch was cut from `origin/dev` and does not depend on it.
+
+**Deferred work** — settings incl. AI key storage + CSV export with formula-injection hardening (slice 10); degraded-read server-side observability/logging on the Dashboard; optional per-account balance chips on the Dashboard. Live OpenAI behavior remains intentionally deferred to the settings slice.
+
+**Open questions / blockers** — none.
+
+---
+
 ## 2026-06-29 20:21 UTC — CI coverage-ratchet fix for bank-import PR
 
 **What was done** — investigated failed PR #9 `verify` job. CodeRabbit passed; CI failed in `Coverage ratchet` because branch coverage dropped from 89.24% to 88.16% after the bank-import changes. Added `src/app-pages.smoke.test.ts` covering static app routes (`/`, `/dashboard`, `/imports`, `/imports/files`, `/settings`) to restore branch coverage without weakening the ratchet. Regenerated traceability outputs.

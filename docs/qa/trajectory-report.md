@@ -7,7 +7,7 @@ It does NOT verify test-first ordering or test integrity (not derivable from
 one-commit-per-slice history) — those are graded by the trajectory-eval workflow.
 
 Scope: 8 archived slice(s).
-Result: PASS, 3 warning(s)
+Result: PASS, 2 warning(s)
 
 | Slice | Review evidence | Raw review refs | Trailer commits | design+tasks | lib domains touched |
 |---|---|---|---|---|---|
@@ -15,7 +15,7 @@ Result: PASS, 3 warning(s)
 | 2026-06-28-add-accounts | clean | 4 linked | 1 | yes | - |
 | 2026-06-28-add-ledger-queries | clean | 3 linked | 1 | yes | - |
 | 2026-06-29-add-bank-statement-imports | clean | 7 linked | 1 | yes | - |
-| 2026-06-29-add-dashboard | clean | 5 linked | **0** | yes | - |
+| 2026-06-29-add-dashboard | clean | 5 linked | 1 | yes | - |
 | 2026-06-29-add-ledger-items-review | clean | 5 linked | 1 | yes | - |
 | 2026-06-29-add-manual-text-input | clean | 4 linked | 1 | yes | - |
 | 2026-06-29-add-parsing-pipeline | clean | 5 linked | 1 | yes | - |
@@ -32,4 +32,3 @@ None.
 
 - **review-evidence**: 2026-06-26-add-foundation-shell: review-findings.json is missing (review must have run clean before archive)
 - **trailer**: 2026-06-26-add-foundation-shell: no commit carries a "Slice: add-foundation-shell" trailer
-- **trailer**: 2026-06-29-add-dashboard: no commit carries a "Slice: add-dashboard" trailer

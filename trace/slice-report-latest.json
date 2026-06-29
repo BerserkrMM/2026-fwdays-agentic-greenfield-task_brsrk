@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-29T23:45:35.309Z",
+  "generatedAt": "2026-06-29T23:53:45.550Z",
   "generatedBy": "scripts/slice-report.mjs",
   "slice": "add-dashboard",
   "commands": {
@@ -40,22 +40,28 @@
     "traceFailures": 0,
     "traceWarnings": 70,
     "trajectoryFailures": 0,
-    "trajectoryWarnings": 3,
-    "changedFiles": 0,
+    "trajectoryWarnings": 2,
+    "changedFiles": 35,
     "evalBaseline": {
       "ua-ux-clarity": 95,
       "explicit-state-clarity": 96,
       "ua-error-clarity": 93
     },
     "coverageBaseline": {
-      "lines": 63.92,
-      "statements": 63.92,
-      "functions": 78.82,
-      "branches": 89.61
+      "lines": 64.21,
+      "statements": 64.21,
+      "functions": 79.06,
+      "branches": 89.49
     },
-    "reviewFindings": "missing",
-    "rawReviewEvidenceRefs": 0,
-    "sliceTrailerCommits": 0,
-    "refs": []
+    "reviewFindings": "clean",
+    "rawReviewEvidenceRefs": 5,
+    "sliceTrailerCommits": 1,
+    "refs": [
+      "FR-DASH-01",
+      "FR-DASH-02",
+      "FR-DASH-03",
+      "FR-DASH-04",
+      "FR-DASH-05"
+    ]
   }
 }
