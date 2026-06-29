@@ -3,7 +3,11 @@ import { createInMemoryRepositories } from "@/src/db/memory";
 import { ManualTextError } from "@/src/domain/manual-text";
 import { ParsingError, type ParserAdapter } from "@/src/domain/parsing";
 import type { ParsedLedgerItemDraft } from "@/src/domain/parsed-draft";
-import type { Repositories } from "@/src/domain/ports";
+import {
+  type ItemCreationContract,
+  NoDefaultAccountError,
+  type Repositories,
+} from "@/src/domain/ports";
 import { AccountsService } from "@/src/modules/accounts/service";
 import { ItemCreationService } from "@/src/modules/foundation/item-creation";
 import { OpenAiParserAdapter } from "@/src/modules/parsing/adapters";
@@ -100,6 +104,20 @@ describe("ManualInputService creates pending items (partial success)", () => {
     expect(summary.created).toBe(1);
     expect(summary.failed).toBe(1);
     expect(await repos.ledgerItems.listAll()).toHaveLength(1);
+  });
+
+  it("propagates a systemic creation error instead of mislabelling it as a failed draft", async () => {
+    repos = createInMemoryRepositories();
+    const parsing = new ParsingService(repos, draftsAdapter([expense(-4000, "Ковбаса")]));
+    const itemCreation: ItemCreationContract = {
+      async createPendingItem() {
+        throw new NoDefaultAccountError();
+      },
+    };
+    const service = new ManualInputService(repos, parsing, itemCreation);
+    await expect(service.importText("ковбаса 40 грн")).rejects.toBeInstanceOf(
+      NoDefaultAccountError,
+    );
   });
 });
 

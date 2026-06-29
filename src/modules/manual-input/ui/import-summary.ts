@@ -30,8 +30,17 @@ export function parseImportSummary(params: {
   return { created: created ?? 0, failed: failed ?? 0 };
 }
 
+/** True when the import recognized nothing (no items created, none failed). */
+export function isEmptyImport({ created, failed }: ImportSummary): boolean {
+  return created === 0 && failed === 0;
+}
+
 /** Ukrainian banner text for an import summary. */
-export function importSummaryMessage({ created, failed }: ImportSummary): string {
+export function importSummaryMessage(summary: ImportSummary): string {
+  const { created, failed } = summary;
+  if (isEmptyImport(summary)) {
+    return "Не вдалося розпізнати жодної операції. Перевірте текст і спробуйте ще раз.";
+  }
   const createdPart = `Створено операцій: ${created}.`;
   if (failed > 0) {
     return `${createdPart} Не вдалося зберегти: ${failed}.`;

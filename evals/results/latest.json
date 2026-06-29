@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-29T07:40:00Z",
+  "generatedAt": "2026-06-29T12:48:00Z",
   "threshold": 70,
   "dimensions": {
     "ua-ux-clarity": 95,
@@ -67,6 +67,22 @@
       "judges": 1,
       "disagreement": false,
       "notes": "Fresh eval-judge (maker≠checker) over the produced output, confirmed to match the live src/modules/ledger-items/ui/ledger-content.ts. All three CRITICAL criteria hold: every string is Ukrainian (loanwords «імпорт»/«архівовано» are standard Ukrainian, not English jargon); invalid-status/validation errors state cause and remedy («Затвердити можна лише операцію, що очікує; вилучену не можна редагувати», field-named description/date-required); the two empty states are distinct («Журнал порожній …» vs «Нічого не знайдено …»). amount-invalid gives concrete examples («напр. 200 або 200,50»). Calm tone, never a generic message in the graded surface. Minor deduction: «Невірна сума» is slightly blunt vs the otherwise polished phrasing — lands on par with the accounts baseline (93)."
+    },
+    {
+      "id": "eval-manual-input-error-clarity",
+      "dimension": "ua-error-clarity",
+      "trace": [
+        "FR-TEXT-01",
+        "FR-TEXT-03",
+        "FR-TEXT-05",
+        "NFR-I18N-01"
+      ],
+      "capability": "manual-input",
+      "score": 93,
+      "pass": true,
+      "judges": 1,
+      "disagreement": false,
+      "notes": "Fresh eval-judge (maker≠checker) over the produced output, verified to match the live manual-input-content.ts + import-summary.ts. All three CRITICAL criteria hold: every span is Ukrainian (AI localized as «ШІ»); the parse-failure error states what failed and gives two next actions («Не вдалося розпізнати текст. Перевірте налаштування ШІ або спробуйте ще раз.»); the empty-text validation is a direct imperative («Введіть текст для імпорту.»). Summary states created/failed counts explicitly and only when relevant; calm finance tone, no generic 'something went wrong' in the visible output. Minor: a generic fallback exists for unmapped codes (not in graded output). Held at 93, on par with the sibling baseline, not inflated."
     }
   ]
 }

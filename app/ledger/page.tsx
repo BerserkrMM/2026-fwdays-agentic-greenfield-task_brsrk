@@ -27,6 +27,7 @@ import {
 } from "@/src/modules/ledger-items/ui/ledger-params";
 import {
   importSummaryMessage,
+  isEmptyImport,
   parseImportSummary,
 } from "@/src/modules/manual-input/ui/import-summary";
 import { PageHeader } from "@/src/modules/foundation/ui/PageHeader";
@@ -87,9 +88,17 @@ export default async function LedgerPage({
       {importSummary ? (
         <div className="mb-6">
           <StateView
-            tone={importSummary.failed > 0 ? "warning" : "info"}
-            glyph="✓"
-            title="Імпорт завершено"
+            tone={
+              importSummary.failed > 0 || isEmptyImport(importSummary)
+                ? "warning"
+                : "info"
+            }
+            glyph={isEmptyImport(importSummary) ? "⚠" : "✓"}
+            title={
+              isEmptyImport(importSummary)
+                ? "Нічого не імпортовано"
+                : "Імпорт завершено"
+            }
             description={importSummaryMessage(importSummary)}
           />
         </div>

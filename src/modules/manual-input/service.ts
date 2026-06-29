@@ -8,7 +8,12 @@
 // fallback with no Next/DB import here.
 
 import { assertManualText } from "@/src/domain/manual-text";
-import type { ItemCreationContract, Repositories } from "@/src/domain/ports";
+import {
+  type ItemCreationContract,
+  MissingInputEventError,
+  NoDefaultAccountError,
+  type Repositories,
+} from "@/src/domain/ports";
 import type { ParsingService } from "@/src/modules/parsing/service";
 
 export interface ManualImportSummary {
@@ -61,7 +66,17 @@ export class ManualInputService {
           parserRunId: result.parserRun.id,
         });
         created += 1;
-      } catch {
+      } catch (error) {
+        // A systemic failure (no default account / missing input event) is not a
+        // per-draft data problem — it would mislabel a real fault as a benign
+        // "partial" summary, so let it propagate. Only genuine per-row failures
+        // are counted (partial-success, FR-TEXT-04).
+        if (
+          error instanceof NoDefaultAccountError ||
+          error instanceof MissingInputEventError
+        ) {
+          throw error;
+        }
         failed += 1;
       }
     }

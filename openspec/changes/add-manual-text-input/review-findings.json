@@ -1,0 +1,69 @@
+{
+  "slice": "add-manual-text-input",
+  "clean": true,
+  "reviewedAt": "2026-06-29T12:48:00.000Z",
+  "rawEvidence": [
+    "reviews/raw/code-reviewer.md",
+    "reviews/raw/security-reviewer.md",
+    "reviews/raw/spec-compliance-auditor.md",
+    "reviews/raw/eval-judge.md"
+  ],
+  "reviewers": {
+    "code": {
+      "verdict": "APPROVE",
+      "rawEvidence": "reviews/raw/code-reviewer.md"
+    },
+    "security": {
+      "verdict": "PASS",
+      "rawEvidence": "reviews/raw/security-reviewer.md"
+    },
+    "specCompliance": {
+      "verdict": "PASS (7/7 scenarios implemented, 0 missing, 0 contradicted)",
+      "rawEvidence": "reviews/raw/spec-compliance-auditor.md"
+    },
+    "evalJudge": {
+      "verdict": "93/100 PASS (ua-error-clarity, threshold 70; on par with baseline 93)",
+      "rawEvidence": "reviews/raw/eval-judge.md"
+    }
+  },
+  "confirmedFindingsFixed": [
+    {
+      "id": "CODE-1",
+      "severity": "minor",
+      "summary": "Bare catch in the draft-creation loop swallowed systemic errors (NoDefaultAccountError / MissingInputEventError), which would mislabel a real fault as a benign 'partial' import.",
+      "resolution": "ManualInputService now re-throws those two systemic errors and only counts genuine per-row creation failures. Regression test added (service.test.ts 'propagates a systemic creation error')."
+    },
+    {
+      "id": "CODE-2",
+      "severity": "minor",
+      "summary": "A zero-draft parse redirected to /ledger?imported=0&failed=0 and rendered a success-styled '✓ Імпорт завершено / Створено операцій: 0' banner, implying success when nothing was recognized.",
+      "resolution": "Added isEmptyImport(); the summary now reads 'Не вдалося розпізнати жодної операції…' and the Ledger banner switches to a warning tone with a '⚠ Нічого не імпортовано' title. Message + helper tests added."
+    }
+  ],
+  "acceptedFindings": [
+    {
+      "id": "CODE-NIT-1",
+      "severity": "nit",
+      "summary": "firstParam helper is duplicated in app/imports/text/page.tsx (an identical one is exported from ledger-items/ui/ledger-params.ts).",
+      "rationale": "Reviewer notes a cross-module import 'would arguably be worse'. Kept the 3-line helper local; promoting a shared foundation util is more churn than warranted for this slice."
+    },
+    {
+      "id": "SEC-MINOR-1",
+      "severity": "minor",
+      "summary": "Polynomial regex in src/domain/parsing.ts:64 (phone redaction) on uncapped text could spend noticeable CPU on a multi-MB paste.",
+      "rationale": "Single-user local app (BC-SCOPE-01) with no other tenant to starve; 'no input size limit' is a product decision and the parse path has a 30s adapter timeout. Pre-existing parsing code, not introduced by this slice. Optional future soft length cap noted."
+    },
+    {
+      "id": "SPEC-NOTE-1",
+      "severity": "note",
+      "summary": "Default-account seeding (FR-ACCT-06/FR-ITEM-06 territory) is invoked inside the FR-TEXT channel action.",
+      "rationale": "Documented intentional, idempotent reuse (proposal.md); ensures the default exists before item creation. Not silent drift."
+    },
+    {
+      "id": "SPEC-NOTE-2",
+      "severity": "note",
+      "summary": "The Ledger summary 'failed' count reflects only per-draft creation failures; a parse failure redirects back to /imports/text instead.",
+      "rationale": "Consistent with the spec delta wording and the FR-TEXT-05 scenario; not a contradiction."
+    }
+  ]
+}

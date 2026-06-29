@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { importSummaryMessage, parseImportSummary } from "./import-summary";
+import {
+  importSummaryMessage,
+  isEmptyImport,
+  parseImportSummary,
+} from "./import-summary";
 
 // @trace FR-TEXT-05
 describe("parseImportSummary", () => {
@@ -38,5 +42,13 @@ describe("importSummaryMessage", () => {
     const msg = importSummaryMessage({ created: 1, failed: 2 });
     expect(msg).toContain("2");
     expect(msg.toLowerCase()).toContain("не вдалося");
+  });
+
+  it("uses a distinct 'nothing recognized' message when nothing was imported", () => {
+    expect(isEmptyImport({ created: 0, failed: 0 })).toBe(true);
+    expect(isEmptyImport({ created: 1, failed: 0 })).toBe(false);
+    const msg = importSummaryMessage({ created: 0, failed: 0 });
+    expect(msg.toLowerCase()).toContain("розпізнати");
+    expect(msg).not.toContain("Створено операцій: 0");
   });
 });
