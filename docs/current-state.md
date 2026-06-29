@@ -4,6 +4,246 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-29 08:32 UTC — addressed valid CodeRabbit ledger review comments
+
+**What was done** — fixed the three valid CodeRabbit code findings: invalid edit
+`type` is now rejected with `type-invalid` instead of silently becoming
+`expense`; Postgres `listAll()` ordering now matches the domain effective-date
+rule with `COALESCE(occurred_at, created_at)`; invalid URL status/type/date
+params are no longer echoed into `raw`, so empty-state and load-more behavior
+match the applied filters. Added/updated unit coverage.
+
+**Current state** — no scope expansion. Validation run: `npm test` (17 files / 92
+tests), `npx tsc --noEmit`, `npm run lint`, `npm run build`,
+`npx openspec validate --all --strict`, `npm run check:coverage`,
+`npm run check:eval`, and regenerated `slice:report --write` all pass.
+
+**Next steps** — push the CodeRabbit-fix commit to PR #6 and optionally respond to
+CodeRabbit that the remaining author/demo/process comments require human
+submission metadata rather than code changes.
+
+**Open questions / blockers** — author real name and demo-video URL remain human
+submission inputs if the final homework rubric requires them.
+
+---
+
+## 2026-06-29 08:04 UTC — add-ledger-items-review raw review evidence committed
+
+**What was done** — force-added the four raw maker≠checker reviewer transcripts under
+`openspec/changes/archive/2026-06-29-add-ledger-items-review/reviews/raw/` despite
+the global `**/raw/` ignore rule, so `review-findings.json.rawEvidence` now points
+to files that are present in git/PR. Regenerated the slice report after the raw
+evidence commit.
+
+**Current state** — no implementation changes. Deterministic checks remain green via
+the regenerated slice report; changed-file count is now 42 because the four raw
+review evidence files are tracked.
+
+**Next steps** — push the new evidence commit to PR #6. If a stricter final-HEAD
+maker≠checker proof is required, re-run the four independent reviewers over the
+post-fix/post-evidence HEAD and commit those final transcripts too.
+
+**Open questions / blockers** — none for raw-evidence tracking.
+
+---
+
+## 2026-06-29 07:42 UTC — add-ledger-items-review slice SHIPPED (review complete, archived)
+
+**What was done** — completed the maker≠checker stage that the previous entry left
+blocked, then archived slice 4 (`ledger-items`) and prepared the PR to `dev`. After
+the session-limit reset, four fresh independent reviewers ran over `git diff
+dev..HEAD`; all confirmed findings were folded and the rest accepted with rationale.
+
+**Review outcome (maker≠checker, fresh reviewers over the committed diff)**
+- **code-reviewer: APPROVE** (no blockers/majors). **security: PASS** (no
+  critical/major). **spec-compliance: 13/13 scenarios** implemented, 0 missing/
+  contradicted, deferred-scope + checkbox honesty PASS. **eval-judge: 93/100 PASS**
+  (`ua-error-clarity`, on par with the accounts baseline 93 — no regression).
+- Raw outputs under `openspec/changes/archive/2026-06-29-add-ledger-items-review/reviews/raw/`;
+  summarized in `review-findings.json` (`clean: true`, `rawEvidence` linked).
+
+**Findings fixed (folded into the slice)**
+- **TZ-1** (code+spec): zoneless `occurred_at` from the edit form is now parsed as
+  UTC (`parseOccurredAt`), so the round-trip is timezone-stable (BC-SCOPE-03 is
+  Europe/Kyiv, not UTC) and no longer compounds drift. Pinned by a test.
+- **SPEC-A (major)**: extracted the pure screen logic to
+  `ledger-items/ui/ledger-params.ts` + `ledger-params.test.ts` (param parse,
+  empty-vs-filtered decision, cumulative load-more href).
+- **SPEC-C**: service test that an invalid edit does not persist. **CODE-3**:
+  labelled the archived-account edit option. **SPEC-B**: reworded the FR-ITEM-01
+  incremental scenario to cumulative.
+
+**Findings accepted/deferred (documented in review-findings.json)**
+- CODE-2 redirect drops filters (mirrors accounts convention), SPEC-D UUID
+  hardening beyond spec, SEC-1 unbounded read-all-and-fold (design D1, v2), SEC-2
+  single-user no-auth (BC-SCOPE-01).
+
+**Scope delivered** — FR-ITEM-01/02/03/04(approve)/05 + FR-CAT-01/03 on the edit
+path: the `/ledger` review surface (list, status, newest-first by effective date,
+incremental pagination, filters + search, edit, approve, soft-delete).
+
+**Scope NOT delivered** — FR-ITEM-04 batch creation + FR-ITEM-07 retry (need
+`parsing` + channels, slices 5–8); FR-CAT-04 breakdown UI (`dashboard`, slice 9).
+Not claimed.
+
+**Process evidence produced** — RED→GREEN (`evidence/red-run.json` /
+`green-run.json`, `check:red-green --strict` passes); clean maker≠checker review
+with raw evidence; graded eval (`evals/results/latest.json`); deterministic gates
+green: lint, tsc, 17 files / 91 tests, build, coverage ratchet (lines/stmts 38.98,
+fns 62.58, branches 84.01), `openspec validate --all --strict` (10 specs),
+`check:trace` (0 failures), `check:trajectory` (0 failures, 4 slices), claims,
+handoff. OpenSpec change archived as `2026-06-29-add-ledger-items-review`.
+
+**Process evidence NOT produced** — no LLM trajectory-eval (waived — no runnable
+workflow in this repo; see `trajectory-eval-waiver.md`). No UI recording/vision
+proof (later QA phase). Coverage `all` counts server-component JSX render branches
+as uncovered (expected; logic is covered via the extracted pure helpers).
+
+**Deferred work** — `parsing` (slice 5) then the import channels (6–8) will
+populate `/ledger`; `dashboard` (9) consumes the category breakdown. SEC-1
+SQL-side pagination tracked for v2.
+
+**Fallow audit** — verdict `fail` with new-only advisory findings only: 1 unused
+file (`evals/cases/ledger-items.eval.ts`, eval runner loads it — accepted, as with
+`accounts.eval.ts`), server-component JSX complexity, and test-setup/markup
+duplication. No runtime defect. (Re-run before final push.)
+
+<!-- slice-report:start -->
+### Generated slice report: add-ledger-items-review
+
+Generated by `node scripts/slice-report.mjs --slice add-ledger-items-review` at 2026-06-29T08:31:12.182Z. Do not hand-write these metrics.
+
+| Metric | Value |
+|---|---:|
+| OpenSpec validated specs | 10 |
+| Active OpenSpec changes | 0 |
+| Test files / tests passed | 17 / 92 |
+| Trace failures / warnings | 0 / 96 |
+| Trajectory failures / warnings | 0 / 2 |
+| Changed files vs origin/dev | 42 |
+| Review findings | clean |
+| Raw review evidence refs | 5 |
+| Slice trailer commits | 1 |
+| Refs | FR-ITEM-01, FR-ITEM-02, FR-ITEM-03, FR-ITEM-04, FR-ITEM-05, FR-CAT-01, FR-CAT-03 |
+
+Command exits: openspecValidate=0, openspecList=0, tests=0, trace=0, trajectory=0, evals=0, coverage=0.
+<!-- slice-report:end -->
+
+**Current state** — slice archived; review clean; deterministic gates green;
+branch `add-ledger-items-review` ready to push and open a PR to `dev`. Honest
+boundary: deterministic G4 checks + a clean maker≠checker review + a graded eval
+all pass; the LLM trajectory-eval layer is waived, so this is not a claim that an
+end-to-end trajectory-eval ran.
+
+**Next steps** — push the branch, open the PR to `dev`, address CI / CodeRabbit.
+Then start slice 5 `add-parsing-pipeline` (FR-PARSE-*).
+
+**Open questions / blockers** — none.
+
+---
+
+## 2026-06-29 07:00 UTC — add-ledger-items-review slice (review surface; tests-first, GREEN) — review BLOCKED
+
+**What was done** — built slice 4 of the MVP plan, the `ledger-items` review/write
+surface, on branch `add-ledger-items-review` off `dev` (PR #5 `add-ledger-queries`
+is merged). Tests-first with durable RED→GREEN evidence; deterministic build is
+green. The independent maker≠checker review + eval grading are **blocked by a
+platform session limit** (resets 01:30 UTC), so the change is **NOT archived** and
+**no PR is opened**.
+
+**Scope delivered (owned this slice)**
+- FR-ITEM-01 (journal list: status shown, newest-first by effective date
+  `occurred_at ?? created_at`, incremental "load more" pagination, deleted shown
+  as a log, empty state), FR-ITEM-02 (combinable status/type/account/category/
+  date-range filters + case-insensitive description search), FR-ITEM-03 (edit all
+  fields; signed amount from absolute+type; mandatory `occurred_at`; active-account
+  validation; approved stays approved; deleted not editable), FR-ITEM-04 **approve**
+  (`pending`→`approved`, non-pending rejected), FR-ITEM-05 (soft delete, idempotent,
+  excluded from balances via the existing fold, kept as log), FR-CAT-01/03 (category
+  required free text, blank → «Без категорії») on the edit path.
+- Framework-free `src/domain/ledger-filter.ts` + `ledger-item-edit.ts`; two new
+  `LedgerItemRepository` primitives (`listAll`, `update`) on both backends;
+  `LedgerItemsService` in `src/modules/ledger-items/`; the real `/ledger`
+  server-component screen + server actions; Ukrainian-first copy module.
+
+**Scope NOT delivered (deferred to owning slices, with rationale)**
+- FR-ITEM-04 **batch partial-success creation** and FR-ITEM-07 **retry** — both
+  need the not-yet-built `parsing` capability + import channels (slices 5–8);
+  building them now would be unused code.
+- FR-CAT-04 category breakdown (already computed by `ledger`; UI owned by
+  `dashboard`, slice 9). FR-ITEM-06 / FR-CAT-02 already delivered upstream; reused.
+
+**Process evidence produced**
+- `evidence/red-run.json` (real RED: 4 new suites fail to load, modules absent,
+  before implementation) + `green-run.json`; `check:red-green --slice
+  add-ledger-items-review --strict` passes.
+- Deterministic gates green: lint, `tsc --noEmit`, `test:run` (16 files / 81
+  tests, was 11/51), `next build` (`/ledger` dynamic), coverage ratchet bumped
+  (lines/stmts 35.88, fns 60.99, branches 83.07), `openspec validate --all
+  --strict` (11 items), `check:trace` (0 failures), `check:claims` (0),
+  `check:trajectory` (0 failures), `check:handoff`.
+- Eval case authored (`evals/cases/ledger-items.eval.ts`, dimension
+  `ua-error-clarity`); produced output saved under `reviews/eval-produced-output.txt`.
+- `trajectory-eval-waiver.md`; honest `review-findings.json` (`clean: false`).
+
+**Process evidence NOT produced (the blocker)**
+- **Independent maker≠checker review** — all four fresh reviewers (code, security,
+  spec-compliance, eval-judge) were dispatched over the staged diff but each
+  terminated on the platform session/usage limit (resets 01:30 UTC) with no
+  verdict. Raw limit transcripts saved under `reviews/raw/`. An **interim parent
+  self-audit** (explicitly NOT independent) found no blocker and one accepted minor
+  (TZ-1: datetime-local UTC/local drift on edit; v1-acceptable). No clean
+  maker≠checker result is claimed.
+- **Eval grading** — not run; `evals/results/latest.json` + `quality/eval-baseline.json`
+  left unchanged (no fabricated score).
+- No LLM trajectory-eval (waived). No UI recording/vision proof (later QA phase).
+
+**Deferred work**
+- FR-ITEM-04 batch partial-success creation + FR-ITEM-07 retry → `parsing` +
+  channel slices (5–8). FR-CAT-04 breakdown UI → `dashboard` (slice 9).
+- This slice's own remaining steps: independent maker≠checker review, eval
+  grading, archive, slice report, and PR — all gated on the session-limit reset.
+
+**Current state**
+- Branch `add-ledger-items-review`: 16 test files / 81 tests green; lint, tsc,
+  build, coverage ratchet, `openspec validate --all --strict`, trace, claims,
+  trajectory all pass. OpenSpec change present but **un-archived** (active).
+  `review-findings.json` is `clean: false` pending the independent review.
+
+**Fallow audit** — `FALLOW_AGENT_SOURCE=pi npx fallow audit --base origin/dev
+--format json --quiet --explain`. Verdict `fail` with new-only advisory findings,
+no runtime defect:
+- 1 unused file: `evals/cases/ledger-items.eval.ts` — the eval case is loaded by
+  the eval runner, not statically imported by app code; same accepted pattern as
+  `accounts.eval.ts`. Kept intentionally.
+- 5 complexity findings (max cyclomatic 22) — the `/ledger` server-component JSX
+  render (filter form + per-item rows/edit forms), flagged by the "none" coverage
+  tier for server-component JSX, not by logic complexity. Accepted, as with the
+  accounts page precedent.
+- 2 duplication groups — the DB-boundary smoke-test reset boilerplate (shared with
+  the other smoke tests) and repeated Tailwind input classes on the filter/edit
+  forms. Standard per-file test isolation + presentational markup; extracting a
+  shared helper/component is deferred.
+- Fixed during this pass: removed the unused `export` on `effectiveDate` in
+  `ledger-filter.ts` (now file-internal) — fallow `unused_exports` is clean.
+
+**Next steps (after the session-limit reset)**
+1. Re-dispatch the four fresh reviewers over `git diff dev`; persist raw outputs
+   under `reviews/`; fold confirmed findings; fix or accept-with-rationale.
+2. Independently grade the eval case; ratchet `eval-baseline.json` if it clears the
+   `ua-error-clarity` baseline (93), else fix the copy.
+3. Only then set `review-findings.json` `clean:true`, `npx openspec archive
+   add-ledger-items-review --yes`, regenerate trace/trajectory + slice report,
+   update this log last, run fallow audit, push, open PR to `dev`.
+
+**Open questions / blockers**
+- Blocker: platform session/usage limit prevents the independent review + eval
+  judging now (resets 01:30 UTC). The slice is intentionally left committed on the
+  branch but un-archived; honest per AGENTS.md (no "complete/done" claim without
+  maker≠checker + eval evidence).
+
+---
+
 ## 2026-06-28 21:28 UTC — PR #5 review hygiene fixes
 
 **What was done**

@@ -1,0 +1,13 @@
+{
+  "command": "npx vitest run src/domain/ledger-filter.test.ts src/domain/ledger-item-edit.test.ts src/modules/ledger-items/service.test.ts src/modules/ledger-items/ledger-items.smoke.test.ts",
+  "exitCode": 1,
+  "gitHead": "d5a4a00ed6c6ec2b6216a111d7eec1504424ca1b",
+  "timestamp": "2026-06-28T21:49:55.000Z",
+  "failingTests": [
+    "src/domain/ledger-filter.test.ts",
+    "src/domain/ledger-item-edit.test.ts",
+    "src/modules/ledger-items/service.test.ts",
+    "src/modules/ledger-items/ledger-items.smoke.test.ts"
+  ],
+  "notes": "Tests-first RED: all four new suites fail to load because the implementation modules do not exist yet (src/domain/ledger-filter.ts, src/domain/ledger-item-edit.ts, src/modules/ledger-items/service.ts) and LedgerItemRepository has no listAll()/update() primitives. Behavior is asserted before code exists; no implementation was written before this run."
+}

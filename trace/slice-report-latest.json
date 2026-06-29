@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-28T20:59:11.330Z",
+  "generatedAt": "2026-06-29T08:31:12.182Z",
   "generatedBy": "scripts/slice-report.mjs",
-  "slice": "add-ledger-queries",
+  "slice": "add-ledger-items-review",
   "commands": {
     "openspecValidate": {
       "command": "npx openspec validate --all --strict",
@@ -35,33 +35,35 @@
   "metrics": {
     "openspecPassed": 10,
     "activeChanges": 0,
-    "testFilesPassed": 11,
-    "testsPassed": 51,
+    "testFilesPassed": 17,
+    "testsPassed": 92,
     "traceFailures": 0,
-    "traceWarnings": 100,
+    "traceWarnings": 96,
     "trajectoryFailures": 0,
     "trajectoryWarnings": 2,
-    "changedFiles": 33,
+    "changedFiles": 42,
     "evalBaseline": {
       "ua-ux-clarity": 95,
       "explicit-state-clarity": 96,
       "ua-error-clarity": 93
     },
     "coverageBaseline": {
-      "lines": 34.67,
-      "statements": 34.67,
-      "functions": 56.41,
-      "branches": 78.73
+      "lines": 38.98,
+      "statements": 38.98,
+      "functions": 62.58,
+      "branches": 84.01
     },
     "reviewFindings": "clean",
-    "rawReviewEvidenceRefs": 3,
+    "rawReviewEvidenceRefs": 5,
     "sliceTrailerCommits": 1,
     "refs": [
-      "FR-LEDGER-02",
-      "FR-LEDGER-03",
-      "FR-LEDGER-04",
-      "FR-LEDGER-05",
-      "FR-ACCT-02"
+      "FR-ITEM-01",
+      "FR-ITEM-02",
+      "FR-ITEM-03",
+      "FR-ITEM-04",
+      "FR-ITEM-05",
+      "FR-CAT-01",
+      "FR-CAT-03"
     ]
   }
 }

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-28T17:20:00Z",
+  "generatedAt": "2026-06-29T07:40:00Z",
   "threshold": 70,
   "dimensions": {
     "ua-ux-clarity": 95,
@@ -51,6 +51,22 @@
       "judges": 1,
       "disagreement": false,
       "notes": "All three CRITICAL criteria satisfied by quotable spans: every visible string is Ukrainian (currency code UAH glossed as «у гривні»); the archive-rejection messages state cause and remedy («Не можна архівувати типовий рахунок. Спершу зробіть типовим інший рахунок» and «…останній активний рахунок — має лишатися щонайменше один»); the default is labelled «Типовий» unambiguously and reused consistently in the set-default action. Tone is calm and finance-oriented; messages are situation-specific, never generic. Minor non-gating nit: the last-account message states the invariant rather than an explicit next step."
+    },
+    {
+      "id": "eval-ledger-items-error-clarity",
+      "dimension": "ua-error-clarity",
+      "trace": [
+        "FR-ITEM-03",
+        "FR-ITEM-04",
+        "FR-ITEM-05",
+        "NFR-I18N-01"
+      ],
+      "capability": "ledger-items",
+      "score": 93,
+      "pass": true,
+      "judges": 1,
+      "disagreement": false,
+      "notes": "Fresh eval-judge (maker≠checker) over the produced output, confirmed to match the live src/modules/ledger-items/ui/ledger-content.ts. All three CRITICAL criteria hold: every string is Ukrainian (loanwords «імпорт»/«архівовано» are standard Ukrainian, not English jargon); invalid-status/validation errors state cause and remedy («Затвердити можна лише операцію, що очікує; вилучену не можна редагувати», field-named description/date-required); the two empty states are distinct («Журнал порожній …» vs «Нічого не знайдено …»). amount-invalid gives concrete examples («напр. 200 або 200,50»). Calm tone, never a generic message in the graded surface. Minor deduction: «Невірна сума» is slightly blunt vs the otherwise polished phrasing — lands on par with the accounts baseline (93)."
     }
   ]
 }

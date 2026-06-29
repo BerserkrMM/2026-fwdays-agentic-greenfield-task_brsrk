@@ -391,7 +391,15 @@
         "openspec/specs/ledger-items/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/domain/ledger-filter.test.ts",
+        "src/modules/ledger-items/ledger-items.smoke.test.ts",
+        "src/modules/ledger-items/service.test.ts",
+        "src/modules/ledger-items/ui/content.test.ts",
+        "src/modules/ledger-items/ui/ledger-params.test.ts",
+        "src/modules/ledger-items/ui/ledger-params.test.ts",
+        "src/modules/ledger-items/ui/ledger-params.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -400,7 +408,11 @@
         "openspec/specs/ledger-items/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/domain/ledger-filter.test.ts",
+        "src/modules/ledger-items/service.test.ts",
+        "src/modules/ledger-items/ui/ledger-params.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -410,7 +422,13 @@
         "openspec/specs/ledger-items/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/domain/ledger-item-edit.test.ts",
+        "src/modules/ledger-items/ledger-items.smoke.test.ts",
+        "src/modules/ledger-items/service.test.ts",
+        "src/modules/ledger-items/ui/content.test.ts",
+        "evals/cases/ledger-items.eval.ts"
+      ],
       "recordings": []
     },
     {
@@ -423,7 +441,12 @@
       ],
       "planned": true,
       "tests": [
-        "src/modules/foundation/item-creation.test.ts"
+        "src/domain/ledger-item-edit.test.ts",
+        "src/modules/foundation/item-creation.test.ts",
+        "src/modules/ledger-items/ledger-items.smoke.test.ts",
+        "src/modules/ledger-items/service.test.ts",
+        "src/modules/ledger-items/ui/content.test.ts",
+        "evals/cases/ledger-items.eval.ts"
       ],
       "recordings": []
     },
@@ -434,7 +457,13 @@
         "openspec/specs/ledger-items/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/domain/ledger-item-edit.test.ts",
+        "src/modules/ledger-items/ledger-items.smoke.test.ts",
+        "src/modules/ledger-items/service.test.ts",
+        "src/modules/ledger-items/ui/content.test.ts",
+        "evals/cases/ledger-items.eval.ts"
+      ],
       "recordings": []
     },
     {
@@ -566,6 +595,7 @@
       ],
       "planned": true,
       "tests": [
+        "src/domain/ledger-item-edit.test.ts",
         "src/modules/foundation/item-creation.test.ts"
       ],
       "recordings": []
@@ -591,6 +621,7 @@
       ],
       "planned": true,
       "tests": [
+        "src/domain/ledger-item-edit.test.ts",
         "src/modules/foundation/item-creation.test.ts"
       ],
       "recordings": []
@@ -699,7 +730,8 @@
       "planned": true,
       "tests": [
         "src/domain/ledger-query.test.ts",
-        "src/modules/ledger/ledger.smoke.test.ts"
+        "src/modules/ledger/ledger.smoke.test.ts",
+        "src/modules/ledger-items/ledger-items.smoke.test.ts"
       ],
       "recordings": []
     },
@@ -854,22 +886,6 @@
     {
       "check": "test-trace",
       "msg": "FR-PARSE-08 has no test annotated \"@trace FR-PARSE-08\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-ITEM-01 has no test annotated \"@trace FR-ITEM-01\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-ITEM-02 has no test annotated \"@trace FR-ITEM-02\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-ITEM-03 has no test annotated \"@trace FR-ITEM-03\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-ITEM-05 has no test annotated \"@trace FR-ITEM-05\""
     },
     {
       "check": "test-trace",

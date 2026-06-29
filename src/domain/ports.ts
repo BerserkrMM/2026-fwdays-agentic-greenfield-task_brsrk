@@ -55,6 +55,19 @@ export interface LedgerItemRepository {
    * (FR-LEDGER-02/03, FR-ACCT-05).
    */
   listNonDeleted(): Promise<LedgerItem[]>;
+  /**
+   * Every item across every account and status, including `deleted` — the read
+   * primitive the Ledger-items review screen filters/sorts/paginates in the
+   * domain (FR-ITEM-01/02). Deleted items are returned so the journal can show
+   * them as a log (FR-ITEM-05).
+   */
+  listAll(): Promise<LedgerItem[]>;
+  /**
+   * Persists mutable fields of an existing item (edit / approve / delete —
+   * FR-ITEM-03/04/05). Provenance columns (input_event_id, parser_run_id,
+   * import_row_number, currency, created_at) are immutable and not updated.
+   */
+  update(item: LedgerItem): Promise<LedgerItem>;
 }
 
 export interface Repositories {

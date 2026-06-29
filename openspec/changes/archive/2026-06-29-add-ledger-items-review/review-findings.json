@@ -1,0 +1,105 @@
+{
+  "clean": true,
+  "makerCheckerComplete": true,
+  "slice": "add-ledger-items-review",
+  "reviewedAt": "2026-06-29T07:40:00Z",
+  "method": "maker≠checker — four fresh project-factory reviewers (code, security, spec-compliance, eval-judge) dispatched in parallel over the committed diff `git diff dev..HEAD`; the implementer did not review. (An earlier dispatch was blocked by a platform session limit; this is the completed re-run after reset.)",
+  "reviewers": [
+    "code-reviewer",
+    "security-reviewer",
+    "spec-compliance-auditor",
+    "eval-judge"
+  ],
+  "verdict": "clean — code reviewer APPROVE (no blockers/majors), security PASS (no critical/major), spec-compliance 13/13 scenarios implemented (0 missing/contradicted) with deferred-scope + checkbox honesty PASS, eval-judge 93/100 PASS; all confirmed actionable findings fixed, the rest accepted with rationale.",
+  "specCompliance": {
+    "scenarios": 13,
+    "implemented": 13,
+    "missing": 0,
+    "contradicted": 0,
+    "note": "Delta uses ## MODIFIED Requirements against the backfilled ledger-items baseline (5 requirements, titles matched). Deferred scope (FR-ITEM-04 batch, FR-ITEM-07, FR-CAT-02/04) verified genuinely absent and not falsely claimed."
+  },
+  "eval": {
+    "case": "eval-ledger-items-error-clarity",
+    "dimension": "ua-error-clarity",
+    "score": 93,
+    "pass": true,
+    "judges": 1,
+    "baseline": 93,
+    "note": "Real graded score from a fresh eval-judge; on par with the accounts baseline, no dimension regression. Recorded in evals/results/latest.json; quality/eval-baseline.json unchanged at 93."
+  },
+  "resolvedFindings": [
+    {
+      "id": "TZ-1 / CODE-1",
+      "source": "code-reviewer + spec-compliance + maker self-audit",
+      "severity": "minor",
+      "summary": "The datetime-local edit field was formatted as a UTC wall-clock but parsed as server-local in editLedgerItem, so saving an item unchanged drifted occurred_at and the drift compounded across edits on a non-UTC server. BC-SCOPE-03 sets the app timezone to Europe/Kyiv (not UTC), so this was a real drift, not inert.",
+      "resolution": "Added parseOccurredAt() in src/domain/ledger-item-edit.ts: a zoneless datetime-local/date value is normalized to UTC (matching the UTC-formatted display), making the round-trip timezone-stable. Pinned by a new test asserting '2026-03-01T12:00' → 2026-03-01T12:00:00.000Z."
+    },
+    {
+      "id": "SPEC-A",
+      "source": "spec-compliance-auditor",
+      "severity": "major",
+      "summary": "The empty-state and load-more screen scenarios were implemented but not pinned by any test (logic lived inline in the server component).",
+      "resolution": "Extracted the pure screen logic to src/modules/ledger-items/ui/ledger-params.ts (parseLedgerParams, firstParam, hasActiveFilters, emptyStateKind, loadMoreHref) and refactored app/ledger/page.tsx to use it. New ledger-params.test.ts pins param parsing (incl. dropping invalid status/type/limit/date), the empty-vs-filtered decision, and the cumulative load-more href (+10, filters preserved). The residual untested part is only the JSX render of EmptyState, consistent with the codebase (no React render tests; covered by build + later QA recordings)."
+    },
+    {
+      "id": "SPEC-C",
+      "source": "spec-compliance-auditor",
+      "severity": "minor",
+      "summary": "No service/integration test asserted that an invalid edit leaves the stored row unchanged ('no partial change is persisted').",
+      "resolution": "Added a service test in src/modules/ledger-items/service.test.ts: an edit with a bad amount rejects with amount-invalid and findById still returns the original amount/description."
+    },
+    {
+      "id": "CODE-3",
+      "source": "code-reviewer",
+      "severity": "minor",
+      "summary": "The edit form offered an item's archived account as an unlabelled selectable option; saving it unchanged failed with account-not-found, which looked arbitrary.",
+      "resolution": "Labelled the fallback option «<name> (архівований — оберіть активний)» (LEDGER_PAGE.archivedAccountNote) so the forced reassignment is discoverable; pinned by a content test."
+    },
+    {
+      "id": "SPEC-B",
+      "source": "spec-compliance-auditor",
+      "severity": "minor",
+      "summary": "The FR-ITEM-01 'List loads incrementally' scenario said items are 'appended', but the design is a cumulative re-fetch (limit grows by 10).",
+      "resolution": "Reworded the delta scenario to 'the loaded list grows to include the next items in newest-first order' so the spec matches the design-sanctioned cumulative pagination (design D1/D3). openspec validate --strict still passes."
+    }
+  ],
+  "acceptedFindings": [
+    {
+      "id": "CODE-2",
+      "source": "code-reviewer",
+      "severity": "minor",
+      "summary": "A successful mutation redirects to bare /ledger, dropping active filters/pagination.",
+      "rationale": "Accepted for v1: mirrors the established accounts server-action convention (clean redirect + revalidatePath). Preserving the originating query adds open-redirect surface for marginal benefit in a single-user local app. Deferred as a future UX nicety."
+    },
+    {
+      "id": "SPEC-D",
+      "source": "spec-compliance-auditor",
+      "severity": "minor",
+      "summary": "The service adds UUID-format guards beyond the spec (malformed id/accountId → not-found/account-not-found).",
+      "rationale": "Accepted: defensive hardening that prevents a hand-crafted POST from turning a bad id into a raw Postgres uuid 500; does not contradict the spec, mirrors the accounts service. No spec change needed."
+    },
+    {
+      "id": "SEC-1",
+      "source": "security-reviewer",
+      "severity": "minor",
+      "summary": "listAll() reads the whole ledger_items table on every render and 'load more' re-reads it (read-all-and-fold).",
+      "rationale": "Accepted for v1 (design D1, documented), single-user local data sizes (BC-SCOPE-01). The LedgerFilter/selectLedgerPage shape lets a future slice push LIMIT/WHERE into SQL without changing callers. Tracked for v2."
+    },
+    {
+      "id": "SEC-2",
+      "source": "security-reviewer",
+      "severity": "informational",
+      "summary": "Mutating server actions have no authentication/authorization.",
+      "rationale": "Correct for v1 single-user, no-auth (BC-SCOPE-01). Recorded so it is not assumed safe once auth lands (then add ownership/session guard + re-verify CSRF/Origin on server-action POSTs)."
+    }
+  ],
+  "securityFindings": "PASS — no critical/major. SQL injection clean (postgres tagged-template bound params only; no user input interpolated), no unhandled-500 from hand-crafted POST/GET (UUID guards + domain validation → mapped error banner), no open-redirect (fixed /ledger path + encoded closed-enum code), client/server DB boundary preserved (TC-STACK-02/04, structural test passes), no mass-assignment (provenance columns immutable; status only via approve/delete), JSX-escaped output. Two accepted minors above (unbounded read; single-user no-auth).",
+  "rawEvidence": [
+    "reviews/raw/code-reviewer.md",
+    "reviews/raw/security-reviewer.md",
+    "reviews/raw/spec-compliance-auditor.md",
+    "reviews/raw/eval-judge.md",
+    "reviews/eval-produced-output.txt"
+  ]
+}
