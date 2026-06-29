@@ -82,6 +82,7 @@ export class BankImportService {
       },
     });
     const validRowNumbers = new Set(rows.map((row) => row.rowNumber));
+    const attributedRows = new Set<number>();
 
     let created = 0;
     let failed = 0;
@@ -93,6 +94,12 @@ export class BankImportService {
         failed += 1;
         continue;
       }
+      if (attributedRows.has(rowNumber)) {
+        // The parser returned more than one draft for the same source row; only
+        // the first is honored, so ignore the extras rather than double-count.
+        continue;
+      }
+      attributedRows.add(rowNumber);
       const existing = await this.repos.ledgerItems.findByInputEventRow(
         inputEventId,
         rowNumber,
@@ -125,6 +132,13 @@ export class BankImportService {
         if (nowExisting) skipped += 1;
         else failed += 1;
       }
+    }
+
+    // A normalized source row the parser dropped entirely (no draft) must not
+    // vanish from the summary — count it as failed so the import never reports
+    // success while silently importing fewer rows than the statement had.
+    for (const rowNumber of validRowNumbers) {
+      if (!attributedRows.has(rowNumber)) failed += 1;
     }
 
     return { inputEventId, parserRunId: result.parserRun.id, created, failed, skipped };

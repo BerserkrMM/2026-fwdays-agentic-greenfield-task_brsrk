@@ -28,7 +28,7 @@
    For v1, the input event preserves the statement content read from the uploaded `File` plus `mime_type`; `storage_uri` remains null because no file storage service exists. This matches the current schema and the manual-input precedent while preserving the original input before processing.
 
 3. **Parser payload is document rows.**
-   The bank channel will pass `{ kind: "bank-statement", provider, rows, locale: "uk-UA" }` to Parsing. Each row contains `rowNumber` and normalized string fields such as date, description, amount, and currency when available. Parsing already preserves `sourceRef.rowNumber` and the item-creation contract maps it to `import_row_number`.
+   The bank channel passes `{ kind: "bank", content: serializeBankRows(provider, rows), locale: "uk-UA" }` to Parsing (see `src/modules/bank-imports/service.ts`). The serialized content carries normalized rows, each with `rowNumber` and string fields such as date, description, amount, and currency when available. Parsing already preserves `sourceRef.rowNumber` and the item-creation contract maps it to `import_row_number`.
 
 4. **Idempotency is enforced before inserting.**
    Add the smallest repository primitive needed to find an existing ledger item by `input_event_id` and `import_row_number`. Bank-imports will skip such rows and only call the item-creation contract for absent rows. The existing DB unique index remains the final safety net.

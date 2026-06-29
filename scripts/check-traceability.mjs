@@ -152,7 +152,11 @@ for (const dir of PATHS.testDirs) {
     for (const m of text.matchAll(traceRe)) {
       for (const id of m[1].split(/\s*,\s*/)) {
         if (!testTraces.has(id)) testTraces.set(id, []);
-        testTraces.get(id).push(file.replaceAll("\\", "/"));
+        // One unique entry per test file: a file with several `it()` blocks all
+        // annotating the same FR must not inflate the evidence list.
+        const normalized = file.replaceAll("\\", "/");
+        const list = testTraces.get(id);
+        if (!list.includes(normalized)) list.push(normalized);
       }
     }
   }

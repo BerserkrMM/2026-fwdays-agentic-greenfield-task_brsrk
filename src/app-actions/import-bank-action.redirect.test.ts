@@ -72,6 +72,20 @@ describe("importBankAction redirects", () => {
     expect(await h.repos.ledgerItems.listAll()).toHaveLength(0);
   });
 
+  it("redirects a legacy binary .xls upload to a friendly file error", async () => {
+    const { importBankAction } = await import("@/app/imports/bank/actions");
+    const biff = new File(
+      [new Uint8Array([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1, 0, 0])],
+      "legacy.xls",
+      { type: "application/vnd.ms-excel" },
+    );
+
+    await expect(importBankAction(form(biff))).rejects.toThrow(
+      "redirect:/imports/bank?formError=file-invalid",
+    );
+    expect(h.parse).not.toHaveBeenCalled();
+  });
+
   it("redirects a corrupt XLSX upload to a friendly file error instead of a 500", async () => {
     const { importBankAction } = await import("@/app/imports/bank/actions");
     const corrupt = new File([new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8])], "evil.xlsx", {

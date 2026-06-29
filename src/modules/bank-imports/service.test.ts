@@ -103,8 +103,42 @@ it("counts malformed bank drafts without a valid normalized source row as failed
     rawText: "Дата,Опис,Сума\n2026-06-01,АТБ,-10.00\n2026-06-02,Таксі,-20.00\n",
   });
 
+  // Row 2 imports; the source-less draft and the hallucinated row 999 are
+  // failed, and row 3 (which got no usable draft) is also counted as failed.
   expect(summary.created).toBe(1);
-  expect(summary.failed).toBe(2);
+  expect(summary.failed).toBe(3);
+  expect(await repos.ledgerItems.listAll()).toHaveLength(1);
+});
+
+// @trace FR-BANK-04
+it("honors only the first draft when the parser returns duplicates for one row", async () => {
+  const service = await build(adapter([draft(2, "АТБ"), draft(2, "дубль")]));
+  const summary = await service.importStatement({
+    provider: "monobank",
+    fileName: "mono.csv",
+    mimeType: "text/csv",
+    rawText: "Дата,Опис,Сума\n2026-06-01,АТБ,-10.00\n",
+  });
+
+  expect(summary.created).toBe(1);
+  expect(summary.failed).toBe(0);
+  expect(await repos.ledgerItems.listAll()).toHaveLength(1);
+});
+
+// @trace FR-BANK-04
+it("counts normalized rows the parser dropped entirely as failed", async () => {
+  const service = await build(adapter([draft(2)]));
+  const summary = await service.importStatement({
+    provider: "monobank",
+    fileName: "mono.csv",
+    mimeType: "text/csv",
+    rawText: "Дата,Опис,Сума\n2026-06-01,АТБ,-10.00\n2026-06-02,Таксі,-20.00\n",
+  });
+
+  // The parser returned a draft only for row 2; row 3 must not vanish from the
+  // summary even though no draft referenced it.
+  expect(summary.created).toBe(1);
+  expect(summary.failed).toBe(1);
   expect(await repos.ledgerItems.listAll()).toHaveLength(1);
 });
 

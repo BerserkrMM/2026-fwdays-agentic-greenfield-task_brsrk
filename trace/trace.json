@@ -114,7 +114,6 @@
       "planned": true,
       "tests": [
         "src/modules/foundation/ui/content.test.ts",
-        "src/modules/foundation/ui/content.test.ts",
         "evals/cases/foundation.eval.ts"
       ],
       "recordings": []
@@ -317,8 +316,6 @@
       "planned": true,
       "tests": [
         "src/app-actions/import-bank-action.redirect.test.ts",
-        "src/modules/bank-imports/service.test.ts",
-        "src/modules/bank-imports/service.test.ts",
         "src/modules/bank-imports/service.test.ts"
       ],
       "recordings": []
@@ -344,7 +341,6 @@
       ],
       "planned": true,
       "tests": [
-        "src/modules/bank-imports/service.test.ts",
         "src/modules/bank-imports/service.test.ts",
         "src/modules/foundation/item-creation.test.ts"
       ],
@@ -469,8 +465,6 @@
         "src/modules/ledger-items/ledger-items.smoke.test.ts",
         "src/modules/ledger-items/service.test.ts",
         "src/modules/ledger-items/ui/content.test.ts",
-        "src/modules/ledger-items/ui/ledger-params.test.ts",
-        "src/modules/ledger-items/ui/ledger-params.test.ts",
         "src/modules/ledger-items/ui/ledger-params.test.ts"
       ],
       "recordings": []
@@ -550,8 +544,6 @@
       "tests": [
         "src/modules/accounts/accounts.smoke.test.ts",
         "src/modules/accounts/service.test.ts",
-        "src/modules/accounts/service.test.ts",
-        "src/modules/foundation/item-creation.test.ts",
         "src/modules/foundation/item-creation.test.ts"
       ],
       "recordings": []
@@ -581,7 +573,6 @@
       "tests": [
         "src/modules/accounts/accounts.smoke.test.ts",
         "src/modules/accounts/service.test.ts",
-        "src/modules/accounts/service.test.ts",
         "src/modules/foundation/item-creation.test.ts",
         "evals/cases/accounts.eval.ts"
       ],
@@ -608,9 +599,6 @@
       "planned": true,
       "tests": [
         "src/domain/account.test.ts",
-        "src/domain/account.test.ts",
-        "src/domain/account.test.ts",
-        "src/modules/accounts/service.test.ts",
         "src/modules/accounts/service.test.ts"
       ],
       "recordings": []
@@ -624,10 +612,6 @@
       "tests": [
         "src/domain/account.test.ts",
         "src/modules/accounts/accounts.smoke.test.ts",
-        "src/modules/accounts/service.test.ts",
-        "src/modules/accounts/service.test.ts",
-        "src/modules/accounts/service.test.ts",
-        "src/modules/accounts/service.test.ts",
         "src/modules/accounts/service.test.ts"
       ],
       "recordings": []
@@ -641,9 +625,6 @@
       "tests": [
         "src/domain/account.test.ts",
         "src/modules/accounts/accounts.smoke.test.ts",
-        "src/modules/accounts/service.test.ts",
-        "src/modules/accounts/service.test.ts",
-        "src/modules/accounts/service.test.ts",
         "src/modules/accounts/service.test.ts",
         "src/modules/ledger/ledger.smoke.test.ts",
         "evals/cases/accounts.eval.ts"
@@ -659,7 +640,6 @@
       "tests": [
         "src/domain/account.test.ts",
         "src/modules/accounts/accounts.smoke.test.ts",
-        "src/modules/accounts/service.test.ts",
         "src/modules/accounts/service.test.ts"
       ],
       "recordings": []
@@ -774,10 +754,7 @@
       "planned": true,
       "tests": [
         "src/domain/ledger-query.test.ts",
-        "src/domain/ledger-query.test.ts",
-        "src/domain/ledger-query.test.ts",
         "src/modules/ledger/ledger.smoke.test.ts",
-        "src/modules/ledger/service.test.ts",
         "src/modules/ledger/service.test.ts"
       ],
       "recordings": []
@@ -790,7 +767,6 @@
       ],
       "planned": true,
       "tests": [
-        "src/domain/ledger-query.test.ts",
         "src/domain/ledger-query.test.ts",
         "src/modules/ledger/ledger.smoke.test.ts",
         "src/modules/ledger/service.test.ts"

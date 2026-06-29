@@ -92,8 +92,7 @@ export function normalizeBankStatement(
   input: NormalizeBankStatementInput,
 ): NormalizedBankRow[] {
   const rawLines = input.rawText.split(/\r?\n/);
-  const firstDataLine = rawLines.find((line) => line.trim().length > 0) ?? "";
-  const delimiter = chooseDelimiter(firstDataLine);
+  const delimiter = chooseDelimiter(rawLines);
   const parsed = rawLines.map((line, index) => ({
     lineNumber: index + 1,
     cells: parseDelimitedLine(line, delimiter).map((cell) => cell.trim()),
@@ -134,8 +133,20 @@ export function statementBytesToText(input: {
   textFallback: string;
 }): string {
   const extension = input.fileName.split(".").pop()?.toLowerCase() ?? "";
-  if (extension === "xls" && /<table[\s>]/i.test(input.textFallback)) {
-    return htmlTableToDelimited(input.textFallback);
+  if (extension === "xls") {
+    if (/<table[\s>]/i.test(input.textFallback)) {
+      return htmlTableToDelimited(input.textFallback);
+    }
+    // Legacy binary BIFF .xls (OLE2 compound document) is not supported in v1;
+    // only the Excel HTML-table .xls export is. Reject it deterministically
+    // instead of feeding binary bytes to the delimited-text parser.
+    if (isOle2CompoundFile(input.bytes)) {
+      throw new BankStatementError(
+        "file-invalid",
+        "Legacy binary .xls is not supported; export the statement as CSV or XLSX.",
+      );
+    }
+    return input.textFallback;
   }
   if (extension !== "xlsx") return input.textFallback;
   try {
@@ -152,11 +163,39 @@ export function statementBytesToText(input: {
   }
 }
 
-function chooseDelimiter(line: string): "," | ";" | "\t" {
+// Choose the delimiter by the line that actually looks like a transaction
+// header, not the first non-empty line: provider exports often begin with a
+// preamble ("Виписка за період…", account name) whose delimiter differs from
+// the table. Prefer the candidate that splits a header line into the most
+// recognized columns; fall back to the densest first non-empty line.
+// OLE2 / Compound File Binary signature — the container legacy BIFF .xls uses.
+const OLE2_SIGNATURE = [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1];
+
+function isOle2CompoundFile(bytes: Uint8Array): boolean {
+  if (bytes.length < OLE2_SIGNATURE.length) return false;
+  return OLE2_SIGNATURE.every((byte, index) => bytes[index] === byte);
+}
+
+function chooseDelimiter(lines: string[]): "," | ";" | "\t" {
+  const candidates = [";", "\t", ","] as const;
+  let best: (typeof candidates)[number] | null = null;
+  let bestScore = 0;
+  for (const delimiter of candidates) {
+    for (const line of lines) {
+      if (!line.trim()) continue;
+      const cells = parseDelimitedLine(line, delimiter).map((cell) => cell.trim());
+      if (looksLikeHeader(cells) && cells.length > bestScore) {
+        best = delimiter;
+        bestScore = cells.length;
+      }
+    }
+  }
+  if (best) return best;
+  const firstDataLine = lines.find((line) => line.trim().length > 0) ?? "";
   const counts = [
-    [";", count(line, ";")],
-    ["\t", count(line, "\t")],
-    [",", count(line, ",")],
+    [";", count(firstDataLine, ";")],
+    ["\t", count(firstDataLine, "\t")],
+    [",", count(firstDataLine, ",")],
   ] as const;
   return counts.toSorted((a, b) => b[1] - a[1])[0][0];
 }
@@ -296,10 +335,15 @@ function readSharedStrings(xml: string): string[] {
 }
 
 function worksheetXmlToDelimited(xml: string, sharedStrings: string[]): string {
+  // Place each row at its declared `r="N"` index so the source Excel row number
+  // is preserved through normalization (sourceRef.rowNumber / import_row_number),
+  // instead of collapsing rows to a dense sequence.
   const lines: string[] = [];
-  for (const row of xml.matchAll(/<row\b[^>]*>([\s\S]*?)<\/row>/g)) {
+  for (const row of xml.matchAll(/<row\b([^>]*)>([\s\S]*?)<\/row>/g)) {
+    const rowAttrs = row[1];
+    const rowBody = row[2];
     const cells: string[] = [];
-    for (const cell of row[1].matchAll(/<c\b([^>]*)>([\s\S]*?)<\/c>/g)) {
+    for (const cell of rowBody.matchAll(/<c\b([^>]*)>([\s\S]*?)<\/c>/g)) {
       const attrs = cell[1];
       const body = cell[2];
       const ref = /\br="([A-Z]+)\d+"/.exec(attrs)?.[1];
@@ -309,7 +353,14 @@ function worksheetXmlToDelimited(xml: string, sharedStrings: string[]): string {
     if (cells.some((value) => value?.trim())) {
       // Tab-delimited so comma-bearing cell values survive re-parsing (see
       // htmlTableToDelimited). Strip stray tabs from cell text first.
-      lines.push(cells.map((value) => (value ?? "").replace(/\t/g, " ")).join("\t"));
+      const line = cells.map((value) => (value ?? "").replace(/\t/g, " ")).join("\t");
+      const declaredRow = Number(/\br="(\d+)"/.exec(rowAttrs)?.[1] ?? 0);
+      if (Number.isSafeInteger(declaredRow) && declaredRow > 0) {
+        while (lines.length < declaredRow - 1) lines.push("");
+        lines[declaredRow - 1] = line;
+      } else {
+        lines.push(line);
+      }
     }
   }
   return lines.join("\n");
