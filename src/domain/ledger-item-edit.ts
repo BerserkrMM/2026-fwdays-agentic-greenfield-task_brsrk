@@ -12,6 +12,7 @@ export type LedgerItemErrorCode =
   | "invalid-status"
   | "description-required"
   | "amount-invalid"
+  | "type-invalid"
   | "date-required"
   | "account-not-found";
 
@@ -58,6 +59,12 @@ export function parseAmountToMinor(raw: string): number {
   return minor;
 }
 
+/** Validates a form/runtime operation type instead of silently defaulting it. */
+export function parseOperationType(raw: string): OperationType {
+  if (raw === "expense" || raw === "income") return raw;
+  throw new LedgerItemError("type-invalid", "Невірний тип операції.");
+}
+
 /**
  * Parses the edit form's operation date, returning null when absent/invalid.
  * `datetime-local` (and `date`) inputs are zoneless; the screen formats them from
@@ -94,8 +101,9 @@ export function editLedgerItem(item: LedgerItem, edit: LedgerItemEdit): LedgerIt
     throw new LedgerItemError("description-required", "Вкажіть опис операції.");
   }
 
+  const type = parseOperationType(edit.type);
   const magnitude = parseAmountToMinor(edit.amount);
-  const amountMinor = edit.type === "expense" ? -magnitude : magnitude;
+  const amountMinor = type === "expense" ? -magnitude : magnitude;
 
   const occurredAt = parseOccurredAt(edit.occurredAt);
   if (!occurredAt) {
@@ -109,7 +117,7 @@ export function editLedgerItem(item: LedgerItem, edit: LedgerItemEdit): LedgerIt
     accountId: edit.accountId,
     description,
     amountMinor,
-    type: edit.type,
+    type,
     category,
     occurredAt,
   };

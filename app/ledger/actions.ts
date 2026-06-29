@@ -9,7 +9,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getRepositories } from "@/src/db/client";
-import { LedgerItemError } from "@/src/domain/ledger-item-edit";
+import { LedgerItemError, parseOperationType } from "@/src/domain/ledger-item-edit";
 import { LedgerItemsService } from "@/src/modules/ledger-items/service";
 
 function service(): LedgerItemsService {
@@ -37,7 +37,7 @@ export async function editItemAction(formData: FormData): Promise<void> {
     service().editItem(id, {
       description: String(formData.get("description") ?? ""),
       amount: String(formData.get("amount") ?? ""),
-      type: String(formData.get("type") ?? "") === "income" ? "income" : "expense",
+      type: parseOperationType(String(formData.get("type") ?? "")),
       category: String(formData.get("category") ?? ""),
       occurredAt: String(formData.get("occurredAt") ?? ""),
       accountId: String(formData.get("accountId") ?? ""),

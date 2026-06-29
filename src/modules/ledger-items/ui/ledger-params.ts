@@ -59,13 +59,13 @@ export function parseLedgerParams(params: RawParams): {
   if (Number.isFinite(limit) && limit > 0) filter.limit = limit;
 
   const raw: Record<string, string> = {};
-  if (status) raw.status = status;
-  if (type) raw.type = type;
+  if (filter.status) raw.status = filter.status;
+  if (filter.type) raw.type = filter.type;
   if (accountId) raw.account = accountId;
   if (category) raw.category = category;
   if (search) raw.q = search;
-  if (fromStr) raw.from = fromStr;
-  if (toStr) raw.to = toStr;
+  if (filter.from && fromStr) raw.from = fromStr;
+  if (filter.to && toStr) raw.to = toStr;
 
   return { filter, raw };
 }

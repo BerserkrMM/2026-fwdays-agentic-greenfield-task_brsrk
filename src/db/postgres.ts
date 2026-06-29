@@ -181,7 +181,7 @@ class PgLedgerItemRepository implements LedgerItemRepository {
     // sensible newest-first DB order keeps results stable for any direct reader.
     const rows = await this.sql<LedgerItemRow[]>`
       SELECT * FROM ledger_items
-       ORDER BY occurred_at DESC NULLS LAST, created_at DESC, id DESC`;
+       ORDER BY COALESCE(occurred_at, created_at) DESC, id DESC`;
     return rows.map(toLedgerItem);
   }
 

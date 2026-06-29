@@ -6,6 +6,7 @@ import {
   editLedgerItem,
   LedgerItemError,
   parseAmountToMinor,
+  parseOperationType,
   type LedgerItemEdit,
 } from "./ledger-item-edit";
 
@@ -55,6 +56,20 @@ describe("parseAmountToMinor", () => {
   });
 });
 
+describe("parseOperationType", () => {
+  it("accepts supported operation types and rejects tampered values", () => {
+    expect(parseOperationType("expense")).toBe("expense");
+    expect(parseOperationType("income")).toBe("income");
+    try {
+      parseOperationType("bogus");
+      throw new Error("expected throw");
+    } catch (error) {
+      expect(error).toBeInstanceOf(LedgerItemError);
+      expect((error as LedgerItemError).code).toBe("type-invalid");
+    }
+  });
+});
+
 // @trace FR-ITEM-03, FR-CAT-01, FR-CAT-03
 describe("editLedgerItem", () => {
   it("applies edits and stores a signed amount matching the type", () => {
@@ -92,6 +107,7 @@ describe("editLedgerItem", () => {
     const cases: Array<[Partial<LedgerItemEdit>, string]> = [
       [{ description: "   " }, "description-required"],
       [{ amount: "abc" }, "amount-invalid"],
+      [{ type: "bogus" as LedgerItemEdit["type"] }, "type-invalid"],
       [{ occurredAt: "" }, "date-required"],
     ];
     for (const [override, code] of cases) {

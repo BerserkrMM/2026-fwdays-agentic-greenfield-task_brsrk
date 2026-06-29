@@ -39,6 +39,7 @@ describe("ledger-items content", () => {
       "invalid-status",
       "description-required",
       "amount-invalid",
+      "type-invalid",
       "date-required",
       "account-not-found",
     ];

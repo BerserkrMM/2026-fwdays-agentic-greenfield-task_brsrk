@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-29T08:01:10.979Z",
+  "generatedAt": "2026-06-29T08:31:12.182Z",
   "generatedBy": "scripts/slice-report.mjs",
   "slice": "add-ledger-items-review",
   "commands": {
@@ -36,7 +36,7 @@
     "openspecPassed": 10,
     "activeChanges": 0,
     "testFilesPassed": 17,
-    "testsPassed": 91,
+    "testsPassed": 92,
     "traceFailures": 0,
     "traceWarnings": 96,
     "trajectoryFailures": 0,

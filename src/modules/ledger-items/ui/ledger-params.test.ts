@@ -40,7 +40,7 @@ describe("parseLedgerParams", () => {
   });
 
   it("drops invalid status/type, non-positive limit, and bad dates without throwing", () => {
-    const { filter } = parseLedgerParams({
+    const { filter, raw } = parseLedgerParams({
       status: "bogus",
       type: "weird",
       limit: "-5",
@@ -50,6 +50,7 @@ describe("parseLedgerParams", () => {
     expect(filter.type).toBeUndefined();
     expect(filter.limit).toBeUndefined();
     expect(filter.from).toBeUndefined();
+    expect(raw).toEqual({});
   });
 
   it("takes the first value of a repeated param and ignores empty strings", () => {
