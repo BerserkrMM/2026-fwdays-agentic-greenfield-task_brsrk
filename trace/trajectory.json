@@ -26,6 +26,14 @@
       "processComplete": true
     },
     {
+      "slice": "2026-06-29-add-bank-statement-imports",
+      "reviewEvidence": "clean",
+      "rawReviewEvidence": "7 linked",
+      "trailerCommits": 1,
+      "libDomains": [],
+      "processComplete": true
+    },
+    {
       "slice": "2026-06-29-add-ledger-items-review",
       "reviewEvidence": "clean",
       "rawReviewEvidence": "5 linked",

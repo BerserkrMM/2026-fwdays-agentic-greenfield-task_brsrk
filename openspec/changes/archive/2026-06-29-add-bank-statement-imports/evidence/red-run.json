@@ -1,0 +1,13 @@
+{
+  "command": "npm run test:run -- src/domain/bank-statement.test.ts src/modules/bank-imports/service.test.ts src/modules/bank-imports/ui/bank-import-content.test.ts src/app-actions/import-bank-action.test.ts",
+  "exitCode": 1,
+  "gitHead": "78e2e352ceba7f9d74cc802ebb384b3ebb4394e1",
+  "timestamp": "2026-06-29T14:53:30.016Z",
+  "failingTests": [
+    "src/domain/bank-statement.test.ts suite failed to load: missing ./bank-statement",
+    "src/modules/bank-imports/service.test.ts suite failed to load: missing ./service",
+    "src/modules/bank-imports/ui/bank-import-content.test.ts suite failed to load: missing ./bank-import-content",
+    "src/app-actions/import-bank-action.test.ts importBankAction rejects non-string provider: missing app/imports/bank/actions",
+    "src/app-actions/import-bank-action.test.ts importBankAction rejects unsupported file: missing app/imports/bank/actions"
+  ]
+}

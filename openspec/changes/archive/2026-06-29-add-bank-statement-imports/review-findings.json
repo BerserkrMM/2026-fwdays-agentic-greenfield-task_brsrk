@@ -1,0 +1,80 @@
+{
+  "slice": "add-bank-statement-imports",
+  "clean": true,
+  "rawEvidence": [
+    "reviews/code-reviewer.md",
+    "reviews/security-reviewer.md",
+    "reviews/spec-compliance-reviewer.md",
+    "reviews/eval-judge.md",
+    "reviews/code-reviewer-rerun.md",
+    "reviews/security-reviewer-rerun.md",
+    "reviews/spec-compliance-reviewer-rerun.md"
+  ],
+  "summary": "Maker≠checker review ran in two rounds. Round 1 (initial reviews) found a parser row-number membership gap, an XLS/XLSX support gap, and test/coverage notes — all fixed. Round 2 was a fresh re-review on Claude reviewer agents (the round-1 re-review attempt had failed on a rate-limited subagent backend). Round 2 found: code REQUEST_CHANGES (MAJOR-1 comma-join cell corruption, MAJOR-2 corrupt-XLSX 500), security PASS_WITH_NOTES (zip-bomb decompression cap, malformed-XLSX 500), spec-compliance PASS (BF-2 missing action-redirect tests; BF-1 retry not route-wired). MAJOR-1, MAJOR-2, the zip-bomb cap, and BF-2 were fixed with regression tests; a confirmation pass by the same code and spec-compliance reviewers returned APPROVE and PASS. BF-1 (input_event-level retry UI) is explicitly deferred to FR-ITEM-07 (owned by ledger-items), consistent with the add-manual-text-input precedent and leaving no owned FR-BANK requirement unmet. Eval-judge graded the bank-import error-clarity case 94/100 PASS.",
+  "verdicts": {
+    "code": "APPROVE (confirmation pass)",
+    "security": "PASS_WITH_NOTES",
+    "spec-compliance": "PASS (confirmation pass)",
+    "eval-judge": "94/100 PASS"
+  },
+  "fixed": [
+    {
+      "id": "ROW-NUMBER-MEMBERSHIP",
+      "severity": "major",
+      "round": 1,
+      "evidence": "src/modules/bank-imports/service.ts builds a Set of normalized source row numbers and counts drafts outside that set (or without a source row) as failed before lookup/insert; src/modules/bank-imports/service.test.ts covers hallucinated row 999 and a missing source row."
+    },
+    {
+      "id": "XLSX-XLS-PARSING",
+      "severity": "blocker/high",
+      "round": 1,
+      "evidence": "src/domain/bank-statement.ts extracts .xlsx worksheet rows from ZIP/XML and Excel HTML .xls tables before normalization; src/domain/bank-statement.test.ts covers both paths. Legacy binary BIFF .xls remains a documented residual."
+    },
+    {
+      "id": "CELL-JOIN-COMMA-CORRUPTION",
+      "severity": "major",
+      "round": 2,
+      "evidence": "worksheetXmlToDelimited and htmlTableToDelimited in src/domain/bank-statement.ts now join reconstructed cells with a tab (stripping stray tabs) so comma-bearing descriptions/amounts no longer shift columns when re-parsed. Regression tests in src/domain/bank-statement.test.ts cover a comma-bearing cell in both the HTML .xls and XLSX paths."
+    },
+    {
+      "id": "CORRUPT-XLSX-500",
+      "severity": "major",
+      "round": 2,
+      "evidence": "statementBytesToText is now inside the action try/catch (app/imports/bank/actions.ts) and wraps the xlsx branch, mapping any non-BankStatementError throw to BankStatementError(\"file-invalid\"); EOCD-miss and no-worksheet are now file-invalid. src/app-actions/import-bank-action.redirect.test.ts asserts a corrupt .xlsx redirects to formError=file-invalid with the parser never called."
+    },
+    {
+      "id": "XLSX-ZIP-BOMB-CAP",
+      "severity": "minor",
+      "round": 2,
+      "evidence": "unzipFiles in src/domain/bank-statement.ts only inflates the needed entries (xl/sharedStrings.xml, xl/worksheets/sheetN.xml) and bounds each inflate via maxOutputLength (MAX_XLSX_ENTRY_BYTES), also clamping the stored path."
+    },
+    {
+      "id": "ACTION-REDIRECT-TEST-GAP",
+      "severity": "major",
+      "round": 2,
+      "evidence": "src/app-actions/import-bank-action.redirect.test.ts drives importBankAction over the real service stack (in-memory repos, mocked parser adapter) and asserts the success (/ledger?imported=1&failed=0), parse-failed, and corrupt-file redirect branches, making tasks.md 1.3's claim true."
+    }
+  ],
+  "acceptedOrDeferred": [
+    {
+      "id": "RETRY-UI-NOT-WIRED",
+      "severity": "deferred",
+      "evidence": "BankImportService.retryInputEvent implements + unit-tests FR-BANK-06 insert-if-absent retry behavior, but the user-reachable retry that re-consumes a preserved input_event is FR-ITEM-07 (owned by ledger-items per docs/mvp-capability-plan.md), explicitly deferred. Spec R6 only requires a retry action shown + input_event/failed parser_run preserved, both satisfied. Avoid end-to-end-retry language until FR-ITEM-07 lands."
+    },
+    {
+      "id": "SKIPPED-COUNT-NOT-SURFACED",
+      "severity": "accepted",
+      "evidence": "The Ledger redirect surfaces created/failed per the spec contract; skipped is only non-zero on retry, which is not user-reachable in this slice (see RETRY-UI-NOT-WIRED). No spec scenario requires surfacing skipped."
+    },
+    {
+      "id": "BINARY-BIFF-XLS-RESIDUAL",
+      "severity": "accepted",
+      "evidence": "XLSX (ZIP/XML) and Excel HTML .xls are handled; legacy binary BIFF .xls would need a workbook dependency. Disclosed in design.md; not required by any FR-BANK scenario for v1."
+    },
+    {
+      "id": "ENV-KEY-ROTATION",
+      "severity": "advisory",
+      "evidence": "Pre-existing OPENAI_API_KEY in the untracked working-tree .env.local (outside this slice's diff; .env* gitignored, not in git history). Rotate if this checkout is ever shared. Not a slice defect."
+    }
+  ]
+}

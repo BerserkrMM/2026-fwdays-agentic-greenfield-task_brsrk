@@ -4,6 +4,152 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-29 20:21 UTC — CI coverage-ratchet fix for bank-import PR
+
+**What was done** — investigated failed PR #9 `verify` job. CodeRabbit passed; CI failed in `Coverage ratchet` because branch coverage dropped from 89.24% to 88.16% after the bank-import changes. Added `src/app-pages.smoke.test.ts` covering static app routes (`/`, `/dashboard`, `/imports`, `/imports/files`, `/settings`) to restore branch coverage without weakening the ratchet. Regenerated traceability outputs.
+
+**Current state** — validation is green locally: `npm run test:coverage` + `node scripts/check-coverage-ratchet.mjs` now passes with branch coverage 89.17% accepted by the ratchet; `npm run lint`, `npx tsc --noEmit`, `npm run test:run` (33 files / 180 tests), `npm run build`, `npx openspec validate --all --strict`, `npm run check:trace` (0 failures / 74 inherited warnings), `npm run check:trajectory` (0 failures / 2 inherited foundation warnings), `npm run check:red-green -- --slice add-bank-statement-imports --strict`, and `npm run check:claims` all pass.
+
+**Next steps** — run `npm run check:handoff`, commit/push the CI fix to `add-bank-statement-imports`, then watch PR #9 verify rerun.
+
+**Open questions / blockers** — none; CI rerun pending after push.
+
+## 2026-06-29 20:06 UTC — bank import follow-up ready: structural AI payloads, Monobank dates, no debug logs
+
+**What was done** — finalized the live bank-import fix after manual verification: removed all temporary `[bank-import]` / `[parsing]` debug `console.*` logs from server action, bank service, parsing service, and OpenAI adapter. Kept the functional fixes: structural table payloads for CSV/XLS/XLSX bank statements, batched AI parsing, per-row tolerance for invalid AI drafts, preservation of Monobank historical dates that looked like long numbers, fallback date extraction from row cells, and stronger category prompt guidance.
+
+**Current state** — deterministic/documentation/workflow checks are green: `npm run lint`, `npx tsc --noEmit`, `npm run test:run` (32 files / 178 tests), `npm run build`, `npx openspec validate --all --strict`, `npm run check:trace` (0 failures / 77 inherited warnings), `npm run check:trajectory` (0 failures / 2 inherited foundation warnings), `npm run check:red-green -- --slice add-bank-statement-imports --strict`, and `npm run check:claims`. `docs/current-state.md` updated last before handoff/commit.
+
+**Next steps** — run `npm run check:handoff`, commit, push `add-bank-statement-imports`, and trigger CodeRabbit review on the PR. After CI/review, remove any remaining temporary investigation notes if desired.
+
+**Open questions / blockers** — none known for the live Monobank/PrivatBank import behavior after the user's manual retest; final CI/CodeRabbit still pending.
+
+## 2026-06-29 19:51 UTC — bank import: preserve Monobank dates and strengthen category prompt
+
+**What was done** — live Monobank logs showed operation dates were still sent to AI as `[number]` because `normalizeParserPayload` only preserved date-like strings with years starting `19xx/20xx`; the real Monobank fixture has date cells like `28.02.1830 18:42:01`, which the PII masker treated as a long number. Broadened date detection in `src/domain/parsing.ts` and bank date fallback parsing in `src/modules/bank-imports/service.ts` to preserve/parse any 4-digit year date shape. Strengthened the OpenAI prompt category section to avoid overusing `Без категорії`, use merchant/MCC/provider/category-column clues, and added Monobank-relevant examples (`Епіцентр`→`Дім`, `PRTMN *INTERNET`→`Звʼязок`, bank fees/interest→`Банківські послуги`, etc.).
+
+**Current state** — targeted checks green: `npm run lint`, `npx tsc --noEmit`, and `npm run test:run -- src/domain/parsing.test.ts src/modules/bank-imports/service.test.ts src/modules/parsing/adapters.test.ts`. Temporary debug logs remain active.
+
+**Next steps** — retry Monobank CSV/XLSX. Expected payload should now show raw date strings instead of `[number]` in the first cell; AI should have better category hints. If dates still display wrong after import, inspect whether AI returns `occurredAt`; if not, service fallback should parse the raw Monobank date cell.
+
+**Open questions / blockers** — live verification pending; remove/guard debug logs after debugging.
+
+## 2026-06-29 19:21 UTC — bank import: tolerate invalid AI drafts per row
+
+**What was done** — live logs showed the whole bank import failed because one AI draft had `amountMinor: 0` (`Invalid parser draft 2: amountMinor must be a non-zero integer`). Added a lenient canonicalization path for bank imports: `ParsingService.parse({ tolerateInvalidDrafts: true })` keeps valid drafts, records malformed drafts in `parser_runs.result_json.invalidDrafts`, and lets `BankImportService` count the affected source rows as failed instead of failing the entire upload. Non-bank/default parsing remains strict. Added regression coverage for invalid bank AI drafts.
+
+**Current state** — targeted checks green: `npm run lint`, `npx tsc --noEmit`, and `npm run test:run -- src/modules/bank-imports/service.test.ts src/modules/parsing/service.test.ts src/domain/parsing.test.ts`. Temporary debug logs from the previous entry are still present and intentionally noisy.
+
+**Next steps** — retry `/imports/bank`. Expected behavior: no redirect to `parse-failed` for a single zero-amount draft; valid rows should import, the bad row should contribute to `failed`, and logs should include `[parsing][service:invalid-drafts-tolerated]` plus `[bank-import][service:row-dropped-by-parser]` for that row.
+
+**Open questions / blockers** — still need live verification and then remove/guard temporary logs.
+
+## 2026-06-29 19:16 UTC — bank import live-debug logging added
+
+**What was done** — added temporary verbose server-side logs across the bank import path to debug the live `parse-failed` redirect: `app/imports/bank/actions.ts` logs action start, file metadata, byte magic, decoded raw text preview, summary, and caught errors; `BankImportService` logs created input events, extracted table headers/row samples, each parser batch, parser draft row numbers, created/skipped/failed rows, parser-dropped rows, and final counters; `ParsingService` logs normalized payload previews, adapter result counts, parser_run creation, and failures; `OpenAiParserAdapter` logs request metadata/content preview, response status, raw content preview, parsed draft counts, and adapter errors.
+
+**Current state** — logs are intentionally noisy and temporary; they include statement row snippets / AI response previews for debugging and should be removed after the issue is isolated. Targeted validation green: `npm run lint`, `npx tsc --noEmit`, and targeted `npm run test:run -- src/modules/bank-imports/service.test.ts src/modules/parsing/adapters.test.ts src/modules/parsing/service.test.ts src/app-actions/import-bank-action.redirect.test.ts`.
+
+**Next steps** — rerun the failing `/imports/bank` upload and inspect terminal logs with prefixes `[bank-import]` and `[parsing]`. Key things to check: `service:table.rowCount`, `openai:response-content.contentPreview`, `service:batch:parser-result.draftRowNumbers`, and any `service:row-dropped-by-parser` / `service:draft-invalid-row` / `parsing:service:error` entries.
+
+**Open questions / blockers** — root cause of live AI parse failure still pending the new logs.
+
+## 2026-06-29 19:05 UTC — bank statement import: structural table payloads for AI parser
+
+**What was done** — refactored bank-statement normalization away from deterministic semantic column mapping. `src/domain/bank-statement.ts` now extracts a structural table (`headerRowNumber`, raw `headers`, and row-numbered `{ rowId, rowNumber, cells }`) for CSV, text/HTML `.xls`, and XLSX/misnamed `.xls`; it no longer decides which column is date/description/amount/currency before AI. `BankImportService` now sends the structural table to the parser in 25-row batches, preserving source row idempotency. The OpenAI prompt now explicitly tells AI to infer semantics from arbitrary headers+cells and echo `sourceRef.rowNumber`. Also fixed a likely date-loss root cause in `normalizeParserPayload`: date strings like `2026-06-01` / `27.02.2025 18:04:09` are no longer masked as `[phone]` before reaching AI; bank service also fills missing `occurredAt` from date-like source row cells when possible.
+
+**Current state** — real fixtures under `docs/test_bank_statements/` structurally extract as expected: monobank cp1251 CSV → 80 rows, monobank XLSX-named-`.xls` → 80 rows, privatbank XLSX → 29 rows. Deterministic checks run and green: `npm run lint`, `npx tsc --noEmit`, `npm run test:run` (32 files / 177 tests), `npm run build`. I attempted to delegate a quick subagent review twice, but both subagent runs timed out before returning findings.
+
+**Next steps** — manually re-test `/imports/bank` with live `OPENAI_API_KEY` and inspect the newest `parser_runs.normalized_payload` / `result_json` to confirm AI returns one draft per row with `sourceRef.rowNumber` and dates. If AI still drops rows, next hardening is to support `rowId` echo and/or per-row fallback attribution.
+
+**Open questions / blockers** — live AI behavior still needs manual verification; no subagent review result was obtained due timeouts.
+
+## 2026-06-29 18:20 UTC — add-bank-statement-imports: fix real-world parsing (no statement imported)
+
+**What was done** — manual testing with real exports under `docs/test_bank_statements/` surfaced that **no** statement imported (`empty-statement` every time). Root-caused four real-world format gaps and fixed them in `src/domain/bank-statement.ts`:
+1. **Format detected by extension, not content** — a monobank export shipped as `.xls` is actually an XLSX (ZIP) workbook, so it never reached the XLSX parser. Now `statementBytesToText` routes by magic bytes (ZIP `PK\x03\x04` → XLSX; OLE2 → BIFF reject), so a misnamed workbook parses correctly.
+2. **CSV assumed UTF-8** — the monobank CSV is Windows-1251 (cp1251); decoded as UTF-8 it was mojibake and the header never matched. Added `decodeStatementText` (UTF-8 → cp1251 fallback on replacement chars). The action now reads bytes once and lets the domain decode (also removes the last double-read).
+3. **Header aliases were exact/full-phrase** — real columns are descriptive ("Сума в валюті картки (UAH)", "Опис операції", "Деталі операції", "Дата i час операції"); switched alias matching to short substring stems.
+4. **Unicode NFD** — the monobank export stores "ї" decomposed (і + combining diaeresis), so it didn't match precomposed aliases; normalize the text to NFC first.
+
+**Current state** — verified end-to-end on all three real fixtures: monobank cp1251 CSV → **80 rows**, monobank XLSX-named-`.xls` → **80 rows** (identical), privatbank XLSX → **29 rows**, all with correct date/description/amount/currency and comma-bearing descriptions intact. Added a committed integration test (`src/domain/bank-statement.real-files.test.ts`) reading the real files, plus unit tests for cp1251, content-based XLSX detection, descriptive headers, and NFC. Gates green: lint, `tsc`, `test:run` (32 files / **175 tests**), `next build`, coverage ratchet up (lines 53.88, fns 74.78, branches 89.24), `openspec validate --strict`, `check:trace`/`trajectory`/`red-green`/`claims`. Committed on `add-bank-statement-imports`; ready to push.
+
+**Next steps** — push, re-trigger CodeRabbit, watch CI; manually re-test `/imports/bank` with the real files. Then slice 8 `add-receipt-photo-imports` (note: a receipt photo `check.JPEG` is already in `docs/test_bank_statements/` for that slice).
+
+**Open questions / blockers** — none for parsing. Still pending human input for final submission: real **author name** + **demo-video** link. The actual ledger items still depend on a live `OPENAI_API_KEY` for the AI parse step (deferred to settings slice); normalization (the part that was broken) is deterministic and now works.
+
+## 2026-06-29 17:40 UTC — add-bank-statement-imports: address CodeRabbit PR #9 findings
+
+**What was done** — triaged CodeRabbit's review on PR #9 and folded the genuinely-actionable findings (the rest were rubric/human-input items, see blockers):
+- `src/domain/bank-statement.ts`: choose the CSV delimiter from the header-like line, not the first non-empty line, so a provider preamble no longer breaks detection (Major); preserve the real Excel `<row r="N">` number when flattening an XLSX worksheet so `sourceRef.rowNumber`/`import_row_number` stay accurate for non-contiguous rows (Major, data integrity); reject legacy binary BIFF `.xls` (OLE2 signature) with explicit `file-invalid` instead of parsing binary as text (Major; Excel HTML-table `.xls` still supported).
+- `app/imports/bank/actions.ts`: read each upload once per format (XLSX → bytes only, CSV → text only) instead of always materializing both `arrayBuffer` and `text` (perf).
+- `src/modules/bank-imports/service.ts`: count normalized rows the parser dropped entirely as failed (a partial parser result can no longer report success while importing fewer rows than the statement had); ignore duplicate drafts for one row (Major).
+- `scripts/check-traceability.mjs`: de-duplicate test files per FR so multiple `it()` blocks sharing a `@trace` tag don't inflate the evidence matrix.
+- `openspec/changes/archive/.../design.md`: sync the documented parser payload with the shipped `{ kind: "bank", content: serializeBankRows(...) }` contract.
+
+**Current state** — deterministic gates green after the fixes: lint, `tsc --noEmit`, `test:run` (31 files / **169 tests**, +7 regression tests), `test:coverage` + ratchet bumped (lines/stmts 53.78, fns 74.44, branches 89.01), `next build`, `openspec validate --all --strict` (10 specs), `check:trace` (0 failures), `check:trajectory` (0 failures, 2 inherited foundation-shell warnings), `check:red-green --strict`, `check:claims`. Committed on `add-bank-statement-imports` with `Slice:`/`Refs:` trailers; ready to push and re-trigger CodeRabbit on PR #9.
+
+**Next steps** — push, re-trigger CodeRabbit (`@coderabbitai review`) on PR #9, watch CI. Then slice 8 `add-receipt-photo-imports`.
+
+**Open questions / blockers** — CodeRabbit's remaining comments are the homework-submission rubric: real **author name** and a **1–2 minute demo-video link** in the PR description / `current-state.md`. These are human inputs and were not fabricated; the frozen maker≠checker raw-evidence files under `reviews/` were intentionally not rewritten (evidence discipline). The slice-report MD041 (H1) lint note was left as-is — it is a generated artifact and an H1 there would collide with the embedding doc's title.
+
+## 2026-06-29 17:04 UTC — add-bank-statement-imports slice SHIPPED (review unblocked, archived)
+
+**What was done** — picked up the slice that the previous session left blocked. Root cause of that block: the round-1 post-fix maker≠checker re-review had failed on a rate-limited subagent backend, so `review-findings.json` was correctly left `clean:false`. Re-ran the full maker≠checker review on Claude reviewer agents (fresh, this session did not write the code). Round-2 reviews: **code REQUEST_CHANGES**, **security PASS_WITH_NOTES**, **spec-compliance PASS**, **eval-judge 94/100 PASS**. Fixed every actionable finding and ran a confirmation pass (code **APPROVE**, spec-compliance **PASS**), then archived the OpenSpec change and committed the slice.
+
+**Scope delivered** — FR-BANK-01..06: `/imports/bank` CSV/XLS/XLSX upload with provider selection; original statement preserved as a `bank` `input_event` before processing; deterministic Monobank/PrivatBank normalization keeping source row numbers; XLSX (ZIP/XML) + Excel HTML `.xls` extraction; Parsing → pending ledger items via the item-creation contract; insert-if-absent retry idempotency on `(input_event_id, import_row_number)`; Ukrainian-first validation/empty/parse-failure/summary states; Ledger created/failed redirect (no preview gate).
+
+**Round-2 review fixes (with regression tests)** — MAJOR-1: XLSX/HTML cell reconstruction now tab-joins (not comma-joins) so comma-bearing descriptions/amounts no longer shift columns. MAJOR-2: corrupt/hostile `.xlsx` now routes to a friendly `file-invalid` error instead of an uncaught 500 (`statementBytesToText` moved inside the action try/catch and hardened). SEC-MINOR-1: XLSX decompression capped (needed entries only, `maxOutputLength`) against zip bombs. BF-2: added action-level redirect tests (`import-bank-action.redirect.test.ts`) covering success/parse-failed/corrupt-file, making tasks.md 1.3's claim true.
+
+**Scope NOT delivered (deferred, justified)** — input_event-level retry **UI** wiring: `BankImportService.retryInputEvent` implements + unit-tests the FR-BANK-06 insert-if-absent behavior, but the user-reachable retry button that re-consumes a preserved event is **FR-ITEM-07** (owned by ledger-items per `docs/mvp-capability-plan.md`), explicitly deferred — consistent with the add-manual-text-input precedent. Spec R6 (retry action shown + `input_event`/failed `parser_run` preserved) is satisfied. Do **not** use "end-to-end retry / full loop" language for input_event retry until FR-ITEM-07 lands. Legacy binary BIFF `.xls` remains a documented residual (XLSX + Excel HTML `.xls` are handled).
+
+**Process evidence produced** — RED/GREEN JSON under the archived change (`check:red-green --strict` green); strict OpenSpec validate + archive (10 specs, MODIFIED delta synced into `openspec/specs/bank-imports/spec.md`, no drift); eval case `evals/cases/bank-imports.eval.ts` (dimension `ua-error-clarity`, graded 94 PASS, ratchet green); clean maker≠checker review with **7** raw evidence files (`reviews/*.md` round-1 + `*-rerun.md` round-2 incl. confirmation passes) and `review-findings.json` (`clean:true`, `rawEvidence` linked); regenerated trace/trajectory + slice report.
+
+**Process evidence NOT produced** — no live LLM trajectory-eval (waived; `trajectory-eval-waiver.md`); no UI recording/vision proof (later QA phase). Honest boundary: deterministic G4 checks + a clean two-round maker≠checker review + a graded eval all pass; this is **not** a claim that an end-to-end trajectory-eval ran.
+
+**Fallow audit** — `FALLOW_AGENT_SOURCE=pi npx fallow audit --base origin/dev`. Verdict `fail` (new-only gate) with **advisory-only** findings, no runtime defect: 1 unused file (`evals/cases/bank-imports.eval.ts` — runner-loaded, same accepted pattern as sibling eval cases); 2 complexity findings (`src/modules/parsing/adapters.ts:parse` cyclomatic 13 `introduced:false`/inherited, and `src/modules/bank-imports/service.ts` moderate); 2 duplication clone groups (the `getRepositories`/`redirect` test-mock boilerplate shared across action test files). Accepted with rationale; not a green fallow.
+
+<!-- slice-report:start -->
+### Generated slice report: add-bank-statement-imports
+
+Generated by `node scripts/slice-report.mjs --slice add-bank-statement-imports` at 2026-06-29T17:04:34.210Z. Do not hand-write these metrics.
+
+| Metric | Value |
+|---|---:|
+| OpenSpec validated specs | 10 |
+| Active OpenSpec changes | 0 |
+| Test files / tests passed | 31 / 162 |
+| Trace failures / warnings | 0 / 77 |
+| Trajectory failures / warnings | 0 / 2 |
+| Changed files vs origin/dev | 37 |
+| Review findings | clean |
+| Raw review evidence refs | 7 |
+| Slice trailer commits | 1 |
+| Refs | FR-BANK-01, FR-BANK-02, FR-BANK-03, FR-BANK-04, FR-BANK-05, FR-BANK-06 |
+
+Command exits: openspecValidate=0, openspecList=0, tests=0, trace=0, trajectory=0, evals=0, coverage=0.
+<!-- slice-report:end -->
+
+**Current state** — slice archived; review clean; deterministic gates green: lint, `tsc --noEmit`, `test:run` (31 files / 162 tests), `next build` (`/imports/bank` dynamic), coverage ratchet bumped (lines/stmts 53.05, fns 74.33, branches 88.62), `openspec validate --all --strict` (10 specs), `check:trace` (0 failures), `check:trajectory` (0 failures, 2 inherited foundation-shell warnings), `check:red-green --strict`, `check:claims`, `check:eval`. Slice committed on branch `add-bank-statement-imports` with `Slice:`/`Refs:` trailers; ready to push and open a PR to `dev`.
+
+**Next steps** — push branch, open PR to `dev`, address CI / CodeRabbit. Then slice 8 `add-receipt-photo-imports` (FR-PHOTO-*), then dashboard (9) and settings (10, incl. AI key + CSV export — note CSV formula-injection hardening was flagged by security as relevant to that export slice).
+
+**Deferred work** — input_event-level retry **UI** (FR-ITEM-07, owned by ledger-items); legacy binary BIFF `.xls` support; receipt-photo channel (slice 8); dashboard (slice 9); settings incl. AI key storage + CSV export with formula-injection hardening (slice 10). Optional hardening: refactor `BankImportService.processEvent`/parser-adapter complexity and de-duplicate the shared action-test mock boilerplate (all fallow advisory, non-blocking).
+
+**Open questions / blockers** — none. Live OpenAI/API-key behavior remains intentionally deferred to the settings slice. Advisory: rotate the working-tree `.env.local` `OPENAI_API_KEY` if this checkout is ever shared (pre-existing, gitignored, not in history — outside this slice's diff).
+
+## 2026-06-29 15:14 UTC — add-bank-statement-imports slice started, implementation green, review re-run BLOCKED
+
+**What was done** — selected the next approved MVP slice from the repo evidence: `add-bank-statement-imports`, owning FR-BANK-01..06. Created and strictly validated OpenSpec change `openspec/changes/add-bank-statement-imports/` with proposal/design/tasks/spec delta. Wrote tests first, captured real RED evidence, implemented the bank import route/action, framework-free bank-statement normalization, bank-import service orchestration, row-idempotency lookup, XLSX worksheet extraction plus Excel HTML `.xls` extraction, parser prompt source-row guidance, and a bank-import eval case. Captured GREEN evidence after `npm run test:run` (30 files / 156 tests).
+
+**Current state** — implementation is not archived and no PR/commit was made. Deterministic checks run and green: `npm run lint`, `npx tsc --noEmit`, `npm run test:run`, `npm run test:coverage`, `node scripts/check-coverage-ratchet.mjs`, `npx openspec validate --all --strict`, `npm run check:trace` (0 failures / active-change warning), `npm run check:red-green -- --slice add-bank-statement-imports --strict`, `npm run check:claims`, `npm run check:eval`, `node scripts/check-trajectory.mjs` (inherited foundation warnings), and `npm run build`. Initial maker≠checker review raw outputs are saved under `openspec/changes/add-bank-statement-imports/reviews/`; findings were fixed in code, but fresh re-review after fixes could not run because subagent calls returned usage-limit errors. `review-findings.json` is intentionally `clean:false`, so archive/PR is blocked.
+
+**Next steps** — after reviewer capacity resets, run fresh code/security/spec-compliance re-review over the current diff; save raw outputs under `openspec/changes/add-bank-statement-imports/reviews/`; if clean, update `review-findings.json` to `clean:true`, archive the OpenSpec change, regenerate trace/trajectory, run `npm run slice:report -- --slice add-bank-statement-imports --write`, rerun fallow, update this log again last, commit with `Slice: add-bank-statement-imports` and `Refs: FR-BANK-01, FR-BANK-02, FR-BANK-03, FR-BANK-04, FR-BANK-05, FR-BANK-06`, push, and open PR to `dev`.
+
+**Open questions / blockers** — blocker: fresh maker≠checker re-review is not available due platform usage limit; do not archive or claim clean review until rerun/waived. Compatibility note: `.xlsx` workbook XML and Excel HTML `.xls` are handled; legacy binary BIFF `.xls` may still need human/product acceptance or a parser dependency if strict binary XLS support is required.
+
+**Fallow audit** — ran `FALLOW_AGENT_SOURCE=pi npx fallow audit --base origin/dev --format json --quiet --explain 2>/dev/null || true`; verdict `fail`. Findings are advisory while the slice is blocked: new eval case is statically unused (eval-runner pattern), duplicated server-action test mock boilerplate, duplicated partial-success test assertions, and introduced moderate complexity in `BankImportService.processEvent`; inherited parser adapter complexity remains. Fix or explicitly accept before final PR.
+
 ## 2026-06-29 14:47 UTC — dev prompt adjustment for live OpenAI parser
 
 **What was done** — after PR #8 was merged to `dev`, updated local `dev` from `origin/dev` and carried over the manual live-test prompt adjustment in `src/modules/parsing/adapters.ts`. Replaced the short OpenAI system prompt with an explicit JSON schema/instructions prompt for Ukrainian finance text parsing: exact field names, signed kopiyky, expense/income classification, missing-value fallbacks, zero-draft handling, categories, dates, multi-item inputs, refunds/cashback, and transfers. Removed temporary OpenAI response `console.log` debugging so runtime logs do not expose user financial text.

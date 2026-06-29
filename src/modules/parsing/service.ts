@@ -1,5 +1,6 @@
 import {
   canonicalizeParserDrafts,
+  canonicalizeValidParserDrafts,
   normalizeParserPayload,
   type ParserAdapter,
   type ParserPayload,
@@ -11,6 +12,8 @@ import type { Repositories } from "@/src/domain/ports";
 export interface ParseInput {
   inputEventId: string;
   payload: ParserPayload;
+  /** Keep valid drafts and store malformed drafts in resultJson instead of failing the whole run. */
+  tolerateInvalidDrafts?: boolean;
 }
 
 export class ParsingService {
@@ -33,12 +36,16 @@ export class ParsingService {
 
     try {
       const adapterResult = await this.adapter.parse(normalizedPayload);
-      const drafts = canonicalizeParserDrafts(adapterResult.drafts);
+      const { drafts, invalidDrafts } = input.tolerateInvalidDrafts
+        ? canonicalizeValidParserDrafts(adapterResult.drafts)
+        : { drafts: canonicalizeParserDrafts(adapterResult.drafts), invalidDrafts: [] };
       const parserRun = await this.repos.parserRuns.create({
         inputEventId: event.id,
         status: "success",
         normalizedPayload: serializedPayload,
-        resultJson: stableJson({ drafts }),
+        resultJson: stableJson(
+          invalidDrafts.length > 0 ? { drafts, invalidDrafts } : { drafts },
+        ),
         error: null,
       });
       return { parserRun, drafts };

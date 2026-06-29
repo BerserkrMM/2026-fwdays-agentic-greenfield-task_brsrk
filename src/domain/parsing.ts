@@ -61,11 +61,29 @@ function normalizeTextContent(content: string): string {
     .filter(Boolean)
     .join("\n")
     .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[email]")
-    .replace(/\+?\d[\d\s().-]{8,}\d/g, (match) => {
+    .replace(/\+?\d[\d\s().:-]{8,}\d/g, (match) => {
+      // Bank-statement rows contain dates like 2026-06-01 or
+      // 27.02.2025 18:04:09. Those are critical parser input, not PII phone
+      // numbers, so preserve them while still masking long card/account values.
+      if (looksLikeDateTime(match)) return match;
       const digits = match.replace(/\D/g, "");
       if (digits.length >= 13) return "[number]";
       return "[phone]";
     });
+}
+
+function looksLikeDateTime(value: string): boolean {
+  const trimmed = value.trim();
+  return (
+    /\b\d{4}[-/.]\d{1,2}[-/.]\d{1,2}(?:[ T]\d{1,2}:\d{2}(?::\d{2})?)?\b/.test(trimmed) ||
+    /\b\d{1,2}[-/.]\d{1,2}[-/.]\d{4}(?:[ T]\d{1,2}:\d{2}(?::\d{2})?)?\b/.test(trimmed)
+  );
+}
+
+export interface InvalidParserDraft {
+  index: number;
+  reason: string;
+  draft: unknown;
 }
 
 export function canonicalizeParserDrafts(input: unknown): ParsedLedgerItemDraft[] {
@@ -73,6 +91,29 @@ export function canonicalizeParserDrafts(input: unknown): ParsedLedgerItemDraft[
     throw new ParsingError("invalid-draft", "Parser result must contain a drafts array.");
   }
   return input.map((draft, index) => canonicalizeDraft(draft, index));
+}
+
+export function canonicalizeValidParserDrafts(input: unknown): {
+  drafts: ParsedLedgerItemDraft[];
+  invalidDrafts: InvalidParserDraft[];
+} {
+  if (!Array.isArray(input)) {
+    throw new ParsingError("invalid-draft", "Parser result must contain a drafts array.");
+  }
+  const drafts: ParsedLedgerItemDraft[] = [];
+  const invalidDrafts: InvalidParserDraft[] = [];
+  input.forEach((draft, index) => {
+    try {
+      drafts.push(canonicalizeDraft(draft, index));
+    } catch (error) {
+      invalidDrafts.push({
+        index,
+        reason: error instanceof Error ? error.message : String(error),
+        draft,
+      });
+    }
+  });
+  return { drafts, invalidDrafts };
 }
 
 function canonicalizeDraft(input: unknown, index: number): ParsedLedgerItemDraft {

@@ -48,6 +48,8 @@ export interface ParserRunRepository {
 export interface LedgerItemRepository {
   insert(item: LedgerItem): Promise<LedgerItem>;
   findById(id: string): Promise<LedgerItem | null>;
+  /** Finds an existing bank-import row item for retry insert-if-absent behavior. */
+  findByInputEventRow(inputEventId: string, rowNumber: number): Promise<LedgerItem | null>;
   /**
    * All non-deleted items (`status <> 'deleted'`) across every account — the read
    * primitive the Ledger capability folds into balances/aggregates. Independent

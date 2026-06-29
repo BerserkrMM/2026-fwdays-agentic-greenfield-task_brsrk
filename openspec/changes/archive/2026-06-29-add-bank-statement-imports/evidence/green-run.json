@@ -1,0 +1,11 @@
+{
+  "command": "npm run test:run",
+  "exitCode": 0,
+  "gitHead": "78e2e352ceba7f9d74cc802ebb384b3ebb4394e1",
+  "timestamp": "2026-06-29T18:20:05.000Z",
+  "passingTests": {
+    "testFiles": 32,
+    "tests": 175
+  },
+  "failingTests": []
+}
