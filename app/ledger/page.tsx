@@ -25,8 +25,13 @@ import {
   parseLedgerParams,
   type RawParams,
 } from "@/src/modules/ledger-items/ui/ledger-params";
+import {
+  importSummaryMessage,
+  isEmptyImport,
+  parseImportSummary,
+} from "@/src/modules/manual-input/ui/import-summary";
 import { PageHeader } from "@/src/modules/foundation/ui/PageHeader";
-import { EmptyState, ErrorState } from "@/src/modules/foundation/ui/states";
+import { EmptyState, ErrorState, StateView } from "@/src/modules/foundation/ui/states";
 import {
   approveItemAction,
   deleteItemAction,
@@ -50,6 +55,8 @@ export default async function LedgerPage({
 }) {
   const params = await searchParams;
   const errorMessage = ledgerErrorMessage(firstParam(params.formError));
+  // Post-import summary from a channel redirect (FR-TEXT-05); helper owned by manual-input.
+  const importSummary = parseImportSummary(params);
   const { filter, raw } = parseLedgerParams(params);
 
   const repos = getRepositories();
@@ -75,6 +82,25 @@ export default async function LedgerPage({
       {errorMessage ? (
         <div className="mb-6">
           <ErrorState title="Дію не виконано" description={errorMessage} />
+        </div>
+      ) : null}
+
+      {importSummary ? (
+        <div className="mb-6">
+          <StateView
+            tone={
+              importSummary.failed > 0 || isEmptyImport(importSummary)
+                ? "warning"
+                : "info"
+            }
+            glyph={isEmptyImport(importSummary) ? "⚠" : "✓"}
+            title={
+              isEmptyImport(importSummary)
+                ? "Нічого не імпортовано"
+                : "Імпорт завершено"
+            }
+            description={importSummaryMessage(importSummary)}
+          />
         </div>
       ) : null}
 

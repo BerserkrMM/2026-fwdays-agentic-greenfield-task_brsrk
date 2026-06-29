@@ -160,7 +160,13 @@
         "openspec/specs/manual-input/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/app-actions/import-text-action.test.ts",
+        "src/domain/manual-text.test.ts",
+        "src/modules/manual-input/service.test.ts",
+        "src/modules/manual-input/ui/manual-input-content.test.ts",
+        "evals/cases/manual-input.eval.ts"
+      ],
       "recordings": []
     },
     {
@@ -169,7 +175,10 @@
         "openspec/specs/manual-input/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/modules/manual-input/manual-input.smoke.test.ts",
+        "src/modules/manual-input/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -178,7 +187,12 @@
         "openspec/specs/manual-input/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/domain/manual-text.test.ts",
+        "src/modules/manual-input/service.test.ts",
+        "src/modules/manual-input/ui/manual-input-content.test.ts",
+        "evals/cases/manual-input.eval.ts"
+      ],
       "recordings": []
     },
     {
@@ -187,7 +201,10 @@
         "openspec/specs/manual-input/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/modules/manual-input/manual-input.smoke.test.ts",
+        "src/modules/manual-input/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -196,7 +213,11 @@
         "openspec/specs/manual-input/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/modules/manual-input/service.test.ts",
+        "src/modules/manual-input/ui/import-summary.test.ts",
+        "evals/cases/manual-input.eval.ts"
+      ],
       "recordings": []
     },
     {
@@ -515,7 +536,9 @@
         "openspec/specs/manual-input/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/modules/manual-input/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -820,26 +843,6 @@
     },
     {
       "check": "test-trace",
-      "msg": "FR-TEXT-01 has no test annotated \"@trace FR-TEXT-01\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-TEXT-02 has no test annotated \"@trace FR-TEXT-02\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-TEXT-03 has no test annotated \"@trace FR-TEXT-03\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-TEXT-04 has no test annotated \"@trace FR-TEXT-04\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-TEXT-05 has no test annotated \"@trace FR-TEXT-05\""
-    },
-    {
-      "check": "test-trace",
       "msg": "FR-FILE-01 has no test annotated \"@trace FR-FILE-01\""
     },
     {
@@ -877,10 +880,6 @@
     {
       "check": "test-trace",
       "msg": "FR-BANK-05 has no test annotated \"@trace FR-BANK-05\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-ITEM-07 has no test annotated \"@trace FR-ITEM-07\""
     },
     {
       "check": "test-trace",

@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-29T09:32:47.832Z",
+  "generatedAt": "2026-06-29T13:39:41.335Z",
   "generatedBy": "scripts/slice-report.mjs",
-  "slice": "add-parsing-pipeline",
+  "slice": "add-manual-text-input",
   "commands": {
     "openspecValidate": {
       "command": "npx openspec validate --all --strict",
@@ -35,39 +35,33 @@
   "metrics": {
     "openspecPassed": 10,
     "activeChanges": 0,
-    "testFilesPassed": 20,
-    "testsPassed": 106,
+    "testFilesPassed": 26,
+    "testsPassed": 134,
     "traceFailures": 0,
-    "traceWarnings": 88,
+    "traceWarnings": 82,
     "trajectoryFailures": 0,
     "trajectoryWarnings": 2,
-    "changedFiles": 35,
+    "changedFiles": 39,
     "evalBaseline": {
       "ua-ux-clarity": 95,
       "explicit-state-clarity": 96,
       "ua-error-clarity": 93
     },
     "coverageBaseline": {
-      "lines": 46.15,
-      "statements": 46.15,
-      "functions": 68.2,
-      "branches": 86.98
+      "lines": 47.86,
+      "statements": 47.86,
+      "functions": 69.51,
+      "branches": 87.99
     },
     "reviewFindings": "clean",
-    "rawReviewEvidenceRefs": 5,
+    "rawReviewEvidenceRefs": 4,
     "sliceTrailerCommits": 1,
     "refs": [
-      "FR-PARSE-01",
-      "FR-PARSE-02",
-      "FR-PARSE-03",
-      "FR-PARSE-04",
-      "FR-PARSE-05",
-      "FR-PARSE-06",
-      "FR-PARSE-07",
-      "FR-PARSE-08",
-      "NFR-PRIV-01",
-      "NFR-PRIV-02",
-      "TC-STACK-05"
+      "FR-TEXT-01",
+      "FR-TEXT-05",
+      "FR-TEXT-02",
+      "FR-TEXT-03",
+      "FR-TEXT-04"
     ]
   }
 }

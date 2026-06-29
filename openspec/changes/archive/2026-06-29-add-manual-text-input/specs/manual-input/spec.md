@@ -1,12 +1,5 @@
-# manual-input
+## MODIFIED Requirements
 
-## Purpose
-
-The Manual Input capability owns the `/imports/text` channel. It lets the user
-submit free-form text, preserves the original text as an `input_event`, performs
-source-specific text normalization, invokes Parsing, creates pending ledger items
-through the item-creation contract, and links the user to the Ledger screen.
-## Requirements
 ### Requirement: User submits free-form text
 
 The system SHALL let the user submit free-form financial text on `/imports/text`,
@@ -88,4 +81,3 @@ screen, surfacing a summary of how many items were created and how many failed.
 - **THEN** the user is redirected to the Ledger screen
 - **AND** a summary of created and failed item counts is shown
 - **AND** the created pending items are visible there
-
