@@ -113,6 +113,7 @@
       ],
       "planned": true,
       "tests": [
+        "src/app-pages.smoke.test.ts",
         "src/modules/foundation/ui/content.test.ts",
         "evals/cases/foundation.eval.ts"
       ],
@@ -134,6 +135,7 @@
       ],
       "planned": true,
       "tests": [
+        "src/app-pages.smoke.test.ts",
         "src/modules/foundation/ui/content.test.ts",
         "evals/cases/foundation.eval.ts"
       ],
@@ -226,7 +228,9 @@
         "openspec/specs/file-imports/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/app-pages.smoke.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -703,7 +707,9 @@
         "openspec/specs/settings/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/app-pages.smoke.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -795,7 +801,9 @@
         "openspec/specs/dashboard/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/app-pages.smoke.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -851,10 +859,6 @@
     },
     {
       "check": "test-trace",
-      "msg": "FR-FILE-01 has no test annotated \"@trace FR-FILE-01\""
-    },
-    {
-      "check": "test-trace",
       "msg": "FR-FILE-02 has no test annotated \"@trace FR-FILE-02\""
     },
     {
@@ -871,10 +875,6 @@
     },
     {
       "check": "test-trace",
-      "msg": "FR-SET-01 has no test annotated \"@trace FR-SET-01\""
-    },
-    {
-      "check": "test-trace",
       "msg": "FR-SET-02 has no test annotated \"@trace FR-SET-02\""
     },
     {
@@ -884,10 +884,6 @@
     {
       "check": "test-trace",
       "msg": "FR-LEDGER-01 has no test annotated \"@trace FR-LEDGER-01\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-DASH-01 has no test annotated \"@trace FR-DASH-01\""
     },
     {
       "check": "test-trace",

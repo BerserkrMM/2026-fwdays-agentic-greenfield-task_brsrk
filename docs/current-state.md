@@ -4,6 +4,16 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-29 20:21 UTC — CI coverage-ratchet fix for bank-import PR
+
+**What was done** — investigated failed PR #9 `verify` job. CodeRabbit passed; CI failed in `Coverage ratchet` because branch coverage dropped from 89.24% to 88.16% after the bank-import changes. Added `src/app-pages.smoke.test.ts` covering static app routes (`/`, `/dashboard`, `/imports`, `/imports/files`, `/settings`) to restore branch coverage without weakening the ratchet. Regenerated traceability outputs.
+
+**Current state** — validation is green locally: `npm run test:coverage` + `node scripts/check-coverage-ratchet.mjs` now passes with branch coverage 89.17% accepted by the ratchet; `npm run lint`, `npx tsc --noEmit`, `npm run test:run` (33 files / 180 tests), `npm run build`, `npx openspec validate --all --strict`, `npm run check:trace` (0 failures / 74 inherited warnings), `npm run check:trajectory` (0 failures / 2 inherited foundation warnings), `npm run check:red-green -- --slice add-bank-statement-imports --strict`, and `npm run check:claims` all pass.
+
+**Next steps** — run `npm run check:handoff`, commit/push the CI fix to `add-bank-statement-imports`, then watch PR #9 verify rerun.
+
+**Open questions / blockers** — none; CI rerun pending after push.
+
 ## 2026-06-29 20:06 UTC — bank import follow-up ready: structural AI payloads, Monobank dates, no debug logs
 
 **What was done** — finalized the live bank-import fix after manual verification: removed all temporary `[bank-import]` / `[parsing]` debug `console.*` logs from server action, bank service, parsing service, and OpenAI adapter. Kept the functional fixes: structural table payloads for CSV/XLS/XLSX bank statements, batched AI parsing, per-row tolerance for invalid AI drafts, preservation of Monobank historical dates that looked like long numbers, fallback date extraction from row cells, and stronger category prompt guidance.
