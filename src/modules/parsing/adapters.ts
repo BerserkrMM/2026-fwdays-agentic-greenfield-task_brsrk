@@ -36,7 +36,7 @@ Required output shape:
 Task:
 Parse the user's Ukrainian free-form finance text or normalized bank-statement rows into atomic ledger item drafts.
 
-For bank-statement payloads, the user content may be JSON like {"provider":"monobank","rows":[...]}. Return at most one draft per source row and include sourceRef.rowNumber from that row on the corresponding draft.
+For bank-statement payloads, the user content is JSON with table structure, for example {"provider":"monobank","headerRowNumber":1,"headers":[...],"rows":[{"rowNumber":2,"rowId":"r2","cells":[...]}]}. Headers and cells may use any bank-specific wording. Infer which cells mean operation date, description/merchant, amount, currency, balance, commission, etc. Return at most one draft per source row and include sourceRef.rowNumber from that row on the corresponding draft. Do not skip a row just because column names are unfamiliar: use the row's headers+cells to decide.
 
 Rules:
 1. Extract every separate financial operation mentioned in the text.
@@ -103,18 +103,23 @@ Rules:
 }
 
 11. Category:
-   Use a short Ukrainian category if obvious, for example:
-   - food, groceries, cafe => "Їжа"
-   - taxi, fuel, transport => "Транспорт"
-   - salary, freelance, sale => "Дохід"
+   Always try to assign a useful short Ukrainian category. Do not overuse "Без категорії".
+   For bank-statement rows, use every clue available: merchant/description, MCC, provider, existing category columns, and common merchant names.
+   Examples:
+   - food, groceries, supermarket, АТБ, Сільпо, Novus, Fora, Varus, McDonald's, cafe => "Їжа"
+   - taxi, Uklon, Bolt, Uber, fuel, WOG, OKKO, transport => "Транспорт"
+   - Epicentr / Епіцентр, household/building supplies => "Дім"
+   - mobile/internet/telecom, Kyivstar, Vodafone, Lifecell, PRTMN *INTERNET => "Звʼязок"
+   - salary, freelance, sale, cashback/refund received => "Дохід"
+   - bank interest/fees/commission/card service/write-off interest => "Банківські послуги"
    - rent, utilities => "Житло"
-   - medicine, doctor => "Здоровʼя"
-   Otherwise use "Без категорії".
+   - medicine, doctor, pharmacy => "Здоровʼя"
+   If no useful category can be inferred after considering these clues, use "Без категорії".
 
 12. Dates:
-   If the user mentions a date, return occurredAt as ISO-8601.
-   If no date is mentioned, omit occurredAt.
-   Do not invent dates.
+   If the user text or bank row contains an operation date/time, return occurredAt as ISO-8601.
+   For bank-statement rows, treat the row's operation date cell as the source of occurredAt even if the header wording is unfamiliar.
+   If no date is present anywhere in that row/text, omit occurredAt. Do not invent dates.
 
 13. Multiple amounts:
    Split into separate drafts when amounts clearly belong to separate items.
@@ -146,7 +151,9 @@ Important:
 - Never return prose.
 - Never return null.
 - Never return unrecognized fields.
-- Never use amount in hryvnias; always use signed kopiyky.`;
+- Never use amount in hryvnias; always use signed kopiyky.
+- For bank-statement rows, amountMinor and description are mandatory. If a row has no transaction amount or no meaningful description/merchant/counterparty, do not create a draft for that row.
+- For bank-statement rows, always echo sourceRef.rowNumber exactly from the input row.`;
 
 /**
  * OpenAI-compatible adapter boundary (FR-PARSE-06). It is intentionally small and
@@ -178,6 +185,17 @@ export class OpenAiParserAdapter implements ParserAdapter {
     // only once parsing has fully completed.
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
+    const requestBody = JSON.stringify({
+      model: this.model,
+      response_format: { type: "json_object" },
+      messages: [
+        {
+          role: "system",
+          content: OPENAI_SYSTEM_PROMPT,
+        },
+        { role: "user", content: JSON.stringify(payload) },
+      ],
+    });
     try {
       const response = await this.fetchImpl(this.endpoint, {
         method: "POST",
@@ -186,17 +204,7 @@ export class OpenAiParserAdapter implements ParserAdapter {
           "content-type": "application/json",
           authorization: `Bearer ${apiKey}`,
         },
-        body: JSON.stringify({
-          model: this.model,
-          response_format: { type: "json_object" },
-          messages: [
-            {
-              role: "system",
-              content: OPENAI_SYSTEM_PROMPT,
-            },
-            { role: "user", content: JSON.stringify(payload) },
-          ],
-        }),
+        body: requestBody,
       });
 
       if (!response.ok) {

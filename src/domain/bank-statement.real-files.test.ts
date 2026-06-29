@@ -30,14 +30,17 @@ describe("real provider statement exports", () => {
     run(`extracts transaction rows from ${c.name}`, () => {
       const bytes = new Uint8Array(readFileSync(c.path));
       const text = statementBytesToText({ fileName: c.path, bytes });
-      const rows = normalizeBankStatement({ provider: c.provider, rawText: text });
+      const table = normalizeBankStatement({ provider: c.provider, rawText: text });
 
-      expect(rows.length).toBeGreaterThan(0);
-      for (const row of rows) {
-        expect(row.date).toBeTruthy();
-        expect(row.description).toBeTruthy();
-        // Amount must look like a signed/decimal money value, not a column shift.
-        expect(/-?\d/.test(row.amount.replace(/\s/g, ""))).toBe(true);
+      expect(table.headers.length).toBeGreaterThan(1);
+      expect(table.rows.length).toBeGreaterThan(0);
+      for (const row of table.rows) {
+        expect(row.rowNumber).toBeGreaterThan(table.headerRowNumber);
+        expect(row.rowId).toBe(`r${row.rowNumber}`);
+        expect(row.cells.length).toBeGreaterThan(1);
+        // Structural extraction should preserve raw transaction-like cell values
+        // for AI, without requiring deterministic semantic column mapping.
+        expect(row.cells.some((cell) => /\d/.test(cell))).toBe(true);
       }
     });
   }

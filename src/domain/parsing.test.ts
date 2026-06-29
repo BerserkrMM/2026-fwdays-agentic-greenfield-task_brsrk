@@ -88,4 +88,15 @@ describe("normalizeParserPayload", () => {
       locale: "uk-UA",
     });
   });
+
+  it("preserves bank-statement date/time values while masking phones and long numbers", () => {
+    const normalized = normalizeParserPayload({
+      kind: "bank",
+      content: 'row 2026-06-01; row 27.02.2025 18:04:09; mono 28.02.1830 18:42:01; phone +380 67 123 45 67; card 4444555566667777',
+    });
+
+    expect(normalized.content).toBe(
+      "row 2026-06-01; row 27.02.2025 18:04:09; mono 28.02.1830 18:42:01; phone [phone]; card [number]",
+    );
+  });
 });

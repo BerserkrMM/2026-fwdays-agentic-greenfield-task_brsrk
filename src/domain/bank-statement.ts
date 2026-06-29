@@ -1,7 +1,7 @@
 // Bank-statement domain helpers — deterministic and framework-free (FR-BANK-01..03).
-// They validate provider/file metadata and normalize provider exports into clean
-// rows for the parser. They do not categorize, infer final item types, call AI,
-// or write ledger items.
+// They validate provider/file metadata and extract statement tables into clean
+// structural rows for the parser. They do not categorize, infer final item
+// fields, call AI, or write ledger items.
 
 import { inflateRawSync } from "node:zlib";
 
@@ -18,11 +18,20 @@ export interface NormalizeBankStatementInput {
 }
 
 export interface NormalizedBankRow {
+  /** Physical source row number from CSV/text line or Excel row r="N". */
   rowNumber: number;
-  date: string;
-  description: string;
-  amount: string;
-  currency: string;
+  /** Stable ID the AI must echo back; easier to copy than a bare number. */
+  rowId: string;
+  /** Raw table cells aligned to `headers`; semantic meaning is left to AI. */
+  cells: string[];
+}
+
+export interface NormalizedBankTable {
+  provider: BankProvider;
+  headerRowNumber: number;
+  /** Raw table headers; unknown/empty headers are given deterministic names. */
+  headers: string[];
+  rows: NormalizedBankRow[];
 }
 
 export type BankStatementErrorCode =
@@ -50,10 +59,8 @@ const SUPPORTED_MIME_TYPES = new Set([
   "application/octet-stream",
 ]);
 
-// Aliases are matched as substrings (see findIndex), so keep them as short,
-// distinctive stems — real headers append qualifiers ("Дата i час операції",
-// "Деталі операції", "Сума в валюті картки (UAH)") that a full-phrase alias
-// would miss.
+// Semantic aliases are NOT used to decide final column meaning. They are only a
+// tie-breaker for locating the header row when an export includes a long preamble.
 const DATE_ALIASES = ["дата", "date"];
 const DESCRIPTION_ALIASES = [
   "опис",
@@ -67,6 +74,12 @@ const DESCRIPTION_ALIASES = [
 ];
 const AMOUNT_ALIASES = ["сума", "amount"];
 const CURRENCY_ALIASES = ["валюта", "currency", "ccy"];
+const STRUCTURAL_HEADER_ALIASES = [
+  ...DATE_ALIASES,
+  ...DESCRIPTION_ALIASES,
+  ...AMOUNT_ALIASES,
+  ...CURRENCY_ALIASES,
+];
 
 export function assertBankProvider(value: unknown): BankProvider {
   if (value === "monobank" || value === "privatbank") return value;
@@ -95,44 +108,42 @@ export function assertSupportedBankFile(
 
 export function normalizeBankStatement(
   input: NormalizeBankStatementInput,
-): NormalizedBankRow[] {
+): NormalizedBankTable {
   // NFC-normalize first: some provider exports store Ukrainian letters in
   // decomposed form (e.g. "ї" as "і" + combining diaeresis), which would break
-  // exact/substring header matching against precomposed aliases.
+  // header/table heuristics against precomposed text.
   const rawLines = input.rawText.normalize("NFC").split(/\r?\n/);
   const delimiter = chooseDelimiter(rawLines);
   const parsed = rawLines.map((line, index) => ({
     lineNumber: index + 1,
     cells: parseDelimitedLine(line, delimiter).map((cell) => cell.trim()),
   }));
-  const headerIndex = parsed.findIndex((row) => looksLikeHeader(row.cells));
+  const headerIndex = findHeaderIndex(parsed);
   if (headerIndex < 0) {
     throw new BankStatementError("empty-statement", "No statement rows found.");
   }
 
-  const header = parsed[headerIndex].cells.map(normalizeHeader);
-  const columns = resolveColumns(input.provider, header);
+  const headerRow = parsed[headerIndex];
+  const width = Math.max(nonEmptyCellCount(headerRow.cells), headerRow.cells.length);
+  const headers = headerRow.cells.slice(0, width).map((cell, index) => headerName(cell, index));
   const rows: NormalizedBankRow[] = [];
 
   for (const row of parsed.slice(headerIndex + 1)) {
-    const cells = row.cells;
+    const cells = row.cells.slice(0, Math.max(width, row.cells.length)).map((cell) => cell.trim());
     if (isNoiseRow(cells)) continue;
-    const date = valueAt(cells, columns.date);
-    const description = valueAt(cells, columns.description);
-    const amount = valueAt(cells, columns.amount);
-    const currency = valueAt(cells, columns.currency) || "UAH";
-    if (!date || !description || !amount || !looksLikeAmount(amount)) continue;
-    rows.push({ rowNumber: row.lineNumber, date, description, amount, currency });
+    if (isDuplicateHeaderRow(cells, headers)) continue;
+    if (!looksLikeDataRow(cells, width)) continue;
+    rows.push({ rowNumber: row.lineNumber, rowId: `r${row.lineNumber}`, cells });
   }
 
   if (rows.length === 0) {
     throw new BankStatementError("empty-statement", "No transaction rows found.");
   }
-  return rows;
+  return { provider: input.provider, headerRowNumber: headerRow.lineNumber, headers, rows };
 }
 
-export function serializeBankRows(provider: BankProvider, rows: NormalizedBankRow[]): string {
-  return JSON.stringify({ provider, rows });
+export function serializeBankRows(table: NormalizedBankTable): string {
+  return JSON.stringify(table);
 }
 
 // Decode a statement upload to delimited text. Format is detected from the file
@@ -190,7 +201,7 @@ function hasZipMagic(bytes: Uint8Array): boolean {
 // Decode statement text, falling back from UTF-8 to Windows-1251 (cp1251) when
 // the UTF-8 decode produces replacement characters — Ukrainian bank CSV exports
 // are frequently cp1251-encoded, which would otherwise become mojibake and
-// defeat header detection.
+// defeat table/header detection.
 function decodeStatementText(bytes: Uint8Array): string {
   const utf8 = new TextDecoder("utf-8", { fatal: false }).decode(bytes);
   if (!utf8.includes("�")) return utf8;
@@ -201,11 +212,10 @@ function decodeStatementText(bytes: Uint8Array): string {
   }
 }
 
-// Choose the delimiter by the line that actually looks like a transaction
-// header, not the first non-empty line: provider exports often begin with a
-// preamble ("Виписка за період…", account name) whose delimiter differs from
-// the table. Prefer the candidate that splits a header line into the most
-// recognized columns; fall back to the densest first non-empty line.
+// Choose the delimiter by the line that actually looks like a table header, not
+// the first non-empty line: provider exports often begin with a preamble whose
+// delimiter differs from the table. Prefer the candidate that produces the best
+// structural table score; fall back to the densest first non-empty line.
 // OLE2 / Compound File Binary signature — the container legacy BIFF .xls uses.
 const OLE2_SIGNATURE = [0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1];
 
@@ -219,13 +229,14 @@ function chooseDelimiter(lines: string[]): "," | ";" | "\t" {
   let best: (typeof candidates)[number] | null = null;
   let bestScore = 0;
   for (const delimiter of candidates) {
-    for (const line of lines) {
-      if (!line.trim()) continue;
-      const cells = parseDelimitedLine(line, delimiter).map((cell) => cell.trim());
-      if (looksLikeHeader(cells) && cells.length > bestScore) {
-        best = delimiter;
-        bestScore = cells.length;
-      }
+    const parsed = lines.map((line, index) => ({
+      lineNumber: index + 1,
+      cells: parseDelimitedLine(line, delimiter).map((cell) => cell.trim()),
+    }));
+    const score = bestHeaderScore(parsed);
+    if (score > bestScore) {
+      best = delimiter;
+      bestScore = score;
     }
   }
   if (best) return best;
@@ -266,54 +277,83 @@ function parseDelimitedLine(line: string, delimiter: string): string[] {
   return cells;
 }
 
-function looksLikeHeader(cells: string[]): boolean {
-  const normalized = cells.map(normalizeHeader);
-  return (
-    findIndex(normalized, DATE_ALIASES) >= 0 &&
-    findIndex(normalized, AMOUNT_ALIASES) >= 0 &&
-    findIndex(normalized, DESCRIPTION_ALIASES) >= 0
-  );
+function findHeaderIndex(rows: Array<{ lineNumber: number; cells: string[] }>): number {
+  let bestIndex = -1;
+  let bestScore = 0;
+  rows.forEach((_, index) => {
+    const score = headerScoreAt(rows, index);
+    if (score > bestScore) {
+      bestIndex = index;
+      bestScore = score;
+    }
+  });
+  return bestScore > 0 ? bestIndex : -1;
 }
 
-function resolveColumns(provider: BankProvider, header: string[]) {
-  // Provider parameter is intentionally present: aliases can diverge as exports
-  // are hardened. Current v1 aliases cover both common Monobank and PrivatBank
-  // CSV headings without changing parser/item semantics.
-  void provider;
-  return {
-    date: findIndex(header, DATE_ALIASES),
-    description: findIndex(header, DESCRIPTION_ALIASES),
-    amount: findIndex(header, AMOUNT_ALIASES),
-    currency: findIndex(header, CURRENCY_ALIASES),
-  };
+function bestHeaderScore(rows: Array<{ lineNumber: number; cells: string[] }>): number {
+  return rows.reduce((best, _, index) => Math.max(best, headerScoreAt(rows, index)), 0);
+}
+
+function headerScoreAt(rows: Array<{ lineNumber: number; cells: string[] }>, index: number): number {
+  const cells = rows[index]?.cells ?? [];
+  const width = nonEmptyCellCount(cells);
+  if (width < 2 || !hasTextCell(cells)) return 0;
+
+  const following = rows.slice(index + 1).filter((row) => !isNoiseRow(row.cells)).slice(0, 8);
+  const dataRows = following.filter((row) => looksLikeDataRow(row.cells, width));
+  if (dataRows.length === 0) return 0;
+
+  const normalized = cells.map(normalizeHeader);
+  const semanticHints = STRUCTURAL_HEADER_ALIASES.filter((alias) => findIndex(normalized, [alias]) >= 0).length;
+  const uniqueTextCells = new Set(cells.map((cell) => normalizeHeader(cell)).filter(Boolean)).size;
+  const textScore = cells.filter((cell) => /[\p{L}A-Za-z]/u.test(cell)).length;
+  return dataRows.length * 20 + Math.min(width, 12) * 3 + uniqueTextCells + textScore + semanticHints * 4;
+}
+
+function looksLikeDataRow(cells: string[], expectedWidth: number): boolean {
+  const nonEmpty = nonEmptyCellCount(cells);
+  if (nonEmpty < 2) return false;
+  if (expectedWidth >= 4 && nonEmpty < Math.max(2, Math.floor(expectedWidth * 0.35))) return false;
+  return cells.some((cell) => /\d/.test(cell)) || cells.some((cell) => /[\p{L}A-Za-z]/u.test(cell));
+}
+
+function nonEmptyCellCount(cells: string[]): number {
+  return cells.filter((cell) => cell.trim()).length;
+}
+
+function hasTextCell(cells: string[]): boolean {
+  return cells.some((cell) => /[\p{L}A-Za-z]/u.test(cell));
+}
+
+function headerName(value: string, index: number): string {
+  const normalized = value.trim().replace(/^\uFEFF/, "").replace(/\s+/g, " ");
+  return normalized || `Колонка ${index + 1}`;
 }
 
 function normalizeHeader(value: string): string {
   return value.trim().replace(/^\uFEFF/, "").replace(/\s+/g, " ").toLowerCase();
 }
 
-// Match a header column by alias as a SUBSTRING, not an exact string: real
-// exports use descriptive titles like "Сума в валюті картки (UAH)" or "Опис
-// операції" / "Дата i час операції" that an exact match would miss. The first
-// (left-most) matching column wins, which picks the card-currency amount and the
-// primary date/description columns ahead of later "сума комісій"/"валюта
-// транзакції" columns.
+// Match a header column by alias as a SUBSTRING, not an exact string. Used only
+// as a header-location tie breaker; semantic column mapping belongs to AI.
 function findIndex(header: string[], aliases: string[]): number {
   return header.findIndex((name) => aliases.some((alias) => name === alias || name.includes(alias)));
-}
-
-function valueAt(cells: string[], index: number): string {
-  return index >= 0 ? (cells[index] ?? "").trim() : "";
 }
 
 function isNoiseRow(cells: string[]): boolean {
   const compact = cells.join(" ").trim().toLowerCase();
   if (!compact) return true;
-  return /^(разом|усього|баланс|період|period|total)\b/.test(compact);
+  return ["разом", "усього", "баланс", "період", "period", "total"].some((prefix) =>
+    compact === prefix || compact.startsWith(`${prefix} `) || compact.startsWith(`${prefix}:`),
+  );
 }
 
-function looksLikeAmount(value: string): boolean {
-  return /-?\d+(?:[,.]\d+)?/.test(value.replace(/\s/g, ""));
+function isDuplicateHeaderRow(cells: string[], headers: string[]): boolean {
+  const normalizedCells = cells.map(normalizeHeader).filter(Boolean);
+  if (normalizedCells.length < 2) return false;
+  const normalizedHeaders = new Set(headers.map(normalizeHeader).filter(Boolean));
+  const matches = normalizedCells.filter((cell) => normalizedHeaders.has(cell)).length;
+  return matches >= Math.min(3, normalizedCells.length);
 }
 
 function htmlTableToDelimited(html: string): string {

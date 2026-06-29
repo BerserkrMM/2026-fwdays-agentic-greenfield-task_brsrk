@@ -4,6 +4,56 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-29 20:06 UTC — bank import follow-up ready: structural AI payloads, Monobank dates, no debug logs
+
+**What was done** — finalized the live bank-import fix after manual verification: removed all temporary `[bank-import]` / `[parsing]` debug `console.*` logs from server action, bank service, parsing service, and OpenAI adapter. Kept the functional fixes: structural table payloads for CSV/XLS/XLSX bank statements, batched AI parsing, per-row tolerance for invalid AI drafts, preservation of Monobank historical dates that looked like long numbers, fallback date extraction from row cells, and stronger category prompt guidance.
+
+**Current state** — deterministic/documentation/workflow checks are green: `npm run lint`, `npx tsc --noEmit`, `npm run test:run` (32 files / 178 tests), `npm run build`, `npx openspec validate --all --strict`, `npm run check:trace` (0 failures / 77 inherited warnings), `npm run check:trajectory` (0 failures / 2 inherited foundation warnings), `npm run check:red-green -- --slice add-bank-statement-imports --strict`, and `npm run check:claims`. `docs/current-state.md` updated last before handoff/commit.
+
+**Next steps** — run `npm run check:handoff`, commit, push `add-bank-statement-imports`, and trigger CodeRabbit review on the PR. After CI/review, remove any remaining temporary investigation notes if desired.
+
+**Open questions / blockers** — none known for the live Monobank/PrivatBank import behavior after the user's manual retest; final CI/CodeRabbit still pending.
+
+## 2026-06-29 19:51 UTC — bank import: preserve Monobank dates and strengthen category prompt
+
+**What was done** — live Monobank logs showed operation dates were still sent to AI as `[number]` because `normalizeParserPayload` only preserved date-like strings with years starting `19xx/20xx`; the real Monobank fixture has date cells like `28.02.1830 18:42:01`, which the PII masker treated as a long number. Broadened date detection in `src/domain/parsing.ts` and bank date fallback parsing in `src/modules/bank-imports/service.ts` to preserve/parse any 4-digit year date shape. Strengthened the OpenAI prompt category section to avoid overusing `Без категорії`, use merchant/MCC/provider/category-column clues, and added Monobank-relevant examples (`Епіцентр`→`Дім`, `PRTMN *INTERNET`→`Звʼязок`, bank fees/interest→`Банківські послуги`, etc.).
+
+**Current state** — targeted checks green: `npm run lint`, `npx tsc --noEmit`, and `npm run test:run -- src/domain/parsing.test.ts src/modules/bank-imports/service.test.ts src/modules/parsing/adapters.test.ts`. Temporary debug logs remain active.
+
+**Next steps** — retry Monobank CSV/XLSX. Expected payload should now show raw date strings instead of `[number]` in the first cell; AI should have better category hints. If dates still display wrong after import, inspect whether AI returns `occurredAt`; if not, service fallback should parse the raw Monobank date cell.
+
+**Open questions / blockers** — live verification pending; remove/guard debug logs after debugging.
+
+## 2026-06-29 19:21 UTC — bank import: tolerate invalid AI drafts per row
+
+**What was done** — live logs showed the whole bank import failed because one AI draft had `amountMinor: 0` (`Invalid parser draft 2: amountMinor must be a non-zero integer`). Added a lenient canonicalization path for bank imports: `ParsingService.parse({ tolerateInvalidDrafts: true })` keeps valid drafts, records malformed drafts in `parser_runs.result_json.invalidDrafts`, and lets `BankImportService` count the affected source rows as failed instead of failing the entire upload. Non-bank/default parsing remains strict. Added regression coverage for invalid bank AI drafts.
+
+**Current state** — targeted checks green: `npm run lint`, `npx tsc --noEmit`, and `npm run test:run -- src/modules/bank-imports/service.test.ts src/modules/parsing/service.test.ts src/domain/parsing.test.ts`. Temporary debug logs from the previous entry are still present and intentionally noisy.
+
+**Next steps** — retry `/imports/bank`. Expected behavior: no redirect to `parse-failed` for a single zero-amount draft; valid rows should import, the bad row should contribute to `failed`, and logs should include `[parsing][service:invalid-drafts-tolerated]` plus `[bank-import][service:row-dropped-by-parser]` for that row.
+
+**Open questions / blockers** — still need live verification and then remove/guard temporary logs.
+
+## 2026-06-29 19:16 UTC — bank import live-debug logging added
+
+**What was done** — added temporary verbose server-side logs across the bank import path to debug the live `parse-failed` redirect: `app/imports/bank/actions.ts` logs action start, file metadata, byte magic, decoded raw text preview, summary, and caught errors; `BankImportService` logs created input events, extracted table headers/row samples, each parser batch, parser draft row numbers, created/skipped/failed rows, parser-dropped rows, and final counters; `ParsingService` logs normalized payload previews, adapter result counts, parser_run creation, and failures; `OpenAiParserAdapter` logs request metadata/content preview, response status, raw content preview, parsed draft counts, and adapter errors.
+
+**Current state** — logs are intentionally noisy and temporary; they include statement row snippets / AI response previews for debugging and should be removed after the issue is isolated. Targeted validation green: `npm run lint`, `npx tsc --noEmit`, and targeted `npm run test:run -- src/modules/bank-imports/service.test.ts src/modules/parsing/adapters.test.ts src/modules/parsing/service.test.ts src/app-actions/import-bank-action.redirect.test.ts`.
+
+**Next steps** — rerun the failing `/imports/bank` upload and inspect terminal logs with prefixes `[bank-import]` and `[parsing]`. Key things to check: `service:table.rowCount`, `openai:response-content.contentPreview`, `service:batch:parser-result.draftRowNumbers`, and any `service:row-dropped-by-parser` / `service:draft-invalid-row` / `parsing:service:error` entries.
+
+**Open questions / blockers** — root cause of live AI parse failure still pending the new logs.
+
+## 2026-06-29 19:05 UTC — bank statement import: structural table payloads for AI parser
+
+**What was done** — refactored bank-statement normalization away from deterministic semantic column mapping. `src/domain/bank-statement.ts` now extracts a structural table (`headerRowNumber`, raw `headers`, and row-numbered `{ rowId, rowNumber, cells }`) for CSV, text/HTML `.xls`, and XLSX/misnamed `.xls`; it no longer decides which column is date/description/amount/currency before AI. `BankImportService` now sends the structural table to the parser in 25-row batches, preserving source row idempotency. The OpenAI prompt now explicitly tells AI to infer semantics from arbitrary headers+cells and echo `sourceRef.rowNumber`. Also fixed a likely date-loss root cause in `normalizeParserPayload`: date strings like `2026-06-01` / `27.02.2025 18:04:09` are no longer masked as `[phone]` before reaching AI; bank service also fills missing `occurredAt` from date-like source row cells when possible.
+
+**Current state** — real fixtures under `docs/test_bank_statements/` structurally extract as expected: monobank cp1251 CSV → 80 rows, monobank XLSX-named-`.xls` → 80 rows, privatbank XLSX → 29 rows. Deterministic checks run and green: `npm run lint`, `npx tsc --noEmit`, `npm run test:run` (32 files / 177 tests), `npm run build`. I attempted to delegate a quick subagent review twice, but both subagent runs timed out before returning findings.
+
+**Next steps** — manually re-test `/imports/bank` with live `OPENAI_API_KEY` and inspect the newest `parser_runs.normalized_payload` / `result_json` to confirm AI returns one draft per row with `sourceRef.rowNumber` and dates. If AI still drops rows, next hardening is to support `rowId` echo and/or per-row fallback attribution.
+
+**Open questions / blockers** — live AI behavior still needs manual verification; no subagent review result was obtained due timeouts.
+
 ## 2026-06-29 18:20 UTC — add-bank-statement-imports: fix real-world parsing (no statement imported)
 
 **What was done** — manual testing with real exports under `docs/test_bank_statements/` surfaced that **no** statement imported (`empty-statement` every time). Root-caused four real-world format gaps and fixed them in `src/domain/bank-statement.ts`:

@@ -84,8 +84,14 @@ it("passes normalized bank rows to the parser and creates pending row items", as
   });
 
   expect(seen[0].kind).toBe("bank");
-  expect(seen[0].content).toContain('"rowNumber":2');
-  expect(seen[0].content).toContain("АТБ");
+  const parserTable = JSON.parse(seen[0].content);
+  expect(parserTable.headers).toEqual(["Дата", "Опис", "Сума"]);
+  expect(parserTable.rows[0]).toEqual({
+    rowNumber: 2,
+    rowId: "r2",
+    cells: ["2026-06-01", "АТБ", "-10.00"],
+  });
+  expect(seen[0].content).not.toContain('"description":"АТБ"');
   expect(summary.created).toBe(2);
   expect(summary.failed).toBe(0);
   const items = await repos.ledgerItems.listAll();
@@ -126,6 +132,22 @@ it("honors only the first draft when the parser returns duplicates for one row",
 });
 
 // @trace FR-BANK-04
+it("tolerates invalid AI drafts for bank rows and counts those rows as failed", async () => {
+  const service = await build(adapter([draft(2), { ...draft(3), amountMinor: 0 }]));
+
+  const summary = await service.importStatement({
+    provider: "monobank",
+    fileName: "mono.csv",
+    mimeType: "text/csv",
+    rawText: "Дата,Опис,Сума\n2026-06-01,АТБ,-10.00\n2026-06-02,Таксі,-20.00\n",
+  });
+
+  expect(summary.created).toBe(1);
+  expect(summary.failed).toBe(1);
+  expect(await repos.ledgerItems.listAll()).toHaveLength(1);
+});
+
+// @trace FR-BANK-04
 it("counts normalized rows the parser dropped entirely as failed", async () => {
   const service = await build(adapter([draft(2)]));
   const summary = await service.importStatement({
@@ -140,6 +162,21 @@ it("counts normalized rows the parser dropped entirely as failed", async () => {
   expect(summary.created).toBe(1);
   expect(summary.failed).toBe(1);
   expect(await repos.ledgerItems.listAll()).toHaveLength(1);
+});
+
+it("fills a missing bank occurredAt from the source row cells instead of falling back to createdAt", async () => {
+  const service = await build(adapter([{ ...draft(2, "АТБ"), occurredAt: undefined }]));
+
+  const summary = await service.importStatement({
+    provider: "monobank",
+    fileName: "mono.csv",
+    mimeType: "text/csv",
+    rawText: "Коли,Що,Скільки\n27.02.2025 18:04:09,АТБ,-10.00\n",
+  });
+
+  expect(summary.created).toBe(1);
+  const [item] = await repos.ledgerItems.listAll();
+  expect(item.occurredAt?.toISOString()).toBe("2025-02-27T18:04:09.000Z");
 });
 
 // @trace FR-BANK-04, FR-PARSE-08, FR-ITEM-07
