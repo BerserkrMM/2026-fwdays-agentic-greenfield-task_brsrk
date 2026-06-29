@@ -123,4 +123,37 @@ describe("OpenAiParserAdapter", () => {
       }).parse({ kind: "text", content: "кава" }),
     ).rejects.toThrow("OpenAI parser returned a malformed response body");
   });
+
+  it("converts a network-level fetch failure into an adapter failure", async () => {
+    await expect(
+      new OpenAiParserAdapter({
+        apiKey: "test-key",
+        fetchImpl: async () => {
+          throw new TypeError("network down");
+        },
+      }).parse({ kind: "text", content: "кава" }),
+    ).rejects.toThrow("OpenAI parser request failed");
+  });
+
+  it("times out when the response body stalls after headers arrive", async () => {
+    await expect(
+      new OpenAiParserAdapter({
+        apiKey: "test-key",
+        timeoutMs: 5,
+        // Headers arrive (fetch resolves), but reading the body hangs until the
+        // shared AbortController fires — verifies the timeout covers body parsing.
+        fetchImpl: (_input, init) =>
+          Promise.resolve({
+            ok: true,
+            status: 200,
+            json: () =>
+              new Promise((_resolve, reject) => {
+                init?.signal?.addEventListener("abort", () =>
+                  reject(new DOMException("Aborted", "AbortError")),
+                );
+              }),
+          } as unknown as Response),
+      }).parse({ kind: "text", content: "кава" }),
+    ).rejects.toThrow("OpenAI parser request timed out after 5ms");
+  });
 });

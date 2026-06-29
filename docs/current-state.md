@@ -4,6 +4,18 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-29 12:05 UTC — add-parsing-pipeline: fix CodeRabbit re-review finding (timeout must cover body read)
+
+**What was done** — CodeRabbit's re-review of `b2069c7` raised one valid Major: `clearTimeout` fired right after `fetch()` (which resolves on headers), so `response.json()` ran with no timeout — a 200 with a stalled body could hang `parse()` forever. Restructured `src/modules/parsing/adapters.ts` so a single `AbortController`/timer stays armed through `response.json()` and is cleared only after the body has been read and parsed; abort during body read now maps to the timeout `ParsingError`. Added two regression tests: a stalled-body-after-headers timeout, and a network-level fetch failure (to keep the branch ratchet green).
+
+**Current state** — `tsc`, `lint`, `test:run` (20 files / 110 tests) green. Coverage improved (lines/statements 46.61→46.86%, branches 87.08→87.17%); baseline ratcheted; `adapters.ts` 100% lines. Deterministic gates (handoff, claims, red-green, coverage) green.
+
+**Next steps** — push follow-up and re-trigger CodeRabbit on PR #7; then next slice `add-manual-text-input`.
+
+**Open questions / blockers** — none.
+
+---
+
 ## 2026-06-29 11:42 UTC — add-parsing-pipeline: address CodeRabbit PR #7 findings
 
 **What was done** — folded the genuinely-actionable CodeRabbit comments from PR #7 (triggered via `@coderabbitai review` against base `dev`):

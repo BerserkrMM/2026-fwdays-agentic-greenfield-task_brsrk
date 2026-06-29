@@ -37,11 +37,14 @@ export class OpenAiParserAdapter implements ParserAdapter {
       throw new ParsingError("adapter-failed", "OpenAI API key is missing.");
     }
 
+    // `fetch` resolves once headers arrive, but the body is streamed afterwards,
+    // so the same AbortController must stay armed through `response.json()` — a
+    // stalled body would otherwise hang `parse()` indefinitely. Clear the timer
+    // only once parsing has fully completed.
     const controller = new AbortController();
     const timer = setTimeout(() => controller.abort(), this.timeoutMs);
-    let response: Response;
     try {
-      response = await this.fetchImpl(this.endpoint, {
+      const response = await this.fetchImpl(this.endpoint, {
         method: "POST",
         signal: controller.signal,
         headers: {
@@ -61,37 +64,48 @@ export class OpenAiParserAdapter implements ParserAdapter {
           ],
         }),
       });
-    } catch {
-      const reason =
-        controller.signal.aborted ? `request timed out after ${this.timeoutMs}ms` : "request failed";
+
+      if (!response.ok) {
+        throw new ParsingError("adapter-failed", `OpenAI parser failed: ${response.status}`);
+      }
+
+      let data: OpenAiChatResponse;
+      try {
+        data = (await response.json()) as OpenAiChatResponse;
+      } catch {
+        if (controller.signal.aborted) {
+          throw new ParsingError(
+            "adapter-failed",
+            `OpenAI parser request timed out after ${this.timeoutMs}ms.`,
+          );
+        }
+        throw new ParsingError(
+          "adapter-failed",
+          "OpenAI parser returned a malformed response body.",
+        );
+      }
+      const content = data.choices?.[0]?.message?.content;
+      if (!content) throw new ParsingError("adapter-failed", "OpenAI parser returned no content.");
+
+      let parsed: AdapterParsingResult;
+      try {
+        parsed = JSON.parse(content) as AdapterParsingResult;
+      } catch {
+        throw new ParsingError("adapter-failed", "OpenAI parser returned invalid JSON.");
+      }
+      if (!Array.isArray(parsed.drafts)) {
+        throw new ParsingError("adapter-failed", "OpenAI parser returned no drafts array.");
+      }
+      return { drafts: parsed.drafts };
+    } catch (error) {
+      if (error instanceof ParsingError) throw error;
+      const reason = controller.signal.aborted
+        ? `request timed out after ${this.timeoutMs}ms`
+        : "request failed";
       throw new ParsingError("adapter-failed", `OpenAI parser ${reason}.`);
     } finally {
       clearTimeout(timer);
     }
-
-    if (!response.ok) {
-      throw new ParsingError("adapter-failed", `OpenAI parser failed: ${response.status}`);
-    }
-
-    let data: OpenAiChatResponse;
-    try {
-      data = (await response.json()) as OpenAiChatResponse;
-    } catch {
-      throw new ParsingError("adapter-failed", "OpenAI parser returned a malformed response body.");
-    }
-    const content = data.choices?.[0]?.message?.content;
-    if (!content) throw new ParsingError("adapter-failed", "OpenAI parser returned no content.");
-
-    let parsed: AdapterParsingResult;
-    try {
-      parsed = JSON.parse(content) as AdapterParsingResult;
-    } catch {
-      throw new ParsingError("adapter-failed", "OpenAI parser returned invalid JSON.");
-    }
-    if (!Array.isArray(parsed.drafts)) {
-      throw new ParsingError("adapter-failed", "OpenAI parser returned no drafts array.");
-    }
-    return { drafts: parsed.drafts };
   }
 }
 
