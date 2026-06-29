@@ -75,4 +75,19 @@ describe("LedgerQueryService (over the in-memory repository)", () => {
       { category: "Транспорт", totalMinor: -3000 },
     ]);
   });
+
+  // @trace FR-DASH-04, FR-LEDGER-04
+  it("folds non-deleted items into monthly trends via the query port", async () => {
+    const trends = await service.getMonthlyTrends();
+    // All seeded items share the current month (occurredAt null → createdAt now),
+    // so they fold into a single point; the precise month grouping is covered by
+    // the domain test. Deleted items are excluded.
+    expect(trends).toHaveLength(1);
+    expect(trends[0]).toMatchObject({
+      incomeMinor: 12000,
+      expenseMinor: -5000,
+      netMinor: 7000,
+    });
+    expect(trends[0].month).toMatch(/^\d{4}-\d{2}$/);
+  });
 });

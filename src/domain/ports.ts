@@ -10,6 +10,7 @@ import type {
   AccountBalance,
   CategoryTotal,
   LedgerAggregates,
+  MonthlyTrendPoint,
 } from "./ledger-query";
 import type { NewParserRun, ParserRun } from "./parser-run";
 import type { ParsedLedgerItemDraft } from "./parsed-draft";
@@ -109,6 +110,11 @@ export interface LedgerQueryPort {
   getAggregates(): Promise<LedgerAggregates>;
   /** Per-category totals over non-deleted items, by raw category text. */
   getCategoryTotals(): Promise<CategoryTotal[]>;
+  /**
+   * Income/expense grouped by calendar month (Europe/Kyiv) over non-deleted
+   * items, ascending — the all-time Dashboard trend (FR-DASH-04, FR-LEDGER-04).
+   */
+  getMonthlyTrends(): Promise<MonthlyTrendPoint[]>;
 }
 
 // --- Item-creation contract (the only sanctioned ledger-item write path) ---

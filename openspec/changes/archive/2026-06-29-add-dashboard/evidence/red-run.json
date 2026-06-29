@@ -1,0 +1,19 @@
+{
+  "slice": "add-dashboard",
+  "phase": "red",
+  "command": "npx vitest run src/domain/ledger-query.trends.test.ts src/modules/dashboard/ui/dashboard-view.test.ts src/modules/ledger/service.test.ts src/app-dashboard-page.smoke.test.ts",
+  "exitCode": 1,
+  "gitHead": "eb1e68c17d367b06e241aadf40e546313dd9567c",
+  "timestamp": "2026-06-29T23:20:07Z",
+  "summary": "New dashboard tests fail before implementation: the monthly-trend domain function, the dashboard view-model module, the LedgerQueryPort.getMonthlyTrends method, and the real /dashboard overview page do not exist yet.",
+  "failingTests": [
+    "src/modules/dashboard/ui/dashboard-view.test.ts > module load fails: Cannot find module './dashboard-view'",
+    "src/domain/ledger-query.trends.test.ts > computeMonthlyTrends (FR-DASH-04) > groups income/expense by Europe/Kyiv calendar month, ascending, excluding deleted",
+    "src/domain/ledger-query.trends.test.ts > computeMonthlyTrends (FR-DASH-04) > falls back to createdAt when occurredAt is absent",
+    "src/domain/ledger-query.trends.test.ts > computeMonthlyTrends (FR-DASH-04) > buckets by Europe/Kyiv local month, not UTC (late-UTC instant rolls into next Kyiv day)",
+    "src/domain/ledger-query.trends.test.ts > computeMonthlyTrends (FR-DASH-04) > returns an empty array when there are no non-deleted items",
+    "src/modules/ledger/service.test.ts > LedgerQueryService (over the in-memory repository) > folds non-deleted items into monthly trends via the query port",
+    "src/app-dashboard-page.smoke.test.ts > DashboardPage (read-only overview) > renders the balance, totals, category breakdown and trend from non-deleted items",
+    "src/app-dashboard-page.smoke.test.ts > DashboardPage (read-only overview) > shows an onboarding empty state when there are no non-deleted items"
+  ]
+}

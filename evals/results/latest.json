@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-29T12:48:00Z",
+  "generatedAt": "2026-06-29T23:40:00Z",
   "threshold": 70,
   "dimensions": {
     "ua-ux-clarity": 95,
@@ -83,6 +83,23 @@
       "judges": 1,
       "disagreement": false,
       "notes": "Fresh eval-judge (maker≠checker) over the produced output, verified to match the live manual-input-content.ts + import-summary.ts. All three CRITICAL criteria hold: every span is Ukrainian (AI localized as «ШІ»); the parse-failure error states what failed and gives two next actions («Не вдалося розпізнати текст. Перевірте налаштування ШІ або спробуйте ще раз.»); the empty-text validation is a direct imperative («Введіть текст для імпорту.»). Summary states created/failed counts explicitly and only when relevant; calm finance tone, no generic 'something went wrong' in the visible output. Minor: a generic fallback exists for unmapped codes (not in graded output). Held at 93, on par with the sibling baseline, not inflated."
+    },
+    {
+      "id": "eval-dashboard-state-clarity",
+      "dimension": "ua-error-clarity",
+      "trace": [
+        "FR-DASH-01",
+        "FR-DASH-04",
+        "FR-DASH-05",
+        "FR-SHELL-03",
+        "NFR-I18N-01"
+      ],
+      "capability": "dashboard",
+      "score": 93,
+      "pass": true,
+      "judges": 1,
+      "disagreement": false,
+      "notes": "Fresh eval-judge (maker≠checker) over the produced output from the live dashboard-content.ts. All three CRITICAL criteria hold: every string is Ukrainian (only Latin is the IANA «Europe/Kyiv» timezone label); the empty state explains «Ще немає операцій» and points to import («Перейти до імпорту»); the insufficient-trend state gives the concrete reason («Тренд з’явиться, коли операції охоплять щонайменше два різні місяці»). Partial vs total failure are distinguished with a retry, and the read-only note + balance hint name which statuses count. Minor non-gating nit: the partial state's «спробуйте оновити сторінку» wording diverges slightly from the error state's «Спробувати ще раз» button. On par with the sibling baseline (93), not inflated. A per-section «Не вдалося завантажити цей розділ» state was added after grading so a failed read no longer masquerades as empty/insufficient."
     }
   ]
 }

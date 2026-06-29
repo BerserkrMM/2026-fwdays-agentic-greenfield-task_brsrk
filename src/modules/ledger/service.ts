@@ -11,10 +11,12 @@ import {
   computeAccountBalances,
   computeAggregates,
   computeCategoryTotals,
+  computeMonthlyTrends,
   computeOverallBalance,
   type AccountBalance,
   type CategoryTotal,
   type LedgerAggregates,
+  type MonthlyTrendPoint,
 } from "@/src/domain/ledger-query";
 import type { LedgerItemRepository, LedgerQueryPort } from "@/src/domain/ports";
 
@@ -39,5 +41,9 @@ export class LedgerQueryService implements LedgerQueryPort {
 
   async getCategoryTotals(): Promise<CategoryTotal[]> {
     return computeCategoryTotals(await this.ledgerItems.listNonDeleted());
+  }
+
+  async getMonthlyTrends(): Promise<MonthlyTrendPoint[]> {
+    return computeMonthlyTrends(await this.ledgerItems.listNonDeleted());
   }
 }

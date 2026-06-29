@@ -1,13 +1,5 @@
-# dashboard
+## MODIFIED Requirements
 
-## Purpose
-
-The Dashboard capability owns the read-only financial overview. It displays
-balance summary, income/expense totals, category breakdown, and trends using
-Ledger capability queries over non-deleted ledger items across the full history
-(all-time; no period filter in v1). It never mutates ledger items, imports, or
-accounts.
-## Requirements
 ### Requirement: Dashboard aggregates cover the full history
 
 All Dashboard figures SHALL be computed over the full history of non-deleted
@@ -116,4 +108,3 @@ accounts. (FR-DASH-05)
 - **WHEN** the Dashboard loads or refreshes
 - **THEN** it only reads from ledger queries
 - **AND** it does not create, update, approve, delete, import, or configure data
-

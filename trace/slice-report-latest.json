@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-29T17:40:17.275Z",
+  "generatedAt": "2026-06-29T23:45:35.309Z",
   "generatedBy": "scripts/slice-report.mjs",
-  "slice": "add-bank-statement-imports",
+  "slice": "add-dashboard",
   "commands": {
     "openspecValidate": {
       "command": "npx openspec validate --all --strict",
@@ -35,34 +35,27 @@
   "metrics": {
     "openspecPassed": 10,
     "activeChanges": 0,
-    "testFilesPassed": 31,
-    "testsPassed": 169,
+    "testFilesPassed": 37,
+    "testsPassed": 199,
     "traceFailures": 0,
-    "traceWarnings": 77,
+    "traceWarnings": 70,
     "trajectoryFailures": 0,
-    "trajectoryWarnings": 2,
-    "changedFiles": 41,
+    "trajectoryWarnings": 3,
+    "changedFiles": 0,
     "evalBaseline": {
       "ua-ux-clarity": 95,
       "explicit-state-clarity": 96,
       "ua-error-clarity": 93
     },
     "coverageBaseline": {
-      "lines": 53.78,
-      "statements": 53.78,
-      "functions": 74.44,
-      "branches": 89.01
+      "lines": 63.92,
+      "statements": 63.92,
+      "functions": 78.82,
+      "branches": 89.61
     },
-    "reviewFindings": "clean",
-    "rawReviewEvidenceRefs": 7,
-    "sliceTrailerCommits": 1,
-    "refs": [
-      "FR-BANK-01",
-      "FR-BANK-02",
-      "FR-BANK-03",
-      "FR-BANK-04",
-      "FR-BANK-05",
-      "FR-BANK-06"
-    ]
+    "reviewFindings": "missing",
+    "rawReviewEvidenceRefs": 0,
+    "sliceTrailerCommits": 0,
+    "refs": []
   }
 }
