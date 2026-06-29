@@ -26,5 +26,5 @@ The next approved Project Factory slice is `add-parsing-pipeline`. Import channe
 
 - New domain parsing helpers under `src/domain/**` and module code under `src/modules/parsing/**`.
 - Repository port usage for existing `input_events` and `parser_runs`; one backward-compatible nullable `ledger_items.confidence` coordination addition for FR-PARSE-04, with no new table ownership.
-- Tests with `@trace FR-PARSE-*` and evidence under `openspec/changes/add-parsing-pipeline/`.
+- Tests with `@trace FR-PARSE-*` and evidence under `openspec/changes/archive/2026-06-29-add-parsing-pipeline/`.
 - Later manual-input, bank-imports, and file-imports slices will consume this parsing port and then create pending ledger items through the existing item-creation contract.

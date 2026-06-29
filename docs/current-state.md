@@ -4,6 +4,21 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-29 11:42 UTC — add-parsing-pipeline: address CodeRabbit PR #7 findings
+
+**What was done** — folded the genuinely-actionable CodeRabbit comments from PR #7 (triggered via `@coderabbitai review` against base `dev`):
+- `src/modules/parsing/adapters.ts`: added an `AbortController` timeout (`timeoutMs`, default 30s) around the OpenAI `fetch` so a hung upstream can no longer block `parse()`, converted abort/network failures into `ParsingError("adapter-failed", ...)`, and wrapped `response.json()` so a malformed body is reported as an adapter failure instead of escaping as a raw exception.
+- `src/modules/parsing/adapters.test.ts`: moved `OPENAI_API_KEY` restore into a `finally` block (test isolation), and added regression tests for the timeout/abort path and malformed-body path (+2 tests).
+- Fixed stale evidence paths in the archived change (`proposal.md`, `tasks.md`) to point at `openspec/changes/archive/2026-06-29-add-parsing-pipeline/...`. Frozen raw reviewer outputs under `reviews/raw/` were intentionally NOT edited (evidence discipline).
+
+**Current state** — `tsc --noEmit`, `lint`, `test:run` (20 files / 108 tests) all green. Coverage improved (lines/statements 46.15→46.61%); baseline ratcheted. `check:coverage`, `check:claims` pass. adapters.ts at 100% line coverage. CodeRabbit's remaining comments were rubric/PR-description items (author name / demo video / agentic write-up) and an auto-generated-report nitpick — not code defects — so left for the PR description, not the code.
+
+**Next steps** — push the follow-up commit and re-trigger CodeRabbit on PR #7; then next slice `add-manual-text-input`.
+
+**Open questions / blockers** — none. Note: CodeRabbit auto-review is disabled for non-default base branches; PRs target `dev`, so reviews must be triggered with `@coderabbitai review` (or add `reviews.auto_review.base_branches: ["dev"]` to `.coderabbit.yaml`).
+
+---
+
 ## 2026-06-29 09:33 UTC — add-parsing-pipeline slice archived
 
 **What was done** — selected the next Project Factory slice from the approved MVP order: `add-parsing-pipeline`, owning FR-PARSE-01..08 plus NFR-PRIV-01/02 and TC-STACK-05. Added the parsing domain/module: deterministic keyless parser-payload normalization, draft validation/canonicalization, OpenAI-compatible adapter boundary, parser-run success/failure/retry recording, and drafts-only parsing service. Added minimal coordination plumbing for FR-PARSE-04 by persisting optional parser confidence on `ledger_items` while leaving it hidden from the v1 ledger UI. Archived the OpenSpec change as `2026-06-29-add-parsing-pipeline` and committed the slice trailer.

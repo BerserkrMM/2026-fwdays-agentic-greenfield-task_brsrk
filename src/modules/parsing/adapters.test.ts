@@ -6,16 +6,19 @@ import { OpenAiParserAdapter } from "./adapters";
 describe("OpenAiParserAdapter", () => {
   it("reports missing OpenAI configuration as an adapter failure", async () => {
     const previous = process.env.OPENAI_API_KEY;
-    delete process.env.OPENAI_API_KEY;
-    await expect(
-      new OpenAiParserAdapter().parse({ kind: "text", content: "кава 45" }),
-    ).rejects.toMatchObject({
-      name: "ParsingError",
-      code: "adapter-failed",
-      message: "OpenAI API key is missing.",
-    } satisfies Partial<ParsingError>);
-    if (previous === undefined) delete process.env.OPENAI_API_KEY;
-    else process.env.OPENAI_API_KEY = previous;
+    try {
+      delete process.env.OPENAI_API_KEY;
+      await expect(
+        new OpenAiParserAdapter().parse({ kind: "text", content: "кава 45" }),
+      ).rejects.toMatchObject({
+        name: "ParsingError",
+        code: "adapter-failed",
+        message: "OpenAI API key is missing.",
+      } satisfies Partial<ParsingError>);
+    } finally {
+      if (previous === undefined) delete process.env.OPENAI_API_KEY;
+      else process.env.OPENAI_API_KEY = previous;
+    }
   });
 
   it("parses JSON drafts from an OpenAI-compatible response", async () => {
@@ -95,5 +98,29 @@ describe("OpenAiParserAdapter", () => {
           }),
       }).parse({ kind: "text", content: "кава" }),
     ).rejects.toThrow("OpenAI parser returned no drafts array");
+  });
+
+  it("converts an aborted (timed-out) request into an adapter failure", async () => {
+    await expect(
+      new OpenAiParserAdapter({
+        apiKey: "test-key",
+        timeoutMs: 1,
+        fetchImpl: (_input, init) =>
+          new Promise((_resolve, reject) => {
+            init?.signal?.addEventListener("abort", () =>
+              reject(new DOMException("Aborted", "AbortError")),
+            );
+          }),
+      }).parse({ kind: "text", content: "кава" }),
+    ).rejects.toThrow("OpenAI parser request timed out after 1ms");
+  });
+
+  it("converts a malformed response body into an adapter failure", async () => {
+    await expect(
+      new OpenAiParserAdapter({
+        apiKey: "test-key",
+        fetchImpl: async () => new Response("not-json-at-all", { status: 200 }),
+      }).parse({ kind: "text", content: "кава" }),
+    ).rejects.toThrow("OpenAI parser returned a malformed response body");
   });
 });
