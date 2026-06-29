@@ -72,6 +72,23 @@ platform session limit** (resets 01:30 UTC), so the change is **NOT archived** a
   trajectory all pass. OpenSpec change present but **un-archived** (active).
   `review-findings.json` is `clean: false` pending the independent review.
 
+**Fallow audit** — `FALLOW_AGENT_SOURCE=pi npx fallow audit --base origin/dev
+--format json --quiet --explain`. Verdict `fail` with new-only advisory findings,
+no runtime defect:
+- 1 unused file: `evals/cases/ledger-items.eval.ts` — the eval case is loaded by
+  the eval runner, not statically imported by app code; same accepted pattern as
+  `accounts.eval.ts`. Kept intentionally.
+- 5 complexity findings (max cyclomatic 22) — the `/ledger` server-component JSX
+  render (filter form + per-item rows/edit forms), flagged by the "none" coverage
+  tier for server-component JSX, not by logic complexity. Accepted, as with the
+  accounts page precedent.
+- 2 duplication groups — the DB-boundary smoke-test reset boilerplate (shared with
+  the other smoke tests) and repeated Tailwind input classes on the filter/edit
+  forms. Standard per-file test isolation + presentational markup; extracting a
+  shared helper/component is deferred.
+- Fixed during this pass: removed the unused `export` on `effectiveDate` in
+  `ledger-filter.ts` (now file-internal) — fallow `unused_exports` is clean.
+
 **Next steps (after the session-limit reset)**
 1. Re-dispatch the four fresh reviewers over `git diff dev`; persist raw outputs
    under `reviews/`; fold confirmed findings; fix or accept-with-rationale.

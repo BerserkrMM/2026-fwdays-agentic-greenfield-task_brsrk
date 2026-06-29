@@ -44,7 +44,7 @@ export interface LedgerPage {
  * before the import channels populate it, so the list orders by this effective
  * date to stay stable (design D2).
  */
-export function effectiveDate(item: LedgerItem): Date {
+function effectiveDate(item: LedgerItem): Date {
   return item.occurredAt ?? item.createdAt;
 }
 
