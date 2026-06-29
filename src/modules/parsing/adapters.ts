@@ -155,6 +155,48 @@ Important:
 - For bank-statement rows, amountMinor and description are mandatory. If a row has no transaction amount or no meaningful description/merchant/counterparty, do not create a draft for that row.
 - For bank-statement rows, always echo sourceRef.rowNumber exactly from the input row.`;
 
+const OPENAI_VISION_SYSTEM_PROMPT = `You are a receipt parser for a Ukrainian personal finance app. You receive ONE photo of a purchase receipt.
+
+Return ONLY valid JSON. No markdown, no comments, no explanation.
+
+Required output shape:
+{
+  "drafts": [
+    {
+      "description": "string",
+      "amountMinor": 0,
+      "currency": "UAH",
+      "type": "expense",
+      "occurredAt": "optional ISO-8601 string",
+      "category": "Без категорії",
+      "confidence": 0.0,
+      "sourceRef": { "photoIndex": 0 }
+    }
+  ]
+}
+
+Task:
+Read the receipt image and extract its purchased line items as atomic ledger item drafts.
+
+Rules:
+1. Create one draft per distinct purchased line item visible on the receipt.
+   If individual line items are not legible but a single total is, create one draft for the total with a combined description.
+2. Use these exact field names: description, amountMinor, currency, type, occurredAt, category, confidence, sourceRef. Do NOT use any other field names.
+3. currency is always "UAH".
+4. amountMinor is signed kopiyky: 300 грн => 30000; 300.50 грн => 30050. Receipt purchases are expenses, so type is "expense" and amountMinor is NEGATIVE. Use "income" only for an explicit refund/return line.
+5. description: the Ukrainian product/line name from the receipt. If unreadable, use a short relevant phrase or "Невідомо".
+6. category: assign a short useful Ukrainian category from the item (food/groceries => "Їжа", pharmacy => "Здоровʼя", transport/fuel => "Транспорт", household => "Дім", etc.). If none can be inferred, use "Без категорії". Do not overuse "Без категорії".
+7. occurredAt: if the receipt shows a purchase date/time, return it as ISO-8601. If absent, omit occurredAt. Do not invent dates.
+8. confidence: a value in [0,1] reflecting how legible the line was.
+9. sourceRef: include { "photoIndex": 0 } on each draft.
+10. If the image is not a readable receipt or shows no purchase, return { "drafts": [] }.
+
+Important:
+- Always return JSON with a top-level "drafts" array.
+- Never return prose, null, or unrecognized fields.
+- Never use amount in hryvnias; always signed kopiyky.
+- amountMinor and description are mandatory for each draft; skip any line with no amount.`;
+
 /**
  * OpenAI-compatible adapter boundary (FR-PARSE-06). It is intentionally small and
  * injectable so CI and import-channel tests can use deterministic adapters while
@@ -179,6 +221,10 @@ export class OpenAiParserAdapter implements ParserAdapter {
       throw new ParsingError("adapter-failed", "OpenAI API key is missing.");
     }
 
+    // Build messages first (a photo payload missing its image fails fast here,
+    // before any timer/network resource is allocated).
+    const messages = buildMessages(payload);
+
     // `fetch` resolves once headers arrive, but the body is streamed afterwards,
     // so the same AbortController must stay armed through `response.json()` — a
     // stalled body would otherwise hang `parse()` indefinitely. Clear the timer
@@ -188,13 +234,7 @@ export class OpenAiParserAdapter implements ParserAdapter {
     const requestBody = JSON.stringify({
       model: this.model,
       response_format: { type: "json_object" },
-      messages: [
-        {
-          role: "system",
-          content: OPENAI_SYSTEM_PROMPT,
-        },
-        { role: "user", content: JSON.stringify(payload) },
-      ],
+      messages,
     });
     try {
       const response = await this.fetchImpl(this.endpoint, {
@@ -253,4 +293,40 @@ export class OpenAiParserAdapter implements ParserAdapter {
 
 interface OpenAiChatResponse {
   choices?: Array<{ message?: { content?: string } }>;
+}
+
+type OpenAiMessage =
+  | { role: "system" | "user"; content: string }
+  | {
+      role: "user";
+      content: Array<
+        { type: "text"; text: string } | { type: "image_url"; image_url: { url: string } }
+      >;
+    };
+
+/**
+ * Selects the system prompt and user message shape by payload kind. Text/bank
+ * payloads send the serialized content as a string; photo payloads send a vision
+ * message with the receipt image as an `image_url` content part (FR-FILE-04).
+ */
+function buildMessages(payload: ParserPayload): OpenAiMessage[] {
+  if (payload.kind === "photo") {
+    if (!payload.image) {
+      throw new ParsingError("adapter-failed", "Receipt photo payload is missing image data.");
+    }
+    return [
+      { role: "system", content: OPENAI_VISION_SYSTEM_PROMPT },
+      {
+        role: "user",
+        content: [
+          { type: "text", text: payload.content || "Розпізнай позиції чека." },
+          { type: "image_url", image_url: { url: payload.image.dataUri } },
+        ],
+      },
+    ];
+  }
+  return [
+    { role: "system", content: OPENAI_SYSTEM_PROMPT },
+    { role: "user", content: JSON.stringify(payload) },
+  ];
 }

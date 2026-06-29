@@ -8,11 +8,19 @@ import type { ParserRun } from "./parser-run";
 
 export type ParserPayloadKind = "text" | "bank" | "photo";
 
+export interface ParserPayloadImage {
+  /** `data:<mime>;base64,…` of the receipt image; passed through normalization untouched. */
+  dataUri: string;
+  mimeType: string;
+}
+
 export interface ParserPayload {
   kind: ParserPayloadKind;
   /** Already source-normalized channel content; parsing-level privacy cleanup still runs. */
   content: string;
   locale?: "uk-UA" | string;
+  /** Image payload for `kind: "photo"` vision parsing (FR-FILE-04). */
+  image?: ParserPayloadImage;
   sourceRef?: {
     rowNumber?: number;
     photoIndex?: number;
@@ -26,6 +34,8 @@ export interface AdapterParsingResult {
 export interface ParsingResult {
   parserRun: ParserRun;
   drafts: ParsedLedgerItemDraft[];
+  /** Drafts the parser returned that failed canonicalization (only populated when tolerated). */
+  invalidDrafts: InvalidParserDraft[];
 }
 
 export interface ParserAdapter {
@@ -52,6 +62,31 @@ export function normalizeParserPayload(payload: ParserPayload): ParserPayload {
     ...payload,
     content: normalizeTextContent(payload.content),
   };
+}
+
+/**
+ * A view of the payload safe to persist on `parser_runs.normalized_payload`: it
+ * drops the raw image base64 (already preserved on the input_event's
+ * `storage_uri`) so the large blob is not duplicated in parser-run history, while
+ * keeping the image's type and size for traceability.
+ */
+export function redactParserPayloadForStorage(payload: ParserPayload): unknown {
+  if (!payload.image) return payload;
+  const { image, ...rest } = payload;
+  return {
+    ...rest,
+    image: { mimeType: image.mimeType, byteLength: dataUriByteLength(image.dataUri) },
+  };
+}
+
+/** Decoded byte length of a base64 `data:` URI payload (not the base64 char count). */
+function dataUriByteLength(dataUri: string): number {
+  const comma = dataUri.indexOf(",");
+  if (comma === -1) return 0;
+  const base64 = dataUri.slice(comma + 1);
+  if (base64.length === 0) return 0;
+  const padding = base64.endsWith("==") ? 2 : base64.endsWith("=") ? 1 : 0;
+  return Math.floor((base64.length * 3) / 4) - padding;
 }
 
 function normalizeTextContent(content: string): string {

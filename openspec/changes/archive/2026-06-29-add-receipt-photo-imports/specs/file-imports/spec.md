@@ -1,12 +1,5 @@
-# file-imports
+## MODIFIED Requirements
 
-## Purpose
-
-The File Imports capability owns the `/imports/files` receipt-photo channel. It
-allows one receipt photo per v1 input event, preserves the original file
-reference, applies deterministic non-AI preprocessing where possible, invokes AI
-vision parsing, and creates pending ledger items from parsed receipt drafts.
-## Requirements
 ### Requirement: User uploads one receipt photo
 
 The system SHALL let the user upload one receipt photo on `/imports/files`.
@@ -113,4 +106,3 @@ There SHALL be no separate preview/approval gate. (FR-FILE-05)
 - **THEN** the user is redirected to the Ledger screen
 - **AND** a summary of created and failed item counts is shown
 - **AND** the created pending items are visible there for review
-

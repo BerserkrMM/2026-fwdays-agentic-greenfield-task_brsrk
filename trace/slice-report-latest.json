@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-29T17:40:17.275Z",
+  "generatedAt": "2026-06-29T22:54:29.634Z",
   "generatedBy": "scripts/slice-report.mjs",
-  "slice": "add-bank-statement-imports",
+  "slice": "add-receipt-photo-imports",
   "commands": {
     "openspecValidate": {
       "command": "npx openspec validate --all --strict",
@@ -35,34 +35,33 @@
   "metrics": {
     "openspecPassed": 10,
     "activeChanges": 0,
-    "testFilesPassed": 31,
-    "testsPassed": 169,
+    "testFilesPassed": 37,
+    "testsPassed": 212,
     "traceFailures": 0,
-    "traceWarnings": 77,
+    "traceWarnings": 70,
     "trajectoryFailures": 0,
     "trajectoryWarnings": 2,
-    "changedFiles": 41,
+    "changedFiles": 37,
     "evalBaseline": {
       "ua-ux-clarity": 95,
       "explicit-state-clarity": 96,
       "ua-error-clarity": 93
     },
     "coverageBaseline": {
-      "lines": 53.78,
-      "statements": 53.78,
-      "functions": 74.44,
-      "branches": 89.01
+      "lines": 61.11,
+      "statements": 61.11,
+      "functions": 78.03,
+      "branches": 89.81
     },
     "reviewFindings": "clean",
-    "rawReviewEvidenceRefs": 7,
+    "rawReviewEvidenceRefs": 4,
     "sliceTrailerCommits": 1,
     "refs": [
-      "FR-BANK-01",
-      "FR-BANK-02",
-      "FR-BANK-03",
-      "FR-BANK-04",
-      "FR-BANK-05",
-      "FR-BANK-06"
+      "FR-FILE-01",
+      "FR-FILE-02",
+      "FR-FILE-03",
+      "FR-FILE-04",
+      "FR-FILE-05"
     ]
   }
 }

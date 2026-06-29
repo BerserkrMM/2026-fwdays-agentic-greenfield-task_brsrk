@@ -157,3 +157,61 @@ describe("OpenAiParserAdapter", () => {
     ).rejects.toThrow("OpenAI parser request timed out after 5ms");
   });
 });
+
+// @trace FR-FILE-04, FR-PARSE-06
+describe("OpenAiParserAdapter vision path", () => {
+  const dataUri = "data:image/jpeg;base64,/9j/AAAQ";
+
+  it("sends an image_url vision message for a photo payload and returns drafts", async () => {
+    let sentBody: unknown;
+    const adapter = new OpenAiParserAdapter({
+      apiKey: "test-key",
+      fetchImpl: async (_input, init) => {
+        sentBody = JSON.parse(String(init?.body));
+        return new Response(
+          JSON.stringify({
+            choices: [
+              {
+                message: {
+                  content: JSON.stringify({
+                    drafts: [
+                      {
+                        description: "Кава",
+                        amountMinor: -4500,
+                        currency: "UAH",
+                        type: "expense",
+                        category: "Кафе",
+                        sourceRef: { photoIndex: 0 },
+                      },
+                    ],
+                  }),
+                },
+              },
+            ],
+          }),
+          { status: 200 },
+        );
+      },
+    });
+
+    const result = await adapter.parse({
+      kind: "photo",
+      content: "Розпізнай чек.",
+      image: { dataUri, mimeType: "image/jpeg" },
+    });
+
+    expect(result.drafts).toHaveLength(1);
+    const body = sentBody as { messages: Array<{ role: string; content: unknown }> };
+    const userMessage = body.messages.find((message) => message.role === "user");
+    const parts = userMessage?.content as Array<{ type: string; image_url?: { url: string } }>;
+    expect(Array.isArray(parts)).toBe(true);
+    const imagePart = parts.find((part) => part.type === "image_url");
+    expect(imagePart?.image_url?.url).toBe(dataUri);
+  });
+
+  it("fails clearly when a photo payload carries no image", async () => {
+    await expect(
+      new OpenAiParserAdapter({ apiKey: "test-key" }).parse({ kind: "photo", content: "чек" }),
+    ).rejects.toMatchObject({ name: "ParsingError", code: "adapter-failed" });
+  });
+});
