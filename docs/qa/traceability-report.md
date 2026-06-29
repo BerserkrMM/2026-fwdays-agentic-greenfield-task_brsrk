@@ -14,11 +14,11 @@ Result: PASS, 82 warning(s)
 | FR-SHELL-04 | yes | yes | - | - |
 | FR-IMPORT-01 | yes | yes | 2 | - |
 | FR-IMPORT-02 | yes | yes | 1 | - |
-| FR-TEXT-01 | yes | yes | 4 | - |
+| FR-TEXT-01 | yes | yes | 5 | - |
 | FR-TEXT-02 | yes | yes | 2 | - |
-| FR-TEXT-03 | yes | yes | 5 | - |
+| FR-TEXT-03 | yes | yes | 4 | - |
 | FR-TEXT-04 | yes | yes | 2 | - |
-| FR-TEXT-05 | yes | yes | 4 | - |
+| FR-TEXT-05 | yes | yes | 3 | - |
 | FR-FILE-01 | yes | yes | - | - |
 | FR-FILE-02 | yes | yes | - | - |
 | FR-FILE-03 | yes | yes | - | - |

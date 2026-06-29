@@ -4,6 +4,18 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-29 13:25 UTC — PR #8 review fixes for add-manual-text-input
+
+**What was done** — reviewed PR #8 against `dev`, checked CI failure and CodeRabbit's actionable comments. Fixed the CI blocker by force-adding the archived raw maker≠checker review evidence so `review-findings.json.rawEvidence` resolves in a clean checkout, then regenerated trajectory/slice reports. Folded valid CodeRabbit code/data findings: `importTextAction` now rejects a non-string `text` FormData value and blank/whitespace text before parsing/storage/default-account seeding; `parseImportSummary` rejects mixed valid/invalid query counts instead of rendering a misleading partial banner; duplicate trace evidence was removed at the source; manual-input eval output now includes the zero-draft warning state and more natural summary wording (`Додано до журналу`). Added regression tests for the malformed FormData and blank-text no-side-effect boundaries.
+
+**Current state** — this PR-fix commit includes the final follow-up from CodeRabbit's second review. Previous pushed commit made GitHub CI `verify` green; the current delta also passes locally: `lint`, `tsc --noEmit`, `test:run` (26 files / 134 tests), `test:coverage`, `next build`, `check:coverage`, `openspec validate --all --strict`, `check:trace` (0 failures / 82 warnings), `check:trajectory` (0 failures / 2 inherited warnings), `check:red-green -- --slice add-manual-text-input --strict`, and `check:eval`. The original CI failure cause (`docs/qa/trajectory-report.md` stale because raw review evidence was ignored/untracked) is resolved.
+
+**Next steps** — push the final blank-text seeding fix, wait for GitHub CI, then trigger/confirm CodeRabbit re-review. Human/submission-only CodeRabbit warnings still need owner input if the final homework rubric requires them: real student name and 1–2 minute demo-video link are not present in the repo and were not invented. The PR description should also explicitly summarize Agentic Engineering evidence: AGENTS.md/context discipline, specs→tests→evals loop, maker≠checker raw reviews, fallow/code-quality review, and the split between student intent/approval and agent-assisted implementation.
+
+**Open questions / blockers** — real author name and demo-video URL remain human inputs, not code/workflow defects. Fallow audit remains non-green with accepted advisory findings only: the eval case is intentionally runner-loaded, smoke-test reset boilerplate is duplicated, and inherited `app/ledger/page.tsx` complexity remains outside this slice.
+
+---
+
 ## 2026-06-29 12:53 UTC — add-manual-text-input slice SHIPPED (channel 1: `/imports/text`)
 
 **What was done** — updated `dev` (PR #7 `add-parsing-pipeline` merged) and built the next approved slice, `add-manual-text-input` (capability `manual-input`, phase 4 channels), on branch `add-manual-text-input` off `dev`. It is the first import channel: free-form Ukrainian text → `input_event` → parser → pending ledger items → Ledger with a created/failed summary. Tests-first with durable RED→GREEN evidence; archived after a clean maker≠checker review + graded eval.

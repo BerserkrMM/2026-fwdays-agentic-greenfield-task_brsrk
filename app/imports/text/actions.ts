@@ -26,15 +26,26 @@ function service(): ManualInputService {
   return new ManualInputService(repos, parsing, itemCreation);
 }
 
-export async function importTextAction(formData: FormData): Promise<void> {
-  const text = String(formData.get("text") ?? "");
+function readTextField(formData: FormData): string {
+  const textField = formData.get("text");
+  if (textField !== null && typeof textField !== "string") {
+    redirect("/imports/text?formError=empty-text");
+  }
+  return textField ?? "";
+}
 
-  // The default account must exist before any item is saved (FR-ITEM-06); seeding
-  // is idempotent and harmless if one already exists (FR-ACCT-06).
-  const repos = getRepositories();
-  await new AccountsService(repos.accounts).ensureSeededDefault();
+export async function importTextAction(formData: FormData): Promise<void> {
+  const text = readTextField(formData);
+  if (text.trim().length === 0) {
+    redirect("/imports/text?formError=empty-text");
+  }
 
   let summary;
+  // The default account must exist before any item is saved (FR-ITEM-06); seeding
+  // is idempotent and harmless if one already exists (FR-ACCT-06). It runs only
+  // after boundary validation so rejected forms do not mutate account state.
+  const repos = getRepositories();
+  await new AccountsService(repos.accounts).ensureSeededDefault();
   try {
     summary = await service().importText(text);
   } catch (error) {

@@ -5,7 +5,8 @@
 // user-visible *quality* of the manual text-import copy: whether the parse-failure
 // error explains what went wrong and offers a retry, whether the empty-text
 // validation is clear, and whether the post-import summary on the Ledger states
-// created/failed counts in calm, Ukrainian-first finance language.
+// created/failed counts or a distinct zero-draft warning in calm,
+// Ukrainian-first finance language.
 //
 // `produce()` reads the REAL copy modules (manual-input-content.ts +
 // import-summary.ts) — the single source of truth shared with the page/action —
@@ -28,7 +29,7 @@ export const cases: EvalCase[] = [
     dimension: "ua-error-clarity",
     capability: "manual-input",
     scenario:
-      "A user pastes free-form text on /imports/text: submits empty input, hits a parse failure (no AI key / bad response), then succeeds and lands on the Ledger with a created/failed summary.",
+      "A user pastes free-form text on /imports/text: submits empty input, hits a parse failure (no AI key / bad response), then lands on the Ledger with success, partial-success, and zero-draft summary states.",
     produce: async () => {
       const { MANUAL_TEXT_PAGE, manualTextErrorMessage } = await import(
         "@/src/modules/manual-input/ui/manual-input-content"
@@ -49,6 +50,7 @@ export const cases: EvalCase[] = [
         `Error[parse-failed]: ${manualTextErrorMessage("parse-failed")}`,
         `Ledger summary (ok): ${importSummaryMessage({ created: 2, failed: 0 })}`,
         `Ledger summary (partial): ${importSummaryMessage({ created: 1, failed: 2 })}`,
+        `Ledger summary (zero-draft warning): ${importSummaryMessage({ created: 0, failed: 0 })}`,
       ].join("\n");
     },
     rubric: [
@@ -56,6 +58,7 @@ export const cases: EvalCase[] = [
       "CRITICAL: the parse-failure error explains what went wrong and points to a retry / checking AI settings",
       "CRITICAL: the empty-text validation tells the user exactly what to do (enter text)",
       "the post-import summary clearly states how many items were created and, when relevant, how many failed",
+      "the zero-draft summary is a distinct warning state that says no operation was recognized, not a success banner",
       "the tone is calm and finance-oriented, not alarming, and never a generic 'something went wrong'",
     ],
   },

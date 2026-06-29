@@ -161,6 +161,7 @@
       ],
       "planned": true,
       "tests": [
+        "src/app-actions/import-text-action.test.ts",
         "src/domain/manual-text.test.ts",
         "src/modules/manual-input/service.test.ts",
         "src/modules/manual-input/ui/manual-input-content.test.ts",
@@ -189,7 +190,6 @@
       "tests": [
         "src/domain/manual-text.test.ts",
         "src/modules/manual-input/service.test.ts",
-        "src/modules/manual-input/service.test.ts",
         "src/modules/manual-input/ui/manual-input-content.test.ts",
         "evals/cases/manual-input.eval.ts"
       ],
@@ -215,7 +215,6 @@
       "planned": true,
       "tests": [
         "src/modules/manual-input/service.test.ts",
-        "src/modules/manual-input/ui/import-summary.test.ts",
         "src/modules/manual-input/ui/import-summary.test.ts",
         "evals/cases/manual-input.eval.ts"
       ],

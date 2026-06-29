@@ -121,7 +121,7 @@ describe("ManualInputService creates pending items (partial success)", () => {
   });
 });
 
-// @trace FR-TEXT-03, FR-ITEM-07
+// @trace FR-ITEM-07
 describe("ManualInputService surfaces parse failure with preserved evidence", () => {
   it("preserves the input_event and a failed parser_run when parsing fails", async () => {
     // OpenAI adapter with no key throws ParsingError("adapter-failed").

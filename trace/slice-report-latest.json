@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-29T12:52:36.199Z",
+  "generatedAt": "2026-06-29T13:39:41.335Z",
   "generatedBy": "scripts/slice-report.mjs",
   "slice": "add-manual-text-input",
   "commands": {
@@ -35,33 +35,33 @@
   "metrics": {
     "openspecPassed": 10,
     "activeChanges": 0,
-    "testFilesPassed": 25,
-    "testsPassed": 132,
+    "testFilesPassed": 26,
+    "testsPassed": 134,
     "traceFailures": 0,
     "traceWarnings": 82,
     "trajectoryFailures": 0,
     "trajectoryWarnings": 2,
-    "changedFiles": 33,
+    "changedFiles": 39,
     "evalBaseline": {
       "ua-ux-clarity": 95,
       "explicit-state-clarity": 96,
       "ua-error-clarity": 93
     },
     "coverageBaseline": {
-      "lines": 47.42,
-      "statements": 47.42,
-      "functions": 69.18,
-      "branches": 87.92
+      "lines": 47.86,
+      "statements": 47.86,
+      "functions": 69.51,
+      "branches": 87.99
     },
     "reviewFindings": "clean",
     "rawReviewEvidenceRefs": 4,
     "sliceTrailerCommits": 1,
     "refs": [
       "FR-TEXT-01",
+      "FR-TEXT-05",
       "FR-TEXT-02",
       "FR-TEXT-03",
-      "FR-TEXT-04",
-      "FR-TEXT-05"
+      "FR-TEXT-04"
     ]
   }
 }
