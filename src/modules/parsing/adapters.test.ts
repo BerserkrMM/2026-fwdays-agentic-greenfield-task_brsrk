@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ParsingError } from "@/src/domain/parsing";
+import type { ParserPayload } from "@/src/domain/parsing";
 import { OpenAiParserAdapter } from "./adapters";
 
 // @trace FR-PARSE-06, FR-PARSE-08
@@ -210,8 +211,11 @@ describe("OpenAiParserAdapter vision path", () => {
   });
 
   it("fails clearly when a photo payload carries no image", async () => {
+    // Runtime guard stays in place for malformed JS callers even though TS now
+    // requires `image` on the `photo` payload variant.
+    const malformedPayload = { kind: "photo", content: "чек" } as unknown as ParserPayload;
     await expect(
-      new OpenAiParserAdapter({ apiKey: "test-key" }).parse({ kind: "photo", content: "чек" }),
+      new OpenAiParserAdapter({ apiKey: "test-key" }).parse(malformedPayload),
     ).rejects.toMatchObject({ name: "ParsingError", code: "adapter-failed" });
   });
 });

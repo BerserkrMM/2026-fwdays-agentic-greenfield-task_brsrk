@@ -4,6 +4,18 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-29 23:26 UTC — PR #10 CodeRabbit pass triaged; small follow-ups ready to push
+
+**What was done** — triggered CodeRabbit on PR #10 with `@coderabbitai review`, waited for the review to finish, and triaged its 10 comments. Folded the valid code/spec/doc nits: `ParserPayload` is now a discriminated union that requires `image` for `kind: "photo"`; the runtime malformed-photo guard remains covered; the file-imports spec wording now matches the shipped payload (isolated image plus parser instruction/source-reference metadata, no surrounding raw input-event context); and the archived code-review note has the markdown blank line CodeRabbit requested. Rechecked the bundled `docs/test_bank_statements/check.JPEG` fixture: 80,831 bytes, detected as `image/jpeg`, data URI prefix `data:image/jpeg;base64,`.
+
+**Current state** — local code/spec checks are green after the follow-ups: `npx eslint . --ignore-pattern '.claude/**'`, `npx tsc --noEmit`, `npm run test:run` (37 files / 212 tests), `npm run build`, `npx openspec validate --all --strict`, `npm run check:trace` (0 failures / 70 warnings), `npm run check:trajectory` (0 failures / 2 inherited warnings), `npm run check:claims`, and `npm run check:handoff`. Note: plain `npm run lint` is currently blocked only by an unrelated ignored local worktree at `.claude/worktrees/add-dashboard`; CI/clean checkout is unaffected, and lint over this checkout excluding `.claude/**` is green.
+
+**Next steps** — commit these PR #10 follow-ups, push `add-receipt-photo-imports`, then trigger CodeRabbit again for the pushed commit and leave the PR for owner review.
+
+**Open questions / blockers** — CodeRabbit also requested a hard upload size limit and real author/demo-video submission fields. The hard size limit was **not** added because the accepted slice/spec explicitly says “no hard file-size limit in v1”; adding one would contradict the recorded product decision. The real author name and 1–2 minute demo video remain human-provided submission inputs and were not fabricated.
+
+---
+
 ## 2026-06-29 22:54 UTC — add-receipt-photo-imports slice SHIPPED (channel 3: `/imports/files`)
 
 **What was done** — built slice 8 (the last import channel), `add-receipt-photo-imports` (capability `file-imports`, FR-FILE-01..05), on branch `add-receipt-photo-imports` off `origin/dev` (it depends on foundation/parsing/ledger-items — all merged — not on the still-open bank PR #9). Tests-first with durable RED→GREEN evidence; archived after a clean four-reviewer maker≠checker round and a graded eval. Two v1 product decisions were confirmed by the owner up front: store the original photo bytes as a `data:` URI in `input_events.storage_uri` (no new infra), and do deterministic validation + magic-byte MIME detection only (binary EXIF stripping deferred).

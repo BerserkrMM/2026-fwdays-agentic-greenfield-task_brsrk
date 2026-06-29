@@ -22,6 +22,7 @@ Faithfully mirrors the bank-imports pattern: framework-free domain, magic-byte t
 - Original bytes forwarded as-is; binary EXIF stripping deferred in v1 per design/spec. Keep the deferral tracked; the "no PII" spec phrasing is stronger than v1 delivers.
 
 ## Verified correct
+
 - Partial-success: `failed` seeded from `invalidDrafts.length`; non-systemic per-draft failures increment; `NoDefaultAccountError`/`MissingInputEventError` re-throw (propagate).
 - Base64 not duplicated into `parser_runs` (redaction applied to stored payload while full payload reaches the adapter; test asserts no `"base64,"`).
 - Magic-byte trust over client MIME; empty rejection; WEBP RIFF…WEBP double-check.

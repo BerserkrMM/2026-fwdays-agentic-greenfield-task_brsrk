@@ -14,18 +14,23 @@ export interface ParserPayloadImage {
   mimeType: string;
 }
 
-export interface ParserPayload {
-  kind: ParserPayloadKind;
+interface BaseParserPayload {
   /** Already source-normalized channel content; parsing-level privacy cleanup still runs. */
   content: string;
   locale?: "uk-UA" | string;
-  /** Image payload for `kind: "photo"` vision parsing (FR-FILE-04). */
-  image?: ParserPayloadImage;
   sourceRef?: {
     rowNumber?: number;
     photoIndex?: number;
   };
 }
+
+export type ParserPayload =
+  | (BaseParserPayload & { kind: "text" | "bank"; image?: never })
+  | (BaseParserPayload & {
+      kind: "photo";
+      /** Image payload required for `kind: "photo"` vision parsing (FR-FILE-04). */
+      image: ParserPayloadImage;
+    });
 
 export interface AdapterParsingResult {
   drafts: ParsedLedgerItemDraft[];

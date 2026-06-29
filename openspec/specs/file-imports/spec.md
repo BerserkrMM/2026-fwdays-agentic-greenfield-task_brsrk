@@ -45,12 +45,13 @@ image type is recorded in `mime_type`. (FR-FILE-02, FR-IMPORT-02, NFR-PRIV-02)
 ### Requirement: Deterministic photo preprocessing precedes AI where possible
 
 Deterministic, non-AI preprocessing SHALL run before any AI call, including image
-validation and magic-byte MIME detection, and SHALL send only the isolated image
-(no surrounding text and no other input-event context) to the AI parser. The
-original file reference SHALL remain preserved unchanged on the `input_event`. The
-raw image is NOT re-persisted into `parser_runs.normalized_payload` (only its type
-and size are kept there) to avoid duplicating the blob. Binary EXIF/metadata
-stripping is deferred in v1 — embedded image metadata (e.g. EXIF) is therefore NOT
+validation and magic-byte MIME detection, and SHALL send the isolated image plus
+receipt-parser instructions/source-reference metadata to the AI parser, without
+surrounding raw text or other input-event context. The original file reference
+SHALL remain preserved unchanged on the `input_event`. The raw image is NOT
+re-persisted into `parser_runs.normalized_payload` (only its type and size are
+kept there) to avoid duplicating the blob. Binary EXIF/metadata stripping is
+deferred in v1 — embedded image metadata (e.g. EXIF) is therefore NOT
 removed before the image is sent to the AI provider; no AI is used for
 preprocessing. (FR-FILE-03, BC-PRIVACY-01, NFR-PRIV-01)
 
@@ -58,7 +59,7 @@ preprocessing. (FR-FILE-03, BC-PRIVACY-01, NFR-PRIV-01)
 
 - **WHEN** a receipt photo is prepared for parsing
 - **THEN** deterministic validation and magic-byte MIME detection run before the AI call
-- **AND** only the isolated image (no surrounding text or other input-event context) is sent to the AI parser
+- **AND** the isolated image is sent to the AI parser with only parser instructions/source-reference metadata, not surrounding raw text or other input-event context
 - **AND** the raw image base64 is not duplicated into the stored normalized parser payload
 - **AND** the original file reference remains preserved unchanged on the input event
 
