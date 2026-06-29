@@ -146,8 +146,7 @@
         "openspec/specs/bank-imports/spec.md",
         "openspec/specs/file-imports/spec.md",
         "openspec/specs/foundation/spec.md",
-        "openspec/specs/manual-input/spec.md",
-        "openspec/changes/add-manual-text-input/specs/manual-input/spec.md"
+        "openspec/specs/manual-input/spec.md"
       ],
       "planned": true,
       "tests": [
@@ -158,8 +157,7 @@
     {
       "id": "FR-TEXT-01",
       "specs": [
-        "openspec/specs/manual-input/spec.md",
-        "openspec/changes/add-manual-text-input/specs/manual-input/spec.md"
+        "openspec/specs/manual-input/spec.md"
       ],
       "planned": true,
       "tests": [
@@ -173,8 +171,7 @@
     {
       "id": "FR-TEXT-02",
       "specs": [
-        "openspec/specs/manual-input/spec.md",
-        "openspec/changes/add-manual-text-input/specs/manual-input/spec.md"
+        "openspec/specs/manual-input/spec.md"
       ],
       "planned": true,
       "tests": [
@@ -186,8 +183,7 @@
     {
       "id": "FR-TEXT-03",
       "specs": [
-        "openspec/specs/manual-input/spec.md",
-        "openspec/changes/add-manual-text-input/specs/manual-input/spec.md"
+        "openspec/specs/manual-input/spec.md"
       ],
       "planned": true,
       "tests": [
@@ -202,8 +198,7 @@
     {
       "id": "FR-TEXT-04",
       "specs": [
-        "openspec/specs/manual-input/spec.md",
-        "openspec/changes/add-manual-text-input/specs/manual-input/spec.md"
+        "openspec/specs/manual-input/spec.md"
       ],
       "planned": true,
       "tests": [
@@ -215,8 +210,7 @@
     {
       "id": "FR-TEXT-05",
       "specs": [
-        "openspec/specs/manual-input/spec.md",
-        "openspec/changes/add-manual-text-input/specs/manual-input/spec.md"
+        "openspec/specs/manual-input/spec.md"
       ],
       "planned": true,
       "tests": [
@@ -335,8 +329,7 @@
         "openspec/specs/bank-imports/spec.md",
         "openspec/specs/file-imports/spec.md",
         "openspec/specs/manual-input/spec.md",
-        "openspec/specs/parsing/spec.md",
-        "openspec/changes/add-manual-text-input/specs/manual-input/spec.md"
+        "openspec/specs/parsing/spec.md"
       ],
       "planned": true,
       "tests": [
@@ -414,8 +407,7 @@
         "openspec/specs/file-imports/spec.md",
         "openspec/specs/foundation/spec.md",
         "openspec/specs/manual-input/spec.md",
-        "openspec/specs/parsing/spec.md",
-        "openspec/changes/add-manual-text-input/specs/manual-input/spec.md"
+        "openspec/specs/parsing/spec.md"
       ],
       "planned": true,
       "tests": [
@@ -429,8 +421,7 @@
         "openspec/specs/bank-imports/spec.md",
         "openspec/specs/file-imports/spec.md",
         "openspec/specs/manual-input/spec.md",
-        "openspec/specs/parsing/spec.md",
-        "openspec/changes/add-manual-text-input/specs/manual-input/spec.md"
+        "openspec/specs/parsing/spec.md"
       ],
       "planned": true,
       "tests": [
@@ -491,8 +482,7 @@
         "openspec/specs/bank-imports/spec.md",
         "openspec/specs/file-imports/spec.md",
         "openspec/specs/ledger-items/spec.md",
-        "openspec/specs/manual-input/spec.md",
-        "openspec/changes/add-manual-text-input/specs/manual-input/spec.md"
+        "openspec/specs/manual-input/spec.md"
       ],
       "planned": true,
       "tests": [
@@ -544,8 +534,7 @@
         "openspec/specs/bank-imports/spec.md",
         "openspec/specs/file-imports/spec.md",
         "openspec/specs/ledger-items/spec.md",
-        "openspec/specs/manual-input/spec.md",
-        "openspec/changes/add-manual-text-input/specs/manual-input/spec.md"
+        "openspec/specs/manual-input/spec.md"
       ],
       "planned": true,
       "tests": [
@@ -1168,10 +1157,6 @@
     {
       "check": "recording-evidence",
       "msg": "FR-DASH-05 is not referenced by any recording manifest under docs/qa/"
-    },
-    {
-      "check": "active-changes",
-      "msg": "active change \"add-manual-text-input\" is not archived"
     }
   ]
 }
