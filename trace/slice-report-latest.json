@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-29T07:41:11.268Z",
+  "generatedAt": "2026-06-29T07:42:33.233Z",
   "generatedBy": "scripts/slice-report.mjs",
   "slice": "add-ledger-items-review",
   "commands": {
@@ -41,7 +41,7 @@
     "traceWarnings": 96,
     "trajectoryFailures": 0,
     "trajectoryWarnings": 2,
-    "changedFiles": 30,
+    "changedFiles": 38,
     "evalBaseline": {
       "ua-ux-clarity": 95,
       "explicit-state-clarity": 96,
@@ -53,8 +53,8 @@
       "functions": 62.58,
       "branches": 84.01
     },
-    "reviewFindings": "missing",
-    "rawReviewEvidenceRefs": 0,
+    "reviewFindings": "clean",
+    "rawReviewEvidenceRefs": 5,
     "sliceTrailerCommits": 1,
     "refs": [
       "FR-ITEM-01",
