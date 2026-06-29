@@ -4,6 +4,91 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-29 07:00 UTC — add-ledger-items-review slice (review surface; tests-first, GREEN) — review BLOCKED
+
+**What was done** — built slice 4 of the MVP plan, the `ledger-items` review/write
+surface, on branch `add-ledger-items-review` off `dev` (PR #5 `add-ledger-queries`
+is merged). Tests-first with durable RED→GREEN evidence; deterministic build is
+green. The independent maker≠checker review + eval grading are **blocked by a
+platform session limit** (resets 01:30 UTC), so the change is **NOT archived** and
+**no PR is opened**.
+
+**Scope delivered (owned this slice)**
+- FR-ITEM-01 (journal list: status shown, newest-first by effective date
+  `occurred_at ?? created_at`, incremental "load more" pagination, deleted shown
+  as a log, empty state), FR-ITEM-02 (combinable status/type/account/category/
+  date-range filters + case-insensitive description search), FR-ITEM-03 (edit all
+  fields; signed amount from absolute+type; mandatory `occurred_at`; active-account
+  validation; approved stays approved; deleted not editable), FR-ITEM-04 **approve**
+  (`pending`→`approved`, non-pending rejected), FR-ITEM-05 (soft delete, idempotent,
+  excluded from balances via the existing fold, kept as log), FR-CAT-01/03 (category
+  required free text, blank → «Без категорії») on the edit path.
+- Framework-free `src/domain/ledger-filter.ts` + `ledger-item-edit.ts`; two new
+  `LedgerItemRepository` primitives (`listAll`, `update`) on both backends;
+  `LedgerItemsService` in `src/modules/ledger-items/`; the real `/ledger`
+  server-component screen + server actions; Ukrainian-first copy module.
+
+**Scope NOT delivered (deferred to owning slices, with rationale)**
+- FR-ITEM-04 **batch partial-success creation** and FR-ITEM-07 **retry** — both
+  need the not-yet-built `parsing` capability + import channels (slices 5–8);
+  building them now would be unused code.
+- FR-CAT-04 category breakdown (already computed by `ledger`; UI owned by
+  `dashboard`, slice 9). FR-ITEM-06 / FR-CAT-02 already delivered upstream; reused.
+
+**Process evidence produced**
+- `evidence/red-run.json` (real RED: 4 new suites fail to load, modules absent,
+  before implementation) + `green-run.json`; `check:red-green --slice
+  add-ledger-items-review --strict` passes.
+- Deterministic gates green: lint, `tsc --noEmit`, `test:run` (16 files / 81
+  tests, was 11/51), `next build` (`/ledger` dynamic), coverage ratchet bumped
+  (lines/stmts 35.88, fns 60.99, branches 83.07), `openspec validate --all
+  --strict` (11 items), `check:trace` (0 failures), `check:claims` (0),
+  `check:trajectory` (0 failures), `check:handoff`.
+- Eval case authored (`evals/cases/ledger-items.eval.ts`, dimension
+  `ua-error-clarity`); produced output saved under `reviews/eval-produced-output.txt`.
+- `trajectory-eval-waiver.md`; honest `review-findings.json` (`clean: false`).
+
+**Process evidence NOT produced (the blocker)**
+- **Independent maker≠checker review** — all four fresh reviewers (code, security,
+  spec-compliance, eval-judge) were dispatched over the staged diff but each
+  terminated on the platform session/usage limit (resets 01:30 UTC) with no
+  verdict. Raw limit transcripts saved under `reviews/raw/`. An **interim parent
+  self-audit** (explicitly NOT independent) found no blocker and one accepted minor
+  (TZ-1: datetime-local UTC/local drift on edit; v1-acceptable). No clean
+  maker≠checker result is claimed.
+- **Eval grading** — not run; `evals/results/latest.json` + `quality/eval-baseline.json`
+  left unchanged (no fabricated score).
+- No LLM trajectory-eval (waived). No UI recording/vision proof (later QA phase).
+
+**Deferred work**
+- FR-ITEM-04 batch partial-success creation + FR-ITEM-07 retry → `parsing` +
+  channel slices (5–8). FR-CAT-04 breakdown UI → `dashboard` (slice 9).
+- This slice's own remaining steps: independent maker≠checker review, eval
+  grading, archive, slice report, and PR — all gated on the session-limit reset.
+
+**Current state**
+- Branch `add-ledger-items-review`: 16 test files / 81 tests green; lint, tsc,
+  build, coverage ratchet, `openspec validate --all --strict`, trace, claims,
+  trajectory all pass. OpenSpec change present but **un-archived** (active).
+  `review-findings.json` is `clean: false` pending the independent review.
+
+**Next steps (after the session-limit reset)**
+1. Re-dispatch the four fresh reviewers over `git diff dev`; persist raw outputs
+   under `reviews/`; fold confirmed findings; fix or accept-with-rationale.
+2. Independently grade the eval case; ratchet `eval-baseline.json` if it clears the
+   `ua-error-clarity` baseline (93), else fix the copy.
+3. Only then set `review-findings.json` `clean:true`, `npx openspec archive
+   add-ledger-items-review --yes`, regenerate trace/trajectory + slice report,
+   update this log last, run fallow audit, push, open PR to `dev`.
+
+**Open questions / blockers**
+- Blocker: platform session/usage limit prevents the independent review + eval
+  judging now (resets 01:30 UTC). The slice is intentionally left committed on the
+  branch but un-archived; honest per AGENTS.md (no "complete/done" claim without
+  maker≠checker + eval evidence).
+
+---
+
 ## 2026-06-28 21:28 UTC — PR #5 review hygiene fixes
 
 **What was done**

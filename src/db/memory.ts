@@ -130,6 +130,15 @@ class MemoryLedgerItemRepository implements LedgerItemRepository {
       .filter((item) => item.status !== "deleted")
       .map((item) => ({ ...item }));
   }
+
+  async listAll(): Promise<LedgerItem[]> {
+    return [...this.store.values()].map((item) => ({ ...item }));
+  }
+
+  async update(item: LedgerItem): Promise<LedgerItem> {
+    this.store.set(item.id, { ...item });
+    return { ...item };
+  }
 }
 
 export function createInMemoryRepositories(): Repositories {

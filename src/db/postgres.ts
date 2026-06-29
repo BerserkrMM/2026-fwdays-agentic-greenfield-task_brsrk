@@ -174,6 +174,30 @@ class PgLedgerItemRepository implements LedgerItemRepository {
       SELECT * FROM ledger_items WHERE status <> 'deleted' ORDER BY created_at, id`;
     return rows.map(toLedgerItem);
   }
+
+  async listAll(): Promise<LedgerItem[]> {
+    // Every status, including `deleted`, so the review screen can show the log
+    // (FR-ITEM-01/05). The domain re-sorts authoritatively (selectLedgerPage); a
+    // sensible newest-first DB order keeps results stable for any direct reader.
+    const rows = await this.sql<LedgerItemRow[]>`
+      SELECT * FROM ledger_items
+       ORDER BY occurred_at DESC NULLS LAST, created_at DESC, id DESC`;
+    return rows.map(toLedgerItem);
+  }
+
+  async update(item: LedgerItem): Promise<LedgerItem> {
+    // Only mutable fields (FR-ITEM-03/04/05); provenance columns stay untouched.
+    const r = fromLedgerItem(item);
+    const [row] = await this.sql<LedgerItemRow[]>`
+      UPDATE ledger_items
+         SET account_id = ${r.account_id}, description = ${r.description},
+             amount_minor = ${r.amount_minor}, type = ${r.type},
+             category = ${r.category}, status = ${r.status},
+             occurred_at = ${r.occurred_at}
+       WHERE id = ${r.id}
+      RETURNING *`;
+    return toLedgerItem(row);
+  }
 }
 
 export function createPostgresRepositories(sql: Sql): Repositories {
