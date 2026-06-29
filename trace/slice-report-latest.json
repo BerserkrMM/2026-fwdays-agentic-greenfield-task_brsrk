@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-29T12:51:33.096Z",
+  "generatedAt": "2026-06-29T12:52:36.199Z",
   "generatedBy": "scripts/slice-report.mjs",
   "slice": "add-manual-text-input",
   "commands": {
@@ -41,7 +41,7 @@
     "traceWarnings": 82,
     "trajectoryFailures": 0,
     "trajectoryWarnings": 2,
-    "changedFiles": 28,
+    "changedFiles": 33,
     "evalBaseline": {
       "ua-ux-clarity": 95,
       "explicit-state-clarity": 96,
@@ -53,8 +53,8 @@
       "functions": 69.18,
       "branches": 87.92
     },
-    "reviewFindings": "missing",
-    "rawReviewEvidenceRefs": 0,
+    "reviewFindings": "clean",
+    "rawReviewEvidenceRefs": 4,
     "sliceTrailerCommits": 1,
     "refs": [
       "FR-TEXT-01",
