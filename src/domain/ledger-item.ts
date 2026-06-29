@@ -29,6 +29,8 @@ export interface LedgerItem {
   type: OperationType;
   /** Free-text category; defaults to `Без категорії` (FR-CAT-01/03). */
   category: string;
+  /** Parser-provided confidence in [0,1], when available (FR-PARSE-04). */
+  confidence: number | null;
   status: LedgerItemStatus;
   /** Source row number for bank-statement rows; null otherwise (FR-BANK-06). */
   importRowNumber: number | null;

@@ -27,6 +27,7 @@ function item(
     currency: "UAH",
     type: amount < 0 ? "expense" : "income",
     category: "Без категорії",
+    confidence: null,
     importRowNumber: null,
     occurredAt: null,
     createdAt: new Date(),

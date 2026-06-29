@@ -21,6 +21,7 @@ function item(overrides: Partial<LedgerItem> = {}): LedgerItem {
     currency: "UAH",
     type: "expense",
     category: "Їжа",
+    confidence: null,
     status: "pending",
     importRowNumber: null,
     occurredAt: new Date("2026-02-01T10:00:00Z"),

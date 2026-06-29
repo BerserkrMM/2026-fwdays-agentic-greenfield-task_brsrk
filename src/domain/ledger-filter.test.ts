@@ -13,6 +13,7 @@ function item(overrides: Partial<LedgerItem> & { id: string }): LedgerItem {
     currency: "UAH",
     type: overrides.type ?? "expense",
     category: overrides.category ?? "Їжа",
+    confidence: null,
     status: overrides.status ?? "pending",
     importRowNumber: null,
     occurredAt: overrides.occurredAt ?? null,

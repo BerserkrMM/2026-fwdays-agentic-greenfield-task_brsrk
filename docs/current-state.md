@@ -4,6 +4,78 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-29 12:05 UTC — add-parsing-pipeline: fix CodeRabbit re-review finding (timeout must cover body read)
+
+**What was done** — CodeRabbit's re-review of `b2069c7` raised one valid Major: `clearTimeout` fired right after `fetch()` (which resolves on headers), so `response.json()` ran with no timeout — a 200 with a stalled body could hang `parse()` forever. Restructured `src/modules/parsing/adapters.ts` so a single `AbortController`/timer stays armed through `response.json()` and is cleared only after the body has been read and parsed; abort during body read now maps to the timeout `ParsingError`. Added two regression tests: a stalled-body-after-headers timeout, and a network-level fetch failure (to keep the branch ratchet green).
+
+**Current state** — `tsc`, `lint`, `test:run` (20 files / 110 tests) green. Coverage improved (lines/statements 46.61→46.86%, branches 87.08→87.17%); baseline ratcheted; `adapters.ts` 100% lines. Deterministic gates (handoff, claims, red-green, coverage) green.
+
+**Next steps** — push follow-up and re-trigger CodeRabbit on PR #7; then next slice `add-manual-text-input`.
+
+**Open questions / blockers** — none.
+
+---
+
+## 2026-06-29 11:42 UTC — add-parsing-pipeline: address CodeRabbit PR #7 findings
+
+**What was done** — folded the genuinely-actionable CodeRabbit comments from PR #7 (triggered via `@coderabbitai review` against base `dev`):
+- `src/modules/parsing/adapters.ts`: added an `AbortController` timeout (`timeoutMs`, default 30s) around the OpenAI `fetch` so a hung upstream can no longer block `parse()`, converted abort/network failures into `ParsingError("adapter-failed", ...)`, and wrapped `response.json()` so a malformed body is reported as an adapter failure instead of escaping as a raw exception.
+- `src/modules/parsing/adapters.test.ts`: moved `OPENAI_API_KEY` restore into a `finally` block (test isolation), and added regression tests for the timeout/abort path and malformed-body path (+2 tests).
+- Fixed stale evidence paths in the archived change (`proposal.md`, `tasks.md`) to point at `openspec/changes/archive/2026-06-29-add-parsing-pipeline/...`. Frozen raw reviewer outputs under `reviews/raw/` were intentionally NOT edited (evidence discipline).
+
+**Current state** — `tsc --noEmit`, `lint`, `test:run` (20 files / 108 tests) all green. Coverage improved (lines/statements 46.15→46.61%); baseline ratcheted. `check:coverage`, `check:claims` pass. adapters.ts at 100% line coverage. CodeRabbit's remaining comments were rubric/PR-description items (author name / demo video / agentic write-up) and an auto-generated-report nitpick — not code defects — so left for the PR description, not the code.
+
+**Next steps** — push the follow-up commit and re-trigger CodeRabbit on PR #7; then next slice `add-manual-text-input`.
+
+**Open questions / blockers** — none. Note: CodeRabbit auto-review is disabled for non-default base branches; PRs target `dev`, so reviews must be triggered with `@coderabbitai review` (or add `reviews.auto_review.base_branches: ["dev"]` to `.coderabbit.yaml`).
+
+---
+
+## 2026-06-29 09:33 UTC — add-parsing-pipeline slice archived
+
+**What was done** — selected the next Project Factory slice from the approved MVP order: `add-parsing-pipeline`, owning FR-PARSE-01..08 plus NFR-PRIV-01/02 and TC-STACK-05. Added the parsing domain/module: deterministic keyless parser-payload normalization, draft validation/canonicalization, OpenAI-compatible adapter boundary, parser-run success/failure/retry recording, and drafts-only parsing service. Added minimal coordination plumbing for FR-PARSE-04 by persisting optional parser confidence on `ledger_items` while leaving it hidden from the v1 ledger UI. Archived the OpenSpec change as `2026-06-29-add-parsing-pipeline` and committed the slice trailer.
+
+**Current state** — branch `add-parsing-pipeline` has the slice implementation committed, pushed, and PR #7 opened against `dev`: https://github.com/BerserkrMM/2026-fwdays-agentic-greenfield-task_brsrk/pull/7. Deterministic gates pass: lint, `tsc --noEmit`, `test:run` (20 files / 106 tests), `test:coverage`, coverage ratchet, OpenSpec strict validation, trace, strict RED/GREEN evidence, claims, and deterministic trajectory. Maker≠checker review is clean after fixes; raw review outputs are tracked under the archived change. No import-channel UI/routes were added.
+
+**Scope delivered** — FR-PARSE-01 through FR-PARSE-08: parsing service consumes stored input-event payloads; validates canonical drafts; preserves/defaults category correctly; preserves and persists confidence; runs privacy/noise normalization before adapter calls; exposes an OpenAI-compatible adapter boundary; never writes ledger items directly; records success/failed parser runs and supports retry by creating a new run.
+
+**Scope NOT delivered** — manual text, bank-statement, and receipt-photo import routes/UI; source-specific channel normalization; Settings AI-provider UI/key storage; live OpenAI integration against a real provider; parser-created ledger items beyond copying confidence through the existing item-creation contract.
+
+**Process evidence produced** — real RED/GREEN JSON under `openspec/changes/archive/2026-06-29-add-parsing-pipeline/evidence/`; strict OpenSpec/archive; eval decision (`eval-decision.md`, no qualitative eval needed); trajectory-eval waiver; clean maker≠checker review with 5 raw evidence files and `review-findings.json`; regenerated trace/trajectory and slice report.
+
+**Process evidence NOT produced** — no qualitative eval or eval judge (waived by `eval-decision.md`: deterministic parser boundary, no user-facing judgment/copy); no live LLM trajectory-eval workflow available (waived); no UI recording/vision proof because this slice has no UI flow.
+
+**Deferred work** — next slice `add-manual-text-input` should consume `ParsingService`, store text `input_event`s, call the parser, create pending items through the item-creation contract, and surface import summaries/errors in Ukrainian. Bank/file channel slices later own their source-specific normalization and live provider behavior.
+
+**Fallow audit** — final fallow verdict `pass` for the new-only gate. Remaining issue is inherited only: unused export `BALANCE_STATUSES` in `src/domain/ledger-item.ts` (pre-existing, not introduced by this slice). Fixed introduced fallow findings during the slice: removed unused `stableJson` export, suppressed intentional parsing module port surface for upcoming consumers, refactored parser draft canonicalization complexity, and extracted parser-run recording test helper to remove duplication.
+
+<!-- slice-report:start -->
+### Generated slice report: add-parsing-pipeline
+
+Generated by `node scripts/slice-report.mjs --slice add-parsing-pipeline` at 2026-06-29T09:32:47.832Z. Do not hand-write these metrics.
+
+| Metric | Value |
+|---|---:|
+| OpenSpec validated specs | 10 |
+| Active OpenSpec changes | 0 |
+| Test files / tests passed | 20 / 106 |
+| Trace failures / warnings | 0 / 88 |
+| Trajectory failures / warnings | 0 / 2 |
+| Changed files vs origin/dev | 35 |
+| Review findings | clean |
+| Raw review evidence refs | 5 |
+| Slice trailer commits | 1 |
+| Refs | FR-PARSE-01, FR-PARSE-02, FR-PARSE-03, FR-PARSE-04, FR-PARSE-05, FR-PARSE-06, FR-PARSE-07, FR-PARSE-08, NFR-PRIV-01, NFR-PRIV-02, TC-STACK-05 |
+
+Command exits: openspecValidate=0, openspecList=0, tests=0, trace=0, trajectory=0, evals=0, coverage=0.
+<!-- slice-report:end -->
+
+**Next steps** — monitor PR #7 CI/review and address feedback. After merge, start `add-manual-text-input`.
+
+**Open questions / blockers** — none for this slice. Live OpenAI/API-key behavior remains intentionally deferred to later integration/settings work.
+
+---
+
 ## 2026-06-29 08:32 UTC — addressed valid CodeRabbit ledger review comments
 
 **What was done** — fixed the three valid CodeRabbit code findings: invalid edit
