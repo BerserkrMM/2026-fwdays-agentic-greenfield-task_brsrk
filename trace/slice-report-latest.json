@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-29T07:42:33.233Z",
+  "generatedAt": "2026-06-29T08:01:10.979Z",
   "generatedBy": "scripts/slice-report.mjs",
   "slice": "add-ledger-items-review",
   "commands": {
@@ -41,7 +41,7 @@
     "traceWarnings": 96,
     "trajectoryFailures": 0,
     "trajectoryWarnings": 2,
-    "changedFiles": 38,
+    "changedFiles": 42,
     "evalBaseline": {
       "ua-ux-clarity": 95,
       "explicit-state-clarity": 96,
