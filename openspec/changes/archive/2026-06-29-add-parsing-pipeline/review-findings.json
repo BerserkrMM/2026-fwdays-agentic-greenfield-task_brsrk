@@ -1,0 +1,60 @@
+{
+  "slice": "add-parsing-pipeline",
+  "clean": true,
+  "reviewedAt": "2026-06-29T09:27:00.000Z",
+  "rawEvidence": [
+    "reviews/raw/code-reviewer.md",
+    "reviews/raw/security-reviewer.md",
+    "reviews/raw/spec-compliance-auditor.md",
+    "reviews/raw/code-reviewer-rerun.md",
+    "reviews/raw/spec-compliance-rerun.md"
+  ],
+  "reviewers": {
+    "code": {
+      "verdict": "APPROVE",
+      "rawEvidence": "reviews/raw/code-reviewer-rerun.md"
+    },
+    "security": {
+      "verdict": "PASS",
+      "rawEvidence": "reviews/raw/security-reviewer.md"
+    },
+    "specCompliance": {
+      "verdict": "PASS",
+      "rawEvidence": "reviews/raw/spec-compliance-rerun.md"
+    }
+  },
+  "confirmedFindingsFixed": [
+    {
+      "id": "CODE-1/SPEC-1",
+      "severity": "major",
+      "summary": "OpenAI adapter accepted JSON content without a drafts array as a successful empty parse.",
+      "resolution": "Adapter now throws an adapter-failed ParsingError for missing drafts arrays and has a regression test."
+    },
+    {
+      "id": "SPEC-2",
+      "severity": "major",
+      "summary": "Non-empty parser category text was trimmed instead of being preserved as-is.",
+      "resolution": "Parser canonicalization and item creation now preserve non-empty category strings exactly while still defaulting blank categories."
+    },
+    {
+      "id": "SPEC-3",
+      "severity": "major",
+      "summary": "Parser confidence was exposed on drafts but not persisted with created ledger items.",
+      "resolution": "Added nullable ledger item confidence plumbing through domain/schema/mappers/Postgres/item creation; ledger UI does not render it."
+    }
+  ],
+  "acceptedFindings": [
+    {
+      "id": "SEC-NOTE-1",
+      "severity": "note",
+      "summary": "OpenAI adapter endpoint is injectable for tests/dev; future Settings/import code should not expose arbitrary endpoint configuration without allowlisting.",
+      "rationale": "Current slice has no UI or user-configured endpoint surface."
+    },
+    {
+      "id": "SPEC-NOTE-1",
+      "severity": "note",
+      "summary": "No live OpenAI/provider integration was exercised.",
+      "rationale": "This slice owns the deterministic adapter boundary and fake-fetch tests; live provider validation belongs to later integration/manual checks once settings/import flows exist."
+    }
+  ]
+}

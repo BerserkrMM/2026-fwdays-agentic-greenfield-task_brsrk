@@ -1,12 +1,5 @@
-# parsing
+## MODIFIED Requirements
 
-## Purpose
-
-The Parsing capability owns the parser port, OpenAI v1 adapter, deterministic
-privacy/noise normalization immediately before AI calls, `parser_run` behavior,
-and the drafts-only parsing contract. It consumes normalized input-event payloads
-from import channels and never writes ledger items directly.
-## Requirements
 ### Requirement: Parser consumes normalized input-event payloads
 
 The parser SHALL consume a normalized `InputEvent` payload and return a
@@ -151,4 +144,3 @@ Every parse attempt SHALL be recorded as a `parser_run` with status (`success` o
 - **WHEN** parsing is invoked for that input event again
 - **THEN** a new parse attempt is recorded
 - **AND** the previous failed run remains unchanged as an audit log
-

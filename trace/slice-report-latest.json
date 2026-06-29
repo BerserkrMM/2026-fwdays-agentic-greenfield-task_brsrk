@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-29T08:31:12.182Z",
+  "generatedAt": "2026-06-29T09:32:47.832Z",
   "generatedBy": "scripts/slice-report.mjs",
-  "slice": "add-ledger-items-review",
+  "slice": "add-parsing-pipeline",
   "commands": {
     "openspecValidate": {
       "command": "npx openspec validate --all --strict",
@@ -35,35 +35,39 @@
   "metrics": {
     "openspecPassed": 10,
     "activeChanges": 0,
-    "testFilesPassed": 17,
-    "testsPassed": 92,
+    "testFilesPassed": 20,
+    "testsPassed": 106,
     "traceFailures": 0,
-    "traceWarnings": 96,
+    "traceWarnings": 88,
     "trajectoryFailures": 0,
     "trajectoryWarnings": 2,
-    "changedFiles": 42,
+    "changedFiles": 35,
     "evalBaseline": {
       "ua-ux-clarity": 95,
       "explicit-state-clarity": 96,
       "ua-error-clarity": 93
     },
     "coverageBaseline": {
-      "lines": 38.98,
-      "statements": 38.98,
-      "functions": 62.58,
-      "branches": 84.01
+      "lines": 46.15,
+      "statements": 46.15,
+      "functions": 68.2,
+      "branches": 86.98
     },
     "reviewFindings": "clean",
     "rawReviewEvidenceRefs": 5,
     "sliceTrailerCommits": 1,
     "refs": [
-      "FR-ITEM-01",
-      "FR-ITEM-02",
-      "FR-ITEM-03",
-      "FR-ITEM-04",
-      "FR-ITEM-05",
-      "FR-CAT-01",
-      "FR-CAT-03"
+      "FR-PARSE-01",
+      "FR-PARSE-02",
+      "FR-PARSE-03",
+      "FR-PARSE-04",
+      "FR-PARSE-05",
+      "FR-PARSE-06",
+      "FR-PARSE-07",
+      "FR-PARSE-08",
+      "NFR-PRIV-01",
+      "NFR-PRIV-02",
+      "TC-STACK-05"
     ]
   }
 }

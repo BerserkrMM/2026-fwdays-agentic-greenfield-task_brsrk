@@ -310,7 +310,9 @@
         "openspec/specs/parsing/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/modules/parsing/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -320,7 +322,10 @@
         "openspec/specs/parsing/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/domain/parsing.test.ts",
+        "src/modules/parsing/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -329,7 +334,10 @@
         "openspec/specs/parsing/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/domain/parsing.test.ts",
+        "src/modules/parsing/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -338,7 +346,11 @@
         "openspec/specs/parsing/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/domain/parsing.test.ts",
+        "src/modules/foundation/item-creation.test.ts",
+        "src/modules/parsing/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -347,7 +359,10 @@
         "openspec/specs/parsing/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/domain/parsing.test.ts",
+        "src/modules/parsing/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -357,7 +372,10 @@
         "openspec/specs/settings/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/modules/parsing/adapters.test.ts",
+        "src/modules/parsing/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -370,7 +388,9 @@
         "openspec/specs/parsing/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/modules/parsing/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -382,7 +402,10 @@
         "openspec/specs/parsing/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/modules/parsing/adapters.test.ts",
+        "src/modules/parsing/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -854,38 +877,6 @@
     {
       "check": "test-trace",
       "msg": "FR-BANK-05 has no test annotated \"@trace FR-BANK-05\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-PARSE-01 has no test annotated \"@trace FR-PARSE-01\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-PARSE-02 has no test annotated \"@trace FR-PARSE-02\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-PARSE-03 has no test annotated \"@trace FR-PARSE-03\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-PARSE-04 has no test annotated \"@trace FR-PARSE-04\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-PARSE-05 has no test annotated \"@trace FR-PARSE-05\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-PARSE-06 has no test annotated \"@trace FR-PARSE-06\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-PARSE-07 has no test annotated \"@trace FR-PARSE-07\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-PARSE-08 has no test annotated \"@trace FR-PARSE-08\""
     },
     {
       "check": "test-trace",

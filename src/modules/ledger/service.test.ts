@@ -25,6 +25,7 @@ function makeItem(
     currency: "UAH",
     type: amountMinor < 0 ? "expense" : "income",
     category,
+    confidence: null,
     status,
     importRowNumber: null,
     occurredAt: null,

@@ -81,6 +81,16 @@ export function toLedgerItem(row: LedgerItemRow): LedgerItem {
     throw new Error(`Unexpected ledger_items.currency: ${row.currency}`);
   }
 
+  const confidence =
+    row.confidence == null
+      ? null
+      : typeof row.confidence === "string"
+        ? Number(row.confidence)
+        : row.confidence;
+  if (confidence !== null && (confidence < 0 || confidence > 1 || !Number.isFinite(confidence))) {
+    throw new Error(`Invalid ledger_items.confidence: ${row.confidence}`);
+  }
+
   return {
     id: row.id,
     accountId: row.account_id,
@@ -91,6 +101,7 @@ export function toLedgerItem(row: LedgerItemRow): LedgerItem {
     currency: CURRENCY,
     type: row.type,
     category: row.category,
+    confidence,
     status: row.status,
     importRowNumber: row.import_row_number,
     occurredAt: row.occurred_at,
@@ -109,6 +120,7 @@ export function fromLedgerItem(item: LedgerItem): LedgerItemRow {
     currency: item.currency,
     type: item.type,
     category: item.category,
+    confidence: item.confidence,
     status: item.status,
     import_row_number: item.importRowNumber,
     occurred_at: item.occurredAt,

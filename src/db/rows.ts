@@ -49,6 +49,7 @@ export interface LedgerItemRow {
   currency: string;
   type: OperationType;
   category: string;
+  confidence: number | string | null;
   status: LedgerItemStatus;
   import_row_number: number | null;
   occurred_at: Date | null;

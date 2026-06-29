@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS ledger_items (
     (type = 'income' AND amount_minor > 0)
   ),
   category          text NOT NULL DEFAULT 'Без категорії',
+  confidence        numeric CHECK (confidence IS NULL OR (confidence >= 0 AND confidence <= 1)),
   status            text NOT NULL DEFAULT 'pending'
                       CHECK (status IN ('pending', 'approved', 'deleted')),
   import_row_number integer,
@@ -80,6 +81,11 @@ CREATE TABLE IF NOT EXISTS ledger_items (
 -- constrained against each other. The upsert behavior is owned by `bank-imports`.
 CREATE UNIQUE INDEX IF NOT EXISTS ux_ledger_items_input_event_row
   ON ledger_items (input_event_id, import_row_number);
+
+-- Coordination addition for FR-PARSE-04: parser confidence is optional and is
+-- not shown in v1 UI, but when present it is persisted with the item.
+ALTER TABLE ledger_items
+  ADD COLUMN IF NOT EXISTS confidence numeric CHECK (confidence IS NULL OR (confidence >= 0 AND confidence <= 1));
 
 -- Deferred FK from ledger_items.account_id to accounts. Foundation created the
 -- NOT NULL column but left the FK for the `accounts` coordination change (this

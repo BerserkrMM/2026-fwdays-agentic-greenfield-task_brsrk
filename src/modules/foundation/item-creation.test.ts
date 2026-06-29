@@ -55,6 +55,7 @@ describe("ItemCreationService", () => {
     expect(item.currency).toBe("UAH");
     expect(item.type).toBe("expense");
     expect(item.category).toBe("Їжа");
+    expect(item.confidence).toBeNull();
     expect(item.accountId).toBe("acc-1");
     expect(item.inputEventId).toBe(inputEventId);
     expect(await repos.ledgerItems.findById(item.id)).not.toBeNull();
@@ -94,7 +95,7 @@ describe("ItemCreationService", () => {
   });
 
   // @trace FR-CAT-01, FR-CAT-02
-  it("trims category text before saving", async () => {
+  it("preserves non-empty category text before saving", async () => {
     const inputEventId = await seedInputEvent();
     const service = new ItemCreationService(repos, accountsPort("acc-1"));
 
@@ -103,7 +104,20 @@ describe("ItemCreationService", () => {
       inputEventId,
     });
 
-    expect(item.category).toBe("Їжа");
+    expect(item.category).toBe("  Їжа  ");
+  });
+
+  // @trace FR-PARSE-04
+  it("persists parser confidence when available", async () => {
+    const inputEventId = await seedInputEvent();
+    const service = new ItemCreationService(repos, accountsPort("acc-1"));
+
+    const item = await service.createPendingItem({
+      draft: { ...draft, confidence: 0.64 },
+      inputEventId,
+    });
+
+    expect(item.confidence).toBe(0.64);
   });
 
   // @trace NFR-PRIV-02, FR-IMPORT-02

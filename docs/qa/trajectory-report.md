@@ -6,7 +6,7 @@ trailers, and module scope.
 It does NOT verify test-first ordering or test integrity (not derivable from
 one-commit-per-slice history) — those are graded by the trajectory-eval workflow.
 
-Scope: 4 archived slice(s).
+Scope: 5 archived slice(s).
 Result: PASS, 2 warning(s)
 
 | Slice | Review evidence | Raw review refs | Trailer commits | design+tasks | lib domains touched |
@@ -15,6 +15,7 @@ Result: PASS, 2 warning(s)
 | 2026-06-28-add-accounts | clean | 4 linked | 1 | yes | - |
 | 2026-06-28-add-ledger-queries | clean | 3 linked | 1 | yes | - |
 | 2026-06-29-add-ledger-items-review | clean | 5 linked | 1 | yes | - |
+| 2026-06-29-add-parsing-pipeline | clean | 5 linked | 1 | yes | - |
 
 ## Cross-slice module overlap
 

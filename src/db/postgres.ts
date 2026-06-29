@@ -149,11 +149,11 @@ class PgLedgerItemRepository implements LedgerItemRepository {
     const [row] = await this.sql<LedgerItemRow[]>`
       INSERT INTO ledger_items
         (id, account_id, input_event_id, parser_run_id, description, amount_minor,
-         currency, type, category, status, import_row_number, occurred_at)
+         currency, type, category, confidence, status, import_row_number, occurred_at)
       VALUES
         (${r.id}, ${r.account_id}, ${r.input_event_id}, ${r.parser_run_id},
          ${r.description}, ${r.amount_minor}, ${r.currency}, ${r.type},
-         ${r.category}, ${r.status}, ${r.import_row_number}, ${r.occurred_at})
+         ${r.category}, ${r.confidence}, ${r.status}, ${r.import_row_number}, ${r.occurred_at})
       RETURNING *`;
     return toLedgerItem(row);
   }
@@ -192,7 +192,7 @@ class PgLedgerItemRepository implements LedgerItemRepository {
       UPDATE ledger_items
          SET account_id = ${r.account_id}, description = ${r.description},
              amount_minor = ${r.amount_minor}, type = ${r.type},
-             category = ${r.category}, status = ${r.status},
+             category = ${r.category}, confidence = ${r.confidence}, status = ${r.status},
              occurred_at = ${r.occurred_at}
        WHERE id = ${r.id}
       RETURNING *`;

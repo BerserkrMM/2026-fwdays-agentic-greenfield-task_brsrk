@@ -1,0 +1,10 @@
+{
+  "command": "npm run test:run -- src/domain/parsing.test.ts src/modules/parsing/service.test.ts",
+  "exitCode": 1,
+  "gitHead": "2a4234cef105f8b0524ff0b55343d1fcde02e24d",
+  "timestamp": "2026-06-29T09:03:07.399Z",
+  "failingTests": [
+    "src/domain/parsing.test.ts failed to load missing ./parsing",
+    "src/modules/parsing/service.test.ts failed to load missing ./service"
+  ]
+}
