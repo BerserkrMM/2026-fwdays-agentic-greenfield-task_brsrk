@@ -67,6 +67,11 @@ describe("editLedgerItem", () => {
     expect(income.amountMinor).toBe(20050);
   });
 
+  it("parses the zoneless date as UTC so the round-trip is timezone-stable", () => {
+    const result = editLedgerItem(item(), edit({ occurredAt: "2026-03-01T12:00" }));
+    expect(result.occurredAt?.toISOString()).toBe("2026-03-01T12:00:00.000Z");
+  });
+
   it("keeps an approved item approved after editing", () => {
     const result = editLedgerItem(item({ status: "approved" }), edit());
     expect(result.status).toBe("approved");

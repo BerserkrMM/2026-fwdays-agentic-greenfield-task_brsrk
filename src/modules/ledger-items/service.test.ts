@@ -98,6 +98,23 @@ describe("LedgerItemsService.editItem", () => {
     ).rejects.toMatchObject({ code: "not-found" });
   });
 
+  it("leaves the stored item unchanged when an edit is invalid (no partial persist)", async () => {
+    const created = await create(-1000, "Кава");
+    await expect(
+      service.editItem(created.id, {
+        description: "Кава",
+        amount: "not-a-number",
+        type: "expense",
+        category: "Кафе",
+        occurredAt: "2026-03-02T08:30",
+        accountId: cashId,
+      }),
+    ).rejects.toMatchObject({ code: "amount-invalid" });
+    const persisted = await repos.ledgerItems.findById(created.id);
+    expect(persisted?.amountMinor).toBe(-1000);
+    expect(persisted?.description).toBe("Кава");
+  });
+
   it("rejects editing onto an archived account", async () => {
     const created = await create(-1000, "Кава");
     const card = await accounts.createAccount("Картка");

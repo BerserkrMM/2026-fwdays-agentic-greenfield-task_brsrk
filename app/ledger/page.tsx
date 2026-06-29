@@ -7,7 +7,6 @@
 
 import { getRepositories } from "@/src/db/client";
 import type { Account } from "@/src/domain/account";
-import type { LedgerFilter } from "@/src/domain/ledger-filter";
 import type { LedgerItem, LedgerItemStatus } from "@/src/domain/ledger-item";
 import { formatUahMinor, type OperationType } from "@/src/domain/money";
 import { AccountsService } from "@/src/modules/accounts/service";
@@ -18,6 +17,14 @@ import {
   TYPE_LABELS,
   ledgerErrorMessage,
 } from "@/src/modules/ledger-items/ui/ledger-content";
+import {
+  emptyStateKind,
+  firstParam,
+  hasActiveFilters,
+  loadMoreHref,
+  parseLedgerParams,
+  type RawParams,
+} from "@/src/modules/ledger-items/ui/ledger-params";
 import { PageHeader } from "@/src/modules/foundation/ui/PageHeader";
 import { EmptyState, ErrorState } from "@/src/modules/foundation/ui/states";
 import {
@@ -28,53 +35,8 @@ import {
 
 export const dynamic = "force-dynamic";
 
-type RawParams = Record<string, string | string[] | undefined>;
-
-function one(value: string | string[] | undefined): string | undefined {
-  const v = Array.isArray(value) ? value[0] : value;
-  return v && v.trim() !== "" ? v : undefined;
-}
-
 const STATUSES: LedgerItemStatus[] = ["pending", "approved", "deleted"];
 const TYPES: OperationType[] = ["expense", "income"];
-
-function buildFilter(params: RawParams): { filter: LedgerFilter; raw: Record<string, string> } {
-  const status = one(params.status);
-  const type = one(params.type);
-  const accountId = one(params.account);
-  const category = one(params.category);
-  const search = one(params.q);
-  const fromStr = one(params.from);
-  const toStr = one(params.to);
-  const limit = Number.parseInt(one(params.limit) ?? "", 10);
-
-  const filter: LedgerFilter = {};
-  if (status && STATUSES.includes(status as LedgerItemStatus)) filter.status = status as LedgerItemStatus;
-  if (type && TYPES.includes(type as OperationType)) filter.type = type as OperationType;
-  if (accountId) filter.accountId = accountId;
-  if (category) filter.category = category;
-  if (search) filter.search = search;
-  if (fromStr) {
-    const from = new Date(`${fromStr}T00:00:00.000Z`);
-    if (!Number.isNaN(from.getTime())) filter.from = from;
-  }
-  if (toStr) {
-    const to = new Date(`${toStr}T23:59:59.999Z`);
-    if (!Number.isNaN(to.getTime())) filter.to = to;
-  }
-  if (Number.isFinite(limit) && limit > 0) filter.limit = limit;
-
-  const raw: Record<string, string> = {};
-  if (status) raw.status = status;
-  if (type) raw.type = type;
-  if (accountId) raw.account = accountId;
-  if (category) raw.category = category;
-  if (search) raw.q = search;
-  if (fromStr) raw.from = fromStr;
-  if (toStr) raw.to = toStr;
-
-  return { filter, raw };
-}
 
 /** YYYY-MM-DDTHH:mm for a datetime-local input (UTC wall-clock; deterministic). */
 function toDateTimeLocal(d: Date): string {
@@ -87,8 +49,8 @@ export default async function LedgerPage({
   searchParams: Promise<RawParams>;
 }) {
   const params = await searchParams;
-  const errorMessage = ledgerErrorMessage(one(params.formError));
-  const { filter, raw } = buildFilter(params);
+  const errorMessage = ledgerErrorMessage(firstParam(params.formError));
+  const { filter, raw } = parseLedgerParams(params);
 
   const repos = getRepositories();
   // Seed the default account so the edit account dropdown is never empty on a
@@ -102,13 +64,9 @@ export default async function LedgerPage({
 
   const page = await service.listPage(filter);
 
-  const moreHref = (() => {
-    const next = new URLSearchParams(raw);
-    next.set("limit", String(page.items.length + 10));
-    return `/ledger?${next.toString()}`;
-  })();
-
-  const hasFilters = Object.keys(raw).length > 0;
+  const moreHref = loadMoreHref(raw, page.items.length);
+  const hasFilters = hasActiveFilters(raw);
+  const emptyKind = emptyStateKind(page.matched, raw);
 
   return (
     <>
@@ -201,10 +159,10 @@ export default async function LedgerPage({
         </form>
       </section>
 
-      {page.matched === 0 ? (
+      {emptyKind ? (
         <EmptyState
-          title={hasFilters ? LEDGER_PAGE.filteredEmptyTitle : LEDGER_PAGE.emptyTitle}
-          description={hasFilters ? LEDGER_PAGE.filteredEmptyDescription : LEDGER_PAGE.emptyDescription}
+          title={emptyKind === "filtered" ? LEDGER_PAGE.filteredEmptyTitle : LEDGER_PAGE.emptyTitle}
+          description={emptyKind === "filtered" ? LEDGER_PAGE.filteredEmptyDescription : LEDGER_PAGE.emptyDescription}
         />
       ) : (
         <>
@@ -326,7 +284,12 @@ function LedgerRow({
                   <option key={a.id} value={a.id}>{a.name}</option>
                 ))}
                 {activeAccounts.some((a) => a.id === item.accountId) ? null : (
-                  <option value={item.accountId}>{accountName}</option>
+                  // The item sits on an archived account: show it labelled so the
+                  // forced reassignment to an active account is discoverable
+                  // (saving it unchanged is rejected with `account-not-found`).
+                  <option value={item.accountId}>
+                    {accountName} ({LEDGER_PAGE.archivedAccountNote})
+                  </option>
                 )}
               </select>
             </label>

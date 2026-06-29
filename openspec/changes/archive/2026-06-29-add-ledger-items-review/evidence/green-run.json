@@ -1,0 +1,9 @@
+{
+  "command": "npm run test:run",
+  "exitCode": 0,
+  "gitHead": "7c789d309d143a2fd53884e3b842e36a45d7172a",
+  "timestamp": "2026-06-29T07:36:00.000Z",
+  "testFiles": 17,
+  "tests": 91,
+  "notes": "GREEN after implementing src/domain/ledger-filter.ts, src/domain/ledger-item-edit.ts, the LedgerItemRepository.listAll()/update() primitives (in-memory + Postgres), src/modules/ledger-items/service.ts, the /ledger review screen + actions, and the ledger-items copy module — and after folding the maker≠checker review fixes (UTC-stable occurred_at parse for TZ-1; extracted+tested ledger-params.ts for the empty-state/load-more screen logic; service test that an invalid edit does not persist; labelled archived-account option). The four original RED suites from red-run.json plus the new ledger-params and content tests pass. gitHead is the branch tip the GREEN working tree (with review fixes) is based on; the fixes land in the subsequent review commit."
+}

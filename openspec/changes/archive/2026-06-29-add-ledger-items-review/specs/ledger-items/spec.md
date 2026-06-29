@@ -18,8 +18,8 @@ the list as a log. (FR-ITEM-01)
 #### Scenario: List loads incrementally
 
 - **GIVEN** more ledger items match than one page (about 10)
-- **WHEN** the user requests more from the end of the loaded list
-- **THEN** the next items are appended in newest-first order
+- **WHEN** the user requests more (the cumulative page limit grows by about 10)
+- **THEN** the loaded list grows to include the next items in newest-first order
 - **AND** previously loaded items remain visible
 
 #### Scenario: Empty journal shows an explicit empty state

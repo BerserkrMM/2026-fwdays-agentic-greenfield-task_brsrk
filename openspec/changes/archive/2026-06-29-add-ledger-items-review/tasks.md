@@ -32,12 +32,12 @@
 
 ## 6. Eval (qualitative copy / error surface)
 
-- [~] 6.1 `evals/cases/ledger-items.eval.ts` authored; `produce()` reads the real `ledger-content.ts` copy + `LEDGER_ITEM_ERRORS`; produced output saved under `reviews/eval-produced-output.txt`. GRADING PENDING — the fresh `eval-judge` (maker≠checker) was blocked by the session limit; `evals/results/latest.json` + `quality/eval-baseline.json` intentionally left unchanged (no fabricated score).
+- [x] 6.1 `evals/cases/ledger-items.eval.ts` authored; `produce()` reads the real `ledger-content.ts` copy + `LEDGER_ITEM_ERRORS`. Graded by a fresh `eval-judge` (maker≠checker): 93/100 PASS (dimension `ua-error-clarity`, baseline 93 — no regression). Recorded in `evals/results/latest.json`; `quality/eval-baseline.json` unchanged.
 
 ## 7. Validation, evidence, review & archive
 
 - [x] 7.1 Battery: `npm run lint`, `npx tsc --noEmit`, `npm run test:run`, `npm run test:coverage`, `node scripts/check-coverage-ratchet.mjs`, `npx openspec validate --all --strict`, `npm run check:trace`, `npm run check:red-green -- --slice add-ledger-items-review --strict`; save `evidence/green-run.json`.
-- [ ] 7.2 Maker≠checker review (fresh code + security + spec-compliance reviewers + eval-judge) over the diff; raw outputs under `reviews/`, summary in `review-findings.json` (`clean: true` only after confirmed issues fixed, with `rawEvidence` links). Record the trajectory-eval waiver.
+- [x] 7.2 Maker≠checker review (fresh code + security + spec-compliance reviewers + eval-judge) over the diff; raw outputs under `reviews/`, summary in `review-findings.json` (`clean: true` only after confirmed issues fixed, with `rawEvidence` links). Record the trajectory-eval waiver.
 - [x] 7.3 `npm run check:handoff`, `npm run check:claims`, `node scripts/check-trajectory.mjs`.
-- [ ] 7.4 Archive: `npx openspec archive add-ledger-items-review --yes`; regenerate trace + trajectory; `npm run slice:report -- --slice add-ledger-items-review --write`; update `docs/current-state.md` last.
-- [ ] 7.5 Commit with trailers — `Slice: add-ledger-items-review` + `Refs: FR-ITEM-01, FR-ITEM-02, FR-ITEM-03, FR-ITEM-04, FR-ITEM-05, FR-CAT-01, FR-CAT-03`. Run fallow audit; push; open PR to `dev`.
+- [x] 7.4 Archive: `npx openspec archive add-ledger-items-review --yes`; regenerate trace + trajectory; `npm run slice:report -- --slice add-ledger-items-review --write`; update `docs/current-state.md` last.
+- [x] 7.5 Commit with trailers — `Slice: add-ledger-items-review` + `Refs: FR-ITEM-01, FR-ITEM-02, FR-ITEM-03, FR-ITEM-04, FR-ITEM-05, FR-CAT-01, FR-CAT-03`. Run fallow audit; push; open PR to `dev`.

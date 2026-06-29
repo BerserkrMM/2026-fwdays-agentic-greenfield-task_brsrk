@@ -28,6 +28,11 @@ describe("ledger-items content", () => {
     expect(LEDGER_PAGE.countSummary(10, 25)).toBe("Показано 10 із 25");
   });
 
+  it("labels an archived account option so reassignment is discoverable", () => {
+    expect(LEDGER_PAGE.archivedAccountNote).toContain("архівований");
+    expect(LEDGER_PAGE.archivedAccountNote).toContain("активний");
+  });
+
   it("maps every error code to a non-empty Ukrainian message", () => {
     const codes: LedgerItemErrorCode[] = [
       "not-found",

@@ -22,6 +22,7 @@ export const LEDGER_PAGE = {
   toLabel: "До дати",
   anyOption: "Будь-який",
   allAccountsOption: "Усі рахунки",
+  archivedAccountNote: "архівований — оберіть активний",
   applyLabel: "Застосувати",
   resetLabel: "Скинути",
   loadMoreLabel: "Завантажити ще",

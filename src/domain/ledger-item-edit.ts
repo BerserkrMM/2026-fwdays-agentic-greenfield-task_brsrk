@@ -59,6 +59,24 @@ export function parseAmountToMinor(raw: string): number {
 }
 
 /**
+ * Parses the edit form's operation date, returning null when absent/invalid.
+ * `datetime-local` (and `date`) inputs are zoneless; the screen formats them from
+ * a UTC wall-clock, so a bare value is normalized to UTC here. This keeps the
+ * round-trip stable regardless of server timezone (BC-SCOPE-03 is Europe/Kyiv, not
+ * UTC) — saving an item unchanged no longer drifts `occurred_at`. Values that
+ * already carry a timezone offset pass through untouched.
+ */
+function parseOccurredAt(raw: string): Date | null {
+  if (!raw) return null;
+  let normalized = raw;
+  if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(raw)) normalized = `${raw}:00Z`;
+  else if (/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}$/.test(raw)) normalized = `${raw}Z`;
+  // A date-only value ("YYYY-MM-DD") is already parsed as UTC midnight by spec.
+  const date = new Date(normalized);
+  return Number.isNaN(date.getTime()) ? null : date;
+}
+
+/**
  * Validates and applies an edit to a `pending` or `approved` item (FR-ITEM-03).
  * The stored `amount_minor` sign always matches the operation type (expense < 0,
  * income > 0); a blank category defaults to `Без категорії` (FR-CAT-01/03);
@@ -79,8 +97,8 @@ export function editLedgerItem(item: LedgerItem, edit: LedgerItemEdit): LedgerIt
   const magnitude = parseAmountToMinor(edit.amount);
   const amountMinor = edit.type === "expense" ? -magnitude : magnitude;
 
-  const occurredAt = new Date(edit.occurredAt);
-  if (!edit.occurredAt || Number.isNaN(occurredAt.getTime())) {
+  const occurredAt = parseOccurredAt(edit.occurredAt);
+  if (!occurredAt) {
     throw new LedgerItemError("date-required", "Вкажіть дату операції.");
   }
 

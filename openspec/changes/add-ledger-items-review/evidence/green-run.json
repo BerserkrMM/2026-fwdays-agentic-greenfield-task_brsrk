@@ -1,9 +1,0 @@
-{
-  "command": "npm run test:run",
-  "exitCode": 0,
-  "gitHead": "d5a4a00ed6c6ec2b6216a111d7eec1504424ca1b",
-  "timestamp": "2026-06-28T21:59:06.000Z",
-  "testFiles": 16,
-  "tests": 81,
-  "notes": "GREEN after implementing src/domain/ledger-filter.ts, src/domain/ledger-item-edit.ts, the LedgerItemRepository.listAll()/update() primitives (in-memory + Postgres), src/modules/ledger-items/service.ts, the /ledger review screen + actions, and the ledger-items copy module. The four new suites from red-run.json (ledger-filter, ledger-item-edit, ledger-items service, ledger-items smoke) now pass, plus the new ledger-content copy test. gitHead matches the working tree at GREEN time (changes staged for the slice commit)."
-}

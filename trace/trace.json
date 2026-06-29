@@ -388,28 +388,30 @@
     {
       "id": "FR-ITEM-01",
       "specs": [
-        "openspec/specs/ledger-items/spec.md",
-        "openspec/changes/add-ledger-items-review/specs/ledger-items/spec.md"
+        "openspec/specs/ledger-items/spec.md"
       ],
       "planned": true,
       "tests": [
         "src/domain/ledger-filter.test.ts",
         "src/modules/ledger-items/ledger-items.smoke.test.ts",
         "src/modules/ledger-items/service.test.ts",
-        "src/modules/ledger-items/ui/content.test.ts"
+        "src/modules/ledger-items/ui/content.test.ts",
+        "src/modules/ledger-items/ui/ledger-params.test.ts",
+        "src/modules/ledger-items/ui/ledger-params.test.ts",
+        "src/modules/ledger-items/ui/ledger-params.test.ts"
       ],
       "recordings": []
     },
     {
       "id": "FR-ITEM-02",
       "specs": [
-        "openspec/specs/ledger-items/spec.md",
-        "openspec/changes/add-ledger-items-review/specs/ledger-items/spec.md"
+        "openspec/specs/ledger-items/spec.md"
       ],
       "planned": true,
       "tests": [
         "src/domain/ledger-filter.test.ts",
-        "src/modules/ledger-items/service.test.ts"
+        "src/modules/ledger-items/service.test.ts",
+        "src/modules/ledger-items/ui/ledger-params.test.ts"
       ],
       "recordings": []
     },
@@ -417,8 +419,7 @@
       "id": "FR-ITEM-03",
       "specs": [
         "openspec/specs/bank-imports/spec.md",
-        "openspec/specs/ledger-items/spec.md",
-        "openspec/changes/add-ledger-items-review/specs/ledger-items/spec.md"
+        "openspec/specs/ledger-items/spec.md"
       ],
       "planned": true,
       "tests": [
@@ -436,8 +437,7 @@
         "openspec/specs/bank-imports/spec.md",
         "openspec/specs/file-imports/spec.md",
         "openspec/specs/ledger-items/spec.md",
-        "openspec/specs/manual-input/spec.md",
-        "openspec/changes/add-ledger-items-review/specs/ledger-items/spec.md"
+        "openspec/specs/manual-input/spec.md"
       ],
       "planned": true,
       "tests": [
@@ -454,8 +454,7 @@
       "id": "FR-ITEM-05",
       "specs": [
         "openspec/specs/bank-imports/spec.md",
-        "openspec/specs/ledger-items/spec.md",
-        "openspec/changes/add-ledger-items-review/specs/ledger-items/spec.md"
+        "openspec/specs/ledger-items/spec.md"
       ],
       "planned": true,
       "tests": [
@@ -592,8 +591,7 @@
     {
       "id": "FR-CAT-01",
       "specs": [
-        "openspec/specs/ledger-items/spec.md",
-        "openspec/changes/add-ledger-items-review/specs/ledger-items/spec.md"
+        "openspec/specs/ledger-items/spec.md"
       ],
       "planned": true,
       "tests": [
@@ -619,8 +617,7 @@
       "specs": [
         "openspec/specs/foundation/spec.md",
         "openspec/specs/ledger-items/spec.md",
-        "openspec/specs/parsing/spec.md",
-        "openspec/changes/add-ledger-items-review/specs/ledger-items/spec.md"
+        "openspec/specs/parsing/spec.md"
       ],
       "planned": true,
       "tests": [
@@ -1169,10 +1166,6 @@
     {
       "check": "recording-evidence",
       "msg": "FR-DASH-05 is not referenced by any recording manifest under docs/qa/"
-    },
-    {
-      "check": "active-changes",
-      "msg": "active change \"add-ledger-items-review\" is not archived"
     }
   ]
 }
