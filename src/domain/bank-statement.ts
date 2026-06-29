@@ -50,17 +50,22 @@ const SUPPORTED_MIME_TYPES = new Set([
   "application/octet-stream",
 ]);
 
-const DATE_ALIASES = ["дата", "date", "operation date", "дата операції"];
+// Aliases are matched as substrings (see findIndex), so keep them as short,
+// distinctive stems — real headers append qualifiers ("Дата i час операції",
+// "Деталі операції", "Сума в валюті картки (UAH)") that a full-phrase alias
+// would miss.
+const DATE_ALIASES = ["дата", "date"];
 const DESCRIPTION_ALIASES = [
   "опис",
-  "description",
-  "призначення платежу",
-  "деталі операції",
+  "деталі",
+  "призначення",
   "коментар",
   "merchant",
   "контрагент",
+  "description",
+  "назва",
 ];
-const AMOUNT_ALIASES = ["сума", "amount", "amount in card currency", "сума операції"];
+const AMOUNT_ALIASES = ["сума", "amount"];
 const CURRENCY_ALIASES = ["валюта", "currency", "ccy"];
 
 export function assertBankProvider(value: unknown): BankProvider {
@@ -91,7 +96,10 @@ export function assertSupportedBankFile(
 export function normalizeBankStatement(
   input: NormalizeBankStatementInput,
 ): NormalizedBankRow[] {
-  const rawLines = input.rawText.split(/\r?\n/);
+  // NFC-normalize first: some provider exports store Ukrainian letters in
+  // decomposed form (e.g. "ї" as "і" + combining diaeresis), which would break
+  // exact/substring header matching against precomposed aliases.
+  const rawLines = input.rawText.normalize("NFC").split(/\r?\n/);
   const delimiter = chooseDelimiter(rawLines);
   const parsed = rawLines.map((line, index) => ({
     lineNumber: index + 1,
@@ -127,30 +135,41 @@ export function serializeBankRows(provider: BankProvider, rows: NormalizedBankRo
   return JSON.stringify({ provider, rows });
 }
 
+// Decode a statement upload to delimited text. Format is detected from the file
+// CONTENT (magic bytes), not the extension, because providers routinely ship an
+// XLSX workbook with a `.xls` name. `textFallback` is only used when raw bytes
+// are unavailable (e.g. unit tests that supply text directly).
 export function statementBytesToText(input: {
   fileName: string;
   bytes: Uint8Array;
-  textFallback: string;
+  textFallback?: string;
 }): string {
+  const { bytes } = input;
   const extension = input.fileName.split(".").pop()?.toLowerCase() ?? "";
-  if (extension === "xls") {
-    if (/<table[\s>]/i.test(input.textFallback)) {
-      return htmlTableToDelimited(input.textFallback);
-    }
-    // Legacy binary BIFF .xls (OLE2 compound document) is not supported in v1;
-    // only the Excel HTML-table .xls export is. Reject it deterministically
-    // instead of feeding binary bytes to the delimited-text parser.
-    if (isOle2CompoundFile(input.bytes)) {
-      throw new BankStatementError(
-        "file-invalid",
-        "Legacy binary .xls is not supported; export the statement as CSV or XLSX.",
-      );
-    }
-    return input.textFallback;
+
+  // XLSX is a ZIP container ("PK\x03\x04"); trust the magic over the extension.
+  if (hasZipMagic(bytes) || (extension === "xlsx" && bytes.length > 0)) {
+    return xlsxBytesToText(bytes);
   }
-  if (extension !== "xlsx") return input.textFallback;
+  // Legacy binary BIFF .xls is an OLE2 compound document — not supported in v1
+  // (only the Excel HTML-table ".xls" export is). Reject it deterministically
+  // instead of feeding binary bytes to the delimited-text parser.
+  if (isOle2CompoundFile(bytes)) {
+    throw new BankStatementError(
+      "file-invalid",
+      "Legacy binary .xls is not supported; export the statement as CSV or XLSX.",
+    );
+  }
+  // CSV or Excel HTML-table .xls. Decode bytes ourselves (handles Windows-1251,
+  // which Ukrainian banks still use) instead of assuming UTF-8.
+  const text = bytes.length > 0 ? decodeStatementText(bytes) : (input.textFallback ?? "");
+  if (/<table[\s>]/i.test(text)) return htmlTableToDelimited(text);
+  return text;
+}
+
+function xlsxBytesToText(bytes: Uint8Array): string {
   try {
-    const files = unzipFiles(input.bytes);
+    const files = unzipFiles(bytes);
     const sharedStrings = readSharedStrings(files.get("xl/sharedStrings.xml") ?? "");
     const sheet = [...files.entries()].find(([name]) => /^xl\/worksheets\/sheet\d+\.xml$/.test(name));
     if (!sheet) throw new BankStatementError("file-invalid", "Workbook has no worksheet.");
@@ -160,6 +179,25 @@ export function statementBytesToText(input: {
     // must surface as a friendly validation error, never an uncaught 500.
     if (error instanceof BankStatementError) throw error;
     throw new BankStatementError("file-invalid", "Unsupported or corrupt XLSX workbook.");
+  }
+}
+
+// ZIP local-file-header signature "PK\x03\x04" — the container XLSX uses.
+function hasZipMagic(bytes: Uint8Array): boolean {
+  return bytes.length >= 4 && bytes[0] === 0x50 && bytes[1] === 0x4b && bytes[2] === 0x03 && bytes[3] === 0x04;
+}
+
+// Decode statement text, falling back from UTF-8 to Windows-1251 (cp1251) when
+// the UTF-8 decode produces replacement characters — Ukrainian bank CSV exports
+// are frequently cp1251-encoded, which would otherwise become mojibake and
+// defeat header detection.
+function decodeStatementText(bytes: Uint8Array): string {
+  const utf8 = new TextDecoder("utf-8", { fatal: false }).decode(bytes);
+  if (!utf8.includes("�")) return utf8;
+  try {
+    return new TextDecoder("windows-1251").decode(bytes);
+  } catch {
+    return utf8;
   }
 }
 
@@ -254,8 +292,14 @@ function normalizeHeader(value: string): string {
   return value.trim().replace(/^\uFEFF/, "").replace(/\s+/g, " ").toLowerCase();
 }
 
+// Match a header column by alias as a SUBSTRING, not an exact string: real
+// exports use descriptive titles like "Сума в валюті картки (UAH)" or "Опис
+// операції" / "Дата i час операції" that an exact match would miss. The first
+// (left-most) matching column wins, which picks the card-currency amount and the
+// primary date/description columns ahead of later "сума комісій"/"валюта
+// транзакції" columns.
 function findIndex(header: string[], aliases: string[]): number {
-  return header.findIndex((name) => aliases.includes(name));
+  return header.findIndex((name) => aliases.some((alias) => name === alias || name.includes(alias)));
 }
 
 function valueAt(cells: string[], index: number): string {

@@ -24,9 +24,9 @@ Result: PASS, 77 warning(s)
 | FR-FILE-03 | yes | yes | - | - |
 | FR-FILE-04 | yes | yes | - | - |
 | FR-FILE-05 | yes | yes | - | - |
-| FR-BANK-01 | yes | yes | 5 | - |
+| FR-BANK-01 | yes | yes | 6 | - |
 | FR-BANK-02 | yes | yes | 5 | - |
-| FR-BANK-03 | yes | yes | 3 | - |
+| FR-BANK-03 | yes | yes | 4 | - |
 | FR-BANK-04 | yes | yes | 2 | - |
 | FR-BANK-05 | yes | yes | 3 | - |
 | FR-BANK-06 | yes | yes | 2 | - |

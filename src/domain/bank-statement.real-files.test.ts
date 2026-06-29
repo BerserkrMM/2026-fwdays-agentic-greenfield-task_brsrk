@@ -1,0 +1,44 @@
+import { existsSync, readFileSync } from "node:fs";
+import { join } from "node:path";
+import { describe, expect, it } from "vitest";
+import { normalizeBankStatement, statementBytesToText, type BankProvider } from "./bank-statement";
+
+// Integration coverage against real provider exports committed under
+// docs/test_bank_statements/. These exercise the quirks that synthetic fixtures
+// miss: cp1251 encoding, an XLSX shipped with a .xls name, long preambles, and
+// descriptive column titles ("Сума в валюті картки", "Опис операції").
+const FIXTURES = join(process.cwd(), "docs", "test_bank_statements");
+
+const cases: { name: string; provider: BankProvider; path: string }[] = [
+  { name: "monobank cp1251 CSV", provider: "monobank", path: join(FIXTURES, "monobank", "1.csv") },
+  {
+    name: "monobank XLSX named .xls",
+    provider: "monobank",
+    path: join(FIXTURES, "monobank", "report_24-06-2026_14-48-32.xls"),
+  },
+  {
+    name: "privatbank XLSX",
+    provider: "privatbank",
+    path: join(FIXTURES, "privatbank", "_JhbQT56SV-4UBMC-J6Yuqmfd7avuiUikKiYrDoEpa8.xlsx"),
+  },
+];
+
+// @trace FR-BANK-01, FR-BANK-03
+describe("real provider statement exports", () => {
+  for (const c of cases) {
+    const run = existsSync(c.path) ? it : it.skip;
+    run(`extracts transaction rows from ${c.name}`, () => {
+      const bytes = new Uint8Array(readFileSync(c.path));
+      const text = statementBytesToText({ fileName: c.path, bytes });
+      const rows = normalizeBankStatement({ provider: c.provider, rawText: text });
+
+      expect(rows.length).toBeGreaterThan(0);
+      for (const row of rows) {
+        expect(row.date).toBeTruthy();
+        expect(row.description).toBeTruthy();
+        // Amount must look like a signed/decimal money value, not a column shift.
+        expect(/-?\d/.test(row.amount.replace(/\s/g, ""))).toBe(true);
+      }
+    });
+  }
+});

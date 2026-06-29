@@ -58,22 +58,13 @@ export async function importBankAction(formData: FormData): Promise<void> {
   try {
     // Decoding the upload (incl. corrupt/hostile XLSX) stays inside the catch so
     // a BankStatementError becomes a friendly redirect, never an uncaught 500.
-    // Read the file once per format: XLSX needs only the raw bytes, while
-    // CSV/HTML-xls needs only the decoded text — never both (avoids doubling
-    // memory on the request path).
-    const extension = file.name.split(".").pop()?.toLowerCase() ?? "";
-    const rawText =
-      extension === "xlsx"
-        ? statementBytesToText({
-            fileName: file.name,
-            bytes: new Uint8Array(await file.arrayBuffer()),
-            textFallback: "",
-          })
-        : statementBytesToText({
-            fileName: file.name,
-            bytes: extension === "xls" ? new Uint8Array(await file.arrayBuffer()) : new Uint8Array(),
-            textFallback: await file.text(),
-          });
+    // Read the raw bytes once; statementBytesToText detects the real format from
+    // the content (XLSX/ZIP, BIFF, CSV/HTML) and decodes the text itself
+    // (including Windows-1251), so we never read the file twice.
+    const rawText = statementBytesToText({
+      fileName: file.name,
+      bytes: new Uint8Array(await file.arrayBuffer()),
+    });
     const repos = getRepositories();
     await new AccountsService(repos.accounts).ensureSeededDefault();
     summary = await service().importStatement({

@@ -4,6 +4,20 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-29 18:20 UTC — add-bank-statement-imports: fix real-world parsing (no statement imported)
+
+**What was done** — manual testing with real exports under `docs/test_bank_statements/` surfaced that **no** statement imported (`empty-statement` every time). Root-caused four real-world format gaps and fixed them in `src/domain/bank-statement.ts`:
+1. **Format detected by extension, not content** — a monobank export shipped as `.xls` is actually an XLSX (ZIP) workbook, so it never reached the XLSX parser. Now `statementBytesToText` routes by magic bytes (ZIP `PK\x03\x04` → XLSX; OLE2 → BIFF reject), so a misnamed workbook parses correctly.
+2. **CSV assumed UTF-8** — the monobank CSV is Windows-1251 (cp1251); decoded as UTF-8 it was mojibake and the header never matched. Added `decodeStatementText` (UTF-8 → cp1251 fallback on replacement chars). The action now reads bytes once and lets the domain decode (also removes the last double-read).
+3. **Header aliases were exact/full-phrase** — real columns are descriptive ("Сума в валюті картки (UAH)", "Опис операції", "Деталі операції", "Дата i час операції"); switched alias matching to short substring stems.
+4. **Unicode NFD** — the monobank export stores "ї" decomposed (і + combining diaeresis), so it didn't match precomposed aliases; normalize the text to NFC first.
+
+**Current state** — verified end-to-end on all three real fixtures: monobank cp1251 CSV → **80 rows**, monobank XLSX-named-`.xls` → **80 rows** (identical), privatbank XLSX → **29 rows**, all with correct date/description/amount/currency and comma-bearing descriptions intact. Added a committed integration test (`src/domain/bank-statement.real-files.test.ts`) reading the real files, plus unit tests for cp1251, content-based XLSX detection, descriptive headers, and NFC. Gates green: lint, `tsc`, `test:run` (32 files / **175 tests**), `next build`, coverage ratchet up (lines 53.88, fns 74.78, branches 89.24), `openspec validate --strict`, `check:trace`/`trajectory`/`red-green`/`claims`. Committed on `add-bank-statement-imports`; ready to push.
+
+**Next steps** — push, re-trigger CodeRabbit, watch CI; manually re-test `/imports/bank` with the real files. Then slice 8 `add-receipt-photo-imports` (note: a receipt photo `check.JPEG` is already in `docs/test_bank_statements/` for that slice).
+
+**Open questions / blockers** — none for parsing. Still pending human input for final submission: real **author name** + **demo-video** link. The actual ledger items still depend on a live `OPENAI_API_KEY` for the AI parse step (deferred to settings slice); normalization (the part that was broken) is deterministic and now works.
+
 ## 2026-06-29 17:40 UTC — add-bank-statement-imports: address CodeRabbit PR #9 findings
 
 **What was done** — triaged CodeRabbit's review on PR #9 and folded the genuinely-actionable findings (the rest were rubric/human-input items, see blockers):

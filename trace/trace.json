@@ -273,6 +273,7 @@
       "planned": true,
       "tests": [
         "src/app-actions/import-bank-action.test.ts",
+        "src/domain/bank-statement.real-files.test.ts",
         "src/domain/bank-statement.test.ts",
         "src/modules/bank-imports/service.test.ts",
         "src/modules/bank-imports/ui/bank-import-content.test.ts",
@@ -302,6 +303,7 @@
       ],
       "planned": true,
       "tests": [
+        "src/domain/bank-statement.real-files.test.ts",
         "src/domain/bank-statement.test.ts",
         "src/modules/bank-imports/service.test.ts",
         "evals/cases/bank-imports.eval.ts"
