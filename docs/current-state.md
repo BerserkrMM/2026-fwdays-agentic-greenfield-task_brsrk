@@ -4,6 +4,18 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-29 14:47 UTC — dev prompt adjustment for live OpenAI parser
+
+**What was done** — after PR #8 was merged to `dev`, updated local `dev` from `origin/dev` and carried over the manual live-test prompt adjustment in `src/modules/parsing/adapters.ts`. Replaced the short OpenAI system prompt with an explicit JSON schema/instructions prompt for Ukrainian finance text parsing: exact field names, signed kopiyky, expense/income classification, missing-value fallbacks, zero-draft handling, categories, dates, multi-item inputs, refunds/cashback, and transfers. Removed temporary OpenAI response `console.log` debugging so runtime logs do not expose user financial text.
+
+**Current state** — change is local on `dev`, ready to commit/push as a small prompt-adjustment follow-up. Validation run: `npm run lint`, `npx tsc --noEmit`, and targeted `npm run test:run -- src/modules/parsing/adapters.test.ts src/modules/manual-input/service.test.ts` passed.
+
+**Next steps** — commit with `Refs: FR-PARSE-01, FR-PARSE-02` and push directly to `origin/dev`; optionally do one manual `/imports/text` live check with `OPENAI_API_KEY` after push.
+
+**Open questions / blockers** — none. This is a prompt hardening follow-up, not a new OpenSpec slice.
+
+---
+
 ## 2026-06-29 13:25 UTC — PR #8 review fixes for add-manual-text-input
 
 **What was done** — reviewed PR #8 against `dev`, checked CI failure and CodeRabbit's actionable comments. Fixed the CI blocker by force-adding the archived raw maker≠checker review evidence so `review-findings.json.rawEvidence` resolves in a clean checkout, then regenerated trajectory/slice reports. Folded valid CodeRabbit code/data findings: `importTextAction` now rejects a non-string `text` FormData value and blank/whitespace text before parsing/storage/default-account seeding; `parseImportSummary` rejects mixed valid/invalid query counts instead of rendering a misleading partial banner; duplicate trace evidence was removed at the source; manual-input eval output now includes the zero-draft warning state and more natural summary wording (`Додано до журналу`). Added regression tests for the malformed FormData and blank-text no-side-effect boundaries.
