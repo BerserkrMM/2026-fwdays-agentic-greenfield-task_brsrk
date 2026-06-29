@@ -1,0 +1,12 @@
+{
+  "command": "npx vitest run src/domain/manual-text.test.ts src/modules/manual-input",
+  "exitCode": 1,
+  "gitHead": "f4983333c298e9b2c38e26bad9eb135b89084895",
+  "timestamp": "2026-06-29T12:31:29.000Z",
+  "failingTests": [
+    "src/domain/manual-text.test.ts failed to load missing ./manual-text",
+    "src/modules/manual-input/service.test.ts failed to load missing @/src/domain/manual-text and ./service",
+    "src/modules/manual-input/ui/import-summary.test.ts failed to load missing ./import-summary",
+    "src/modules/manual-input/manual-input.smoke.test.ts failed to load missing ./service"
+  ]
+}
