@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-29T17:04:34.210Z",
+  "generatedAt": "2026-06-29T17:40:17.275Z",
   "generatedBy": "scripts/slice-report.mjs",
   "slice": "add-bank-statement-imports",
   "commands": {
@@ -36,22 +36,22 @@
     "openspecPassed": 10,
     "activeChanges": 0,
     "testFilesPassed": 31,
-    "testsPassed": 162,
+    "testsPassed": 169,
     "traceFailures": 0,
     "traceWarnings": 77,
     "trajectoryFailures": 0,
     "trajectoryWarnings": 2,
-    "changedFiles": 37,
+    "changedFiles": 41,
     "evalBaseline": {
       "ua-ux-clarity": 95,
       "explicit-state-clarity": 96,
       "ua-error-clarity": 93
     },
     "coverageBaseline": {
-      "lines": 53.05,
-      "statements": 53.05,
-      "functions": 74.33,
-      "branches": 88.62
+      "lines": 53.78,
+      "statements": 53.78,
+      "functions": 74.44,
+      "branches": 89.01
     },
     "reviewFindings": "clean",
     "rawReviewEvidenceRefs": 7,

@@ -4,6 +4,21 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-29 17:40 UTC — add-bank-statement-imports: address CodeRabbit PR #9 findings
+
+**What was done** — triaged CodeRabbit's review on PR #9 and folded the genuinely-actionable findings (the rest were rubric/human-input items, see blockers):
+- `src/domain/bank-statement.ts`: choose the CSV delimiter from the header-like line, not the first non-empty line, so a provider preamble no longer breaks detection (Major); preserve the real Excel `<row r="N">` number when flattening an XLSX worksheet so `sourceRef.rowNumber`/`import_row_number` stay accurate for non-contiguous rows (Major, data integrity); reject legacy binary BIFF `.xls` (OLE2 signature) with explicit `file-invalid` instead of parsing binary as text (Major; Excel HTML-table `.xls` still supported).
+- `app/imports/bank/actions.ts`: read each upload once per format (XLSX → bytes only, CSV → text only) instead of always materializing both `arrayBuffer` and `text` (perf).
+- `src/modules/bank-imports/service.ts`: count normalized rows the parser dropped entirely as failed (a partial parser result can no longer report success while importing fewer rows than the statement had); ignore duplicate drafts for one row (Major).
+- `scripts/check-traceability.mjs`: de-duplicate test files per FR so multiple `it()` blocks sharing a `@trace` tag don't inflate the evidence matrix.
+- `openspec/changes/archive/.../design.md`: sync the documented parser payload with the shipped `{ kind: "bank", content: serializeBankRows(...) }` contract.
+
+**Current state** — deterministic gates green after the fixes: lint, `tsc --noEmit`, `test:run` (31 files / **169 tests**, +7 regression tests), `test:coverage` + ratchet bumped (lines/stmts 53.78, fns 74.44, branches 89.01), `next build`, `openspec validate --all --strict` (10 specs), `check:trace` (0 failures), `check:trajectory` (0 failures, 2 inherited foundation-shell warnings), `check:red-green --strict`, `check:claims`. Committed on `add-bank-statement-imports` with `Slice:`/`Refs:` trailers; ready to push and re-trigger CodeRabbit on PR #9.
+
+**Next steps** — push, re-trigger CodeRabbit (`@coderabbitai review`) on PR #9, watch CI. Then slice 8 `add-receipt-photo-imports`.
+
+**Open questions / blockers** — CodeRabbit's remaining comments are the homework-submission rubric: real **author name** and a **1–2 minute demo-video link** in the PR description / `current-state.md`. These are human inputs and were not fabricated; the frozen maker≠checker raw-evidence files under `reviews/` were intentionally not rewritten (evidence discipline). The slice-report MD041 (H1) lint note was left as-is — it is a generated artifact and an H1 there would collide with the embedding doc's title.
+
 ## 2026-06-29 17:04 UTC — add-bank-statement-imports slice SHIPPED (review unblocked, archived)
 
 **What was done** — picked up the slice that the previous session left blocked. Root cause of that block: the round-1 post-fix maker≠checker re-review had failed on a rate-limited subagent backend, so `review-findings.json` was correctly left `clean:false`. Re-ran the full maker≠checker review on Claude reviewer agents (fresh, this session did not write the code). Round-2 reviews: **code REQUEST_CHANGES**, **security PASS_WITH_NOTES**, **spec-compliance PASS**, **eval-judge 94/100 PASS**. Fixed every actionable finding and ran a confirmation pass (code **APPROVE**, spec-compliance **PASS**), then archived the OpenSpec change and committed the slice.
