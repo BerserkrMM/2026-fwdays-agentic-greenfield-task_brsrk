@@ -26,6 +26,14 @@
       "processComplete": true
     },
     {
+      "slice": "2026-06-29-add-bank-statement-imports",
+      "reviewEvidence": "clean",
+      "rawReviewEvidence": "7 linked",
+      "trailerCommits": 0,
+      "libDomains": [],
+      "processComplete": true
+    },
+    {
       "slice": "2026-06-29-add-ledger-items-review",
       "reviewEvidence": "clean",
       "rawReviewEvidence": "5 linked",
@@ -60,6 +68,10 @@
     {
       "check": "trailer",
       "msg": "2026-06-26-add-foundation-shell: no commit carries a \"Slice: add-foundation-shell\" trailer"
+    },
+    {
+      "check": "trailer",
+      "msg": "2026-06-29-add-bank-statement-imports: no commit carries a \"Slice: add-bank-statement-imports\" trailer"
     }
   ]
 }

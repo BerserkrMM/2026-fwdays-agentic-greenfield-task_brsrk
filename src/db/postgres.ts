@@ -164,6 +164,15 @@ class PgLedgerItemRepository implements LedgerItemRepository {
     return row ? toLedgerItem(row) : null;
   }
 
+  async findByInputEventRow(inputEventId: string, rowNumber: number): Promise<LedgerItem | null> {
+    const [row] = await this.sql<LedgerItemRow[]>`
+      SELECT * FROM ledger_items
+       WHERE input_event_id = ${inputEventId}
+         AND import_row_number = ${rowNumber}
+       LIMIT 1`;
+    return row ? toLedgerItem(row) : null;
+  }
+
   async listNonDeleted(): Promise<LedgerItem[]> {
     // Inclusion follows item status, not account archive state, so archived
     // accounts' historical items are returned (FR-LEDGER-02/03, FR-ACCT-05).

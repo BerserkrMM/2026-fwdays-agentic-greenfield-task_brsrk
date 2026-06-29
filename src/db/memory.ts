@@ -122,7 +122,15 @@ class MemoryLedgerItemRepository implements LedgerItemRepository {
   }
 
   async findById(id: string): Promise<LedgerItem | null> {
-    return this.store.get(id) ?? null;
+    const found = this.store.get(id);
+    return found ? { ...found } : null;
+  }
+
+  async findByInputEventRow(inputEventId: string, rowNumber: number): Promise<LedgerItem | null> {
+    const found = [...this.store.values()].find(
+      (item) => item.inputEventId === inputEventId && item.importRowNumber === rowNumber,
+    );
+    return found ? { ...found } : null;
   }
 
   async listNonDeleted(): Promise<LedgerItem[]> {

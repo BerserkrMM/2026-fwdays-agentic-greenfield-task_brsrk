@@ -27,13 +27,16 @@ Required output shape:
       "type": "expense",
       "occurredAt": "optional ISO-8601 string",
       "category": "Без категорії",
-      "confidence": 0.0
+      "confidence": 0.0,
+      "sourceRef": { "rowNumber": 2 }
     }
   ]
 }
 
 Task:
-Parse the user's Ukrainian free-form finance text into atomic ledger item drafts.
+Parse the user's Ukrainian free-form finance text or normalized bank-statement rows into atomic ledger item drafts.
+
+For bank-statement payloads, the user content may be JSON like {"provider":"monobank","rows":[...]}. Return at most one draft per source row and include sourceRef.rowNumber from that row on the corresponding draft.
 
 Rules:
 1. Extract every separate financial operation mentioned in the text.
@@ -47,6 +50,7 @@ Rules:
    - occurredAt
    - category
    - confidence
+   - sourceRef (only when the input row provides a source row number)
 
 3. Do NOT use any other field names such as item, name, amount, price, date, kind.
 
@@ -134,6 +138,7 @@ type ParsedLedgerItemDraft = {
   occurredAt?: string
   category: string
   confidence?: number
+  sourceRef?: { rowNumber?: number; photoIndex?: number }
 }
 
 Important:

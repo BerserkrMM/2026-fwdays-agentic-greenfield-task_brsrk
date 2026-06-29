@@ -1,13 +1,5 @@
-# bank-imports
+## MODIFIED Requirements
 
-## Purpose
-
-The Bank Imports capability owns the `/imports/bank` channel for CSV/XLS/XLSX
-statement uploads. It records the original statement as an input event, captures
-the selected provider, performs provider-specific deterministic normalization,
-invokes Parsing, and creates pending ledger items while preserving row-level
-idempotency.
-## Requirements
 ### Requirement: User uploads a bank statement file
 
 The system SHALL let the user upload a CSV/XLS/XLSX statement file on
@@ -129,4 +121,3 @@ retry behavior for bank rows. (FR-BANK-06)
 - **GIVEN** a partially imported statement where some rows have no item yet
 - **WHEN** the input event is retried
 - **THEN** items are created only for source rows that do not yet have an item
-
