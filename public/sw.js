@@ -12,8 +12,8 @@
 // clears caches, unregisters, and reloads controlled tabs back to a clean state.
 
 const CACHE = "finup-shell-v2";
-const SHELL_ROUTES = new Set(["/", "/dashboard"]);
-const PRECACHE = ["/", "/dashboard", "/manifest.webmanifest", "/icon-192.png"];
+const SHELL_ROUTES = new Set(["/", "/about", "/dashboard"]);
+const PRECACHE = ["/", "/about", "/dashboard", "/manifest.webmanifest", "/icon-192.png"];
 
 const isLocalDev = ["localhost", "127.0.0.1", "[::1]"].includes(
   self.location.hostname,

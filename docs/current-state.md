@@ -4,6 +4,18 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-30 17:56 UTC — PR #14 CodeRabbit follow-up: cache `/about` shell route
+
+**What was done** — triaged CodeRabbit's 4 comments on PR #14. Folded the valid technical finding: `public/sw.js` now includes `/about` in both `SHELL_ROUTES` and `PRECACHE`, matching the new deployed landing route while preserving the existing dev self-healing / no-cache behavior. Accepted/deferred the three submission-input comments (real author name, 1–2 minute demo video link, recording reference) because they are owner-provided final submission data and were not fabricated; owner also confirmed the author name should not be shown on the `/about` page.
+
+**Current state** — targeted validation is green: `npx eslint public/sw.js src/modules/foundation/ui/ServiceWorkerRegister.tsx` and `npm run test:run -- src/modules/foundation/ui/content.test.ts src/app-pages.smoke.test.ts` (17 tests). PR #14 remains the active PR for `/about` landing-page support.
+
+**Next steps** — commit/push the service-worker follow-up and re-trigger CodeRabbit. Later, owner to add real author name and demo-video link to the final PR/submission materials.
+
+**Open questions / blockers** — none.
+
+---
+
 ## 2026-06-30 16:53 UTC — make `/about` the deployed landing page and enrich presentation page
 
 **What was done** — made the app root redirect to `/about` so deployed Vercel reviewers land on the course/demo presentation first. Refined `/about` copy to reduce contrast-heavy phrasing, renamed process-evidence wording from gates to checks, added concrete gate commands, an evidence artifact map, and a short glossary for process terms (`regression coverage`, `accepted with rationale`, `trade-off`, `ratchet`). Updated the content tests for the new copy structure.
