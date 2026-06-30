@@ -91,9 +91,22 @@ describe("about page content (/about)", () => {
   it("describes the three levels of checks", () => {
     expect(ABOUT.gates.groups.map((g) => g.title)).toEqual([
       "Product / code gates",
-      "Process-evidence gates",
+      "Process-evidence checks",
       "Reporting commands",
     ]);
+  });
+
+  it("lists concrete gate commands and evidence artifacts", () => {
+    expect(ABOUT.commands.rows.map((row) => row.command)).toContain(
+      "npx tsc --noEmit",
+    );
+    expect(ABOUT.commands.rows.map((row) => row.command)).toContain(
+      "npm run check:trace",
+    );
+    expect(ABOUT.artifacts.rows.map((row) => row.path)).toContain(
+      "docs/current-state.md",
+    );
+    expect(ABOUT.terms.rows.map((row) => row.term)).toContain("ratchet");
   });
 
   it("points its calls to action at real in-app routes", () => {

@@ -95,7 +95,19 @@ function Callout({
 }
 
 export default function AboutPage() {
-  const { product, features, build, gates, reviewers, role, next, cta } = ABOUT;
+  const {
+    product,
+    features,
+    build,
+    gates,
+    commands,
+    artifacts,
+    terms,
+    reviewers,
+    role,
+    next,
+    cta,
+  } = ABOUT;
 
   return (
     <>
@@ -275,6 +287,81 @@ export default function AboutPage() {
                 </ul>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Concrete gate commands. */}
+        <div className={`${CARD} mt-6 overflow-hidden`}>
+          <h3 className="text-base font-semibold text-fin-fg">
+            {commands.heading}
+          </h3>
+          <p className="mb-4 mt-1 text-sm text-fin-fg-muted">
+            {commands.intro}
+          </p>
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left text-sm">
+              <thead className="border-b border-fin-border text-xs uppercase tracking-wide text-fin-fg-subtle">
+                <tr>
+                  <th className="py-2 pr-4 font-semibold">Gate</th>
+                  <th className="py-2 pr-4 font-semibold">Command</th>
+                  <th className="py-2 font-semibold">Що доводить</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-fin-border">
+                {commands.rows.map((row) => (
+                  <tr key={row.gate}>
+                    <td className="py-2.5 pr-4 font-medium text-fin-fg">
+                      {row.gate}
+                    </td>
+                    <td className="py-2.5 pr-4">
+                      <code className="rounded-fin-sm bg-fin-surface-muted px-1.5 py-0.5 font-mono text-xs text-fin-primary">
+                        {row.command}
+                      </code>
+                    </td>
+                    <td className="py-2.5 text-fin-fg-muted">{row.proves}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        {/* Evidence artifact map + glossary. */}
+        <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,0.8fr)]">
+          <div className={CARD}>
+            <h3 className="text-base font-semibold text-fin-fg">
+              {artifacts.heading}
+            </h3>
+            <p className="mb-4 mt-1 text-sm text-fin-fg-muted">
+              {artifacts.intro}
+            </p>
+            <ul className="space-y-2.5">
+              {artifacts.rows.map((row) => (
+                <li key={row.path} className="grid gap-1 sm:grid-cols-[13rem_1fr]">
+                  <code className="rounded-fin-sm bg-fin-surface-muted px-1.5 py-0.5 font-mono text-xs text-fin-primary">
+                    {row.path}
+                  </code>
+                  <span className="text-sm text-fin-fg-muted">{row.role}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className={CARD}>
+            <h3 className="text-base font-semibold text-fin-fg">
+              {terms.heading}
+            </h3>
+            <dl className="mt-3 space-y-3">
+              {terms.rows.map((row) => (
+                <div key={row.term}>
+                  <dt className="font-mono text-sm font-medium text-fin-primary">
+                    {row.term}
+                  </dt>
+                  <dd className="mt-0.5 text-sm leading-relaxed text-fin-fg-muted">
+                    {row.meaning}
+                  </dd>
+                </div>
+              ))}
+            </dl>
           </div>
         </div>
 

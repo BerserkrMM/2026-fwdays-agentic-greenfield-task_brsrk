@@ -4,6 +4,18 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-30 16:53 UTC — make `/about` the deployed landing page and enrich presentation page
+
+**What was done** — made the app root redirect to `/about` so deployed Vercel reviewers land on the course/demo presentation first. Refined `/about` copy to reduce contrast-heavy phrasing, renamed process-evidence wording from gates to checks, added concrete gate commands, an evidence artifact map, and a short glossary for process terms (`regression coverage`, `accepted with rationale`, `trade-off`, `ratchet`). Updated the content tests for the new copy structure.
+
+**Current state** — product code changes are ready to validate and commit. `/about` remains a read-only presentation/support page for the course submission, not a new Finup MVP capability.
+
+**Next steps** — commit the landing-page/presentation-page updates, then run `bash crash_course/run-all-checks.sh` as the presentation verification script. If any gate fails, inspect the failing command output and either fix the issue or document the known limitation.
+
+**Open questions / blockers** — none.
+
+---
+
 ## 2026-06-30 15:35 UTC — About page (`/about`) added on branch `add-about-page`
 
 **What was done** — built a new richly-designed About page on a fresh branch `add-about-page` cut from `dev` (per request). It narrates what Finup is and how it was built, with copy taken faithfully from `crash_course/video-presentation-script.md` (the visible 5-part spine) layered with the richer process detail from `crash_course/presentation.md`. New files: `app/about/page.tsx` (server component, no DB/mutations — navigation only) and `src/modules/foundation/ui/about-content.ts` (single-source-of-truth Ukrainian copy as structured data). Added a `/about` nav item to `nav-items.ts` (sidebar only; `primary:false`, so it stays off the mobile bottom bar) and content tests in `content.test.ts`. Design uses only the foundation `fin-*` tokens: dark hero, numbered sections, hand-built styled flow diagrams (pipeline + per-feature cycle), a red/green "not vibe coding" comparison, three-level gate cards, maker≠checker reviewer list, and a CTA — no client JS or chart deps.

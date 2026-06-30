@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 
-// Home routes to the dashboard, the app's read-only overview (DESIGN.md §5).
+// Home routes to the course/demo landing page so reviewers first see the
+// product narrative and agentic engineering process before entering the app.
 export default function Home() {
-  redirect("/dashboard");
+  redirect("/about");
 }

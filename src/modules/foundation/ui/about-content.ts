@@ -37,6 +37,22 @@ export interface ReviewerRow {
   checks: string;
 }
 
+export interface CommandRow {
+  gate: string;
+  command: string;
+  proves: string;
+}
+
+export interface ArtifactRow {
+  path: string;
+  role: string;
+}
+
+export interface TermRow {
+  term: string;
+  meaning: string;
+}
+
 export interface ProcessStep {
   /** Sequence marker, e.g. "3.1". */
   index: string;
@@ -146,8 +162,8 @@ export const ABOUT = {
     index: "03",
     title: "Як будувався проєкт",
     summary:
-      "Це основна частина історії. Тут важливий не кожен дрібний крок, а ланцюг " +
-      "доказів процесу.",
+      "Це основна частина історії: ланцюг доказів процесу з фокусом на ключових " +
+      "етапах.",
     notVibeHeading: "Не vibe coding",
     notVibe: {
       badLabel: "Не так",
@@ -191,8 +207,8 @@ export const ABOUT = {
         body:
           "Для кожного slice створювався OpenSpec change: proposal, spec delta і tasks. " +
           "Тобто перед кодом була специфікація: що саме змінюється, які requirements " +
-          "покриваються і які сценарії мають бути реалізовані. Агент не просто «писав " +
-          "фічу», а реалізовував конкретний slice проти погодженої специфікації.",
+          "покриваються і які сценарії мають бути реалізовані. Агент реалізовував " +
+          "конкретний slice проти погодженої специфікації.",
       },
       {
         index: "3.3",
@@ -223,9 +239,9 @@ export const ABOUT = {
         index: "3.6",
         title: "Maker ≠ checker",
         body:
-          "Після реалізації були reviewer-проходи окремими агентами. Зауваження або " +
-          "фіксились із тестами, щоб не повторювались (regression coverage), або свідомо " +
-          "документувались (trade-off accepted with rationale).",
+          "Після реалізації були reviewer-проходи окремими агентами. Зауваження " +
+          "фіксились із тестами для захисту від повторення (regression coverage) або " +
+          "свідомо документувались (trade-off accepted with rationale)."
       },
       {
         index: "3.7",
@@ -242,7 +258,7 @@ export const ABOUT = {
   gates: {
     heading: "Перевірки: три рівні",
     intro:
-      "Важливо не змішувати всі команди в одну категорію. У проєкті були три рівні.",
+      "У проєкті були три рівні команд із різною відповідальністю.",
     groups: [
       {
         glyph: "✓",
@@ -262,8 +278,8 @@ export const ABOUT = {
       },
       {
         glyph: "◆",
-        title: "Process-evidence gates",
-        summary: "Перевіряють чесність і повноту процесу, а не поведінку продукту.",
+        title: "Process-evidence checks",
+        summary: "Перевіряють чесність і повноту процесу та його артефактів.",
         items: [
           "RED/GREEN evidence check",
           "Claim hygiene check",
@@ -273,10 +289,53 @@ export const ABOUT = {
       {
         glyph: "▤",
         title: "Reporting commands",
-        summary: "Підсумовують стан, але не є окремими product gates.",
+        summary: "Підсумовують стан і допомагають підготувати handoff / PR.",
         items: ["gate:status", "slice:report"],
       },
     ] satisfies GateGroup[],
+  },
+
+  commands: {
+    heading: "Команди, якими проходили gates",
+    intro: "Кожна перевірка запускалась як відтворювана команда з exit code.",
+    rows: [
+      { gate: "TypeScript", command: "npx tsc --noEmit", proves: "типові контракти не зламані" },
+      { gate: "Lint", command: "npm run lint", proves: "базова якість коду і lint rules" },
+      { gate: "Tests", command: "npm run test:run", proves: "unit / integration поведінка проходить" },
+      { gate: "Build", command: "npm run build", proves: "Next.js production build збирається" },
+      { gate: "OpenSpec", command: "npx openspec validate --all --strict", proves: "spec layer валідний" },
+      { gate: "Trace", command: "npm run check:trace", proves: "FR → spec → slice → tests chain не розірваний" },
+      { gate: "Trajectory", command: "npm run check:trajectory", proves: "archived slices мають process artifacts" },
+      { gate: "Coverage", command: "npm run test:coverage && npm run check:coverage", proves: "coverage не просів нижче baseline" },
+      { gate: "Eval", command: "npm run check:eval", proves: "eval score не просів нижче baseline" },
+    ] satisfies CommandRow[],
+  },
+
+  artifacts: {
+    heading: "Де лежать докази процесу",
+    intro: "Ці файли роблять процес видимим: можна відкрити repo і перевірити, що саме було зроблено.",
+    rows: [
+      { path: "AGENTS.md", role: "правила і рамки для агентів" },
+      { path: "docs/requirements.md", role: "source of truth з traceable requirement IDs" },
+      { path: "openspec/changes/<slice>/", role: "proposal, tasks, spec delta для конкретного slice" },
+      { path: "evidence/red-run.json", role: "доказ, що перевірка спочатку падала" },
+      { path: "evidence/green-run.json", role: "доказ, що після реалізації перевірка проходить" },
+      { path: "reviews/*.md", role: "raw maker ≠ checker review evidence" },
+      { path: "review-findings.json", role: "структурований підсумок reviewer findings" },
+      { path: "quality/*-baseline.json", role: "coverage / eval ratchet baselines" },
+      { path: "trace/*.json", role: "machine-readable traceability / trajectory outputs" },
+      { path: "docs/current-state.md", role: "handoff log між сесіями" },
+    ] satisfies ArtifactRow[],
+  },
+
+  terms: {
+    heading: "Коротко про терміни",
+    rows: [
+      { term: "regression coverage", meaning: "тест або перевірка для захисту від повторення знайденої проблеми" },
+      { term: "accepted with rationale", meaning: "зауваження прийняли до уваги, відклали виправлення і записали причину" },
+      { term: "trade-off", meaning: "свідомий компроміс між якістю, scope, часом або складністю" },
+      { term: "ratchet", meaning: "baseline, який утримує метрику від тихого погіршення" },
+    ] satisfies TermRow[],
   },
 
   // ── Maker ≠ checker roles ────────────────────────────────────────────────
@@ -321,7 +380,7 @@ export const ABOUT = {
   },
 
   cta: {
-    text: "Готові спробувати?",
+    text: "Подивитись продукт",
     primaryLabel: "Відкрити огляд",
     primaryHref: "/dashboard",
     secondaryLabel: "Внести дані",
