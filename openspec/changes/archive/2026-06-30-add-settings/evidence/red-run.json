@@ -1,0 +1,16 @@
+{
+  "slice": "add-settings",
+  "phase": "red",
+  "command": "npx vitest run src/domain/csv-export.test.ts src/domain/app-config.test.ts src/modules/settings/service.test.ts src/app-settings-page.smoke.test.ts src/app-settings-export-route.test.ts",
+  "exitCode": 1,
+  "gitHead": "33947a7ab7fc1ce51187aea4373efba41771822e",
+  "timestamp": "2026-06-30T09:36:28Z",
+  "summary": "New settings tests fail before implementation: the CSV export serializer, the app-config domain, the SettingsService, the settings UI copy module, the real /settings page, and the /settings/export Route Handler do not exist yet. Four test files fail at module resolution and the export-route test fails importing the missing handler.",
+  "failingTests": [
+    "src/domain/csv-export.test.ts > collection fails: Cannot find module '@/src/domain/csv-export'",
+    "src/domain/app-config.test.ts > collection fails: Cannot find module '@/src/domain/app-config'",
+    "src/modules/settings/service.test.ts > collection fails: Cannot find module '@/src/modules/settings/service' (and AppConfigRepository not yet on Repositories)",
+    "src/app-settings-page.smoke.test.ts > collection fails: Cannot find module '@/src/modules/settings/ui/settings-content'",
+    "src/app-settings-export-route.test.ts > GET /settings/export (FR-SET-03) > returns a CSV download and mutates nothing — Cannot find module '@/app/settings/export/route'"
+  ]
+}

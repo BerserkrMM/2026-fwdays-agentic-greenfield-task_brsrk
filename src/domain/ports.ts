@@ -4,6 +4,7 @@
 // and `src/modules/*` (services).
 
 import type { Account } from "./account";
+import type { AppConfig } from "./app-config";
 import type { InputEvent, NewInputEvent } from "./input-event";
 import type { LedgerItem } from "./ledger-item";
 import type {
@@ -73,11 +74,28 @@ export interface LedgerItemRepository {
   update(item: LedgerItem): Promise<LedgerItem>;
 }
 
+/**
+ * Persistence for the singleton application config (AI-provider settings). Owned
+ * by the `settings` capability. The repository stores the full config including
+ * the key; the write-only-over-the-wire guarantee (FR-SET-02) is enforced above
+ * it in the service/UI, which only ever expose `AiProviderStatus`.
+ */
+export interface AppConfigRepository {
+  /** The current config row, or null when none has been written yet. */
+  get(): Promise<AppConfig | null>;
+  /** Inserts or replaces the singleton config row, returning the stored value. */
+  upsert(patch: {
+    openAiApiKey: string | null;
+    openAiModel: string | null;
+  }): Promise<AppConfig>;
+}
+
 export interface Repositories {
   inputEvents: InputEventRepository;
   parserRuns: ParserRunRepository;
   ledgerItems: LedgerItemRepository;
   accounts: AccountRepository;
+  appConfig: AppConfigRepository;
 }
 
 // --- Accounts port (default-account resolution; owned by `accounts` later) ---

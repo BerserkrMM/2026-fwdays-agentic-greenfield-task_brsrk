@@ -117,6 +117,23 @@
       "judges": 1,
       "disagreement": false,
       "notes": "Fresh eval-judge (maker≠checker) over the produced output from the live dashboard-content.ts. All three CRITICAL criteria hold: every string is Ukrainian (only Latin is the IANA «Europe/Kyiv» timezone label); the empty state explains «Ще немає операцій» and points to import («Перейти до імпорту»); the insufficient-trend state gives the concrete reason («Тренд з’явиться, коли операції охоплять щонайменше два різні місяці»). Partial vs total failure are distinguished with a retry, and the read-only note + balance hint name which statuses count. Minor non-gating nit: the partial state's «спробуйте оновити сторінку» wording diverges slightly from the error state's «Спробувати ще раз» button. On par with the sibling baseline (93), not inflated. A per-section «Не вдалося завантажити цей розділ» state was added after grading so a failed read no longer masquerades as empty/insufficient."
+    },
+    {
+      "id": "eval-settings-config-export-clarity",
+      "dimension": "ua-error-clarity",
+      "trace": [
+        "FR-SET-01",
+        "FR-SET-02",
+        "FR-SET-03",
+        "FR-SHELL-03",
+        "NFR-I18N-01"
+      ],
+      "capability": "settings",
+      "score": 93,
+      "pass": true,
+      "judges": 1,
+      "disagreement": false,
+      "notes": "Fresh eval-judge graded the live settings-content.ts copy. All three CRITICAL criteria met: fully Ukrainian-first (AI rendered as «ШІ»); the not-configured state states the consequence (AI parsing fails, entry still saved) and the next step (add a key); write-only is explicit («ніколи не показується повторно») with correct blank-field semantics («залиште порожнім, щоб не змінювати збережений ключ»). Validation errors required/whitespace/too-long are distinguishable, blame-free; export copy is read-only-explicit with the no-destructive-reset disclaimer. Minor: «API-ключ»/«Ключ OpenAI»/«Ключ» terminology not unified (sole reason it sits at peer ~93)."
     }
   ]
 }

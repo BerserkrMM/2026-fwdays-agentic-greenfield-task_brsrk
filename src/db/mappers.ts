@@ -3,15 +3,25 @@
 
 import { CURRENCY } from "@/src/domain/money";
 import type { Account } from "@/src/domain/account";
+import type { AppConfig } from "@/src/domain/app-config";
 import type { InputEvent } from "@/src/domain/input-event";
 import type { LedgerItem } from "@/src/domain/ledger-item";
 import type { ParserRun } from "@/src/domain/parser-run";
 import type {
   AccountRow,
+  AppConfigRow,
   InputEventRow,
   LedgerItemRow,
   ParserRunRow,
 } from "./rows";
+
+export function toAppConfig(row: AppConfigRow): AppConfig {
+  return {
+    openAiApiKey: row.openai_api_key,
+    openAiModel: row.openai_model,
+    updatedAt: row.updated_at,
+  };
+}
 
 export function toAccount(row: AccountRow): Account {
   if (row.currency !== CURRENCY) {

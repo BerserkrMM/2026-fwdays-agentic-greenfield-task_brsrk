@@ -19,6 +19,13 @@ export interface AccountRow {
   created_at: Date;
 }
 
+export interface AppConfigRow {
+  id: boolean;
+  openai_api_key: string | null;
+  openai_model: string | null;
+  updated_at: Date;
+}
+
 export interface InputEventRow {
   id: string;
   source: InputEventSource;

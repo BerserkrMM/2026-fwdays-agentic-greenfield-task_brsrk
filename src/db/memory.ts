@@ -3,11 +3,13 @@
 // repository ports as the postgres-backed repositories.
 
 import type { Account } from "@/src/domain/account";
+import type { AppConfig } from "@/src/domain/app-config";
 import type { InputEvent, NewInputEvent } from "@/src/domain/input-event";
 import type { LedgerItem } from "@/src/domain/ledger-item";
 import type { NewParserRun, ParserRun } from "@/src/domain/parser-run";
 import type {
   AccountRepository,
+  AppConfigRepository,
   InputEventRepository,
   LedgerItemRepository,
   ParserRunRepository,
@@ -16,6 +18,26 @@ import type {
 
 function newId(): string {
   return globalThis.crypto.randomUUID();
+}
+
+class MemoryAppConfigRepository implements AppConfigRepository {
+  private config: AppConfig | null = null;
+
+  async get(): Promise<AppConfig | null> {
+    return this.config ? { ...this.config } : null;
+  }
+
+  async upsert(patch: {
+    openAiApiKey: string | null;
+    openAiModel: string | null;
+  }): Promise<AppConfig> {
+    this.config = {
+      openAiApiKey: patch.openAiApiKey,
+      openAiModel: patch.openAiModel,
+      updatedAt: new Date(),
+    };
+    return { ...this.config };
+  }
 }
 
 class MemoryAccountRepository implements AccountRepository {
@@ -155,5 +177,6 @@ export function createInMemoryRepositories(): Repositories {
     parserRuns: new MemoryParserRunRepository(),
     ledgerItems: new MemoryLedgerItemRepository(),
     accounts: new MemoryAccountRepository(),
+    appConfig: new MemoryAppConfigRepository(),
   };
 }

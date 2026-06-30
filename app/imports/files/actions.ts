@@ -11,8 +11,8 @@ import {
 import { AccountsService } from "@/src/modules/accounts/service";
 import { FileImportService } from "@/src/modules/file-imports/service";
 import { ItemCreationService } from "@/src/modules/foundation/item-creation";
-import { OpenAiParserAdapter } from "@/src/modules/parsing/adapters";
 import { ParsingService } from "@/src/modules/parsing/service";
+import { configuredOpenAiAdapter } from "@/src/modules/settings/service";
 
 function readFile(formData: FormData): File {
   const value = formData.get("photo");
@@ -26,10 +26,12 @@ function readFile(formData: FormData): File {
   return value;
 }
 
-function service(): FileImportService {
+async function service(): Promise<FileImportService> {
   const repos = getRepositories();
   const accounts = new AccountsService(repos.accounts);
-  const parsing = new ParsingService(repos, new OpenAiParserAdapter());
+  // The OpenAI adapter is built from the stored Settings config (FR-PARSE-06),
+  // falling back to OPENAI_API_KEY when none is configured.
+  const parsing = new ParsingService(repos, await configuredOpenAiAdapter(repos));
   const itemCreation = new ItemCreationService(repos, accounts);
   return new FileImportService(repos, parsing, itemCreation);
 }
@@ -44,7 +46,8 @@ export async function importPhotoAction(formData: FormData): Promise<void> {
     const bytes = new Uint8Array(await file.arrayBuffer());
     const repos = getRepositories();
     await new AccountsService(repos.accounts).ensureSeededDefault();
-    summary = await service().importPhoto({
+    const svc = await service();
+    summary = await svc.importPhoto({
       fileName: file.name,
       mimeType: file.type || null,
       bytes,
