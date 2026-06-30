@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-30T08:35:14.449Z",
+  "generatedAt": "2026-06-30T09:02:21.954Z",
   "generatedBy": "scripts/slice-report.mjs",
   "slice": "add-dashboard",
   "commands": {
@@ -36,7 +36,7 @@
     "openspecPassed": 10,
     "activeChanges": 0,
     "testFilesPassed": 41,
-    "testsPassed": 233,
+    "testsPassed": 231,
     "traceFailures": 0,
     "traceWarnings": 66,
     "trajectoryFailures": 0,
@@ -48,10 +48,10 @@
       "ua-error-clarity": 93
     },
     "coverageBaseline": {
-      "lines": 66.84,
-      "statements": 66.84,
-      "functions": 80.79,
-      "branches": 90.06
+      "lines": 66.24,
+      "statements": 66.24,
+      "functions": 80.43,
+      "branches": 89.78
     },
     "reviewFindings": "clean",
     "rawReviewEvidenceRefs": 5,

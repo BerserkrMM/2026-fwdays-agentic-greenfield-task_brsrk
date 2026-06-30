@@ -4,6 +4,24 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-30 09:02 UTC — add-dashboard PR #11: CodeRabbit follow-up (single-snapshot read)
+
+**What was done** — merged updated `origin/dev` (receipt-photo PR #10) into `add-dashboard`, resolving doc/generated-artifact conflicts (both handoff entries kept, eval cases unioned, coverage/trace/slice-report regenerated on the merged tree). Then triaged CodeRabbit's 10 comments on PR #11 and folded the substantive ones.
+
+**Folded** — (1) **Single consistent snapshot:** replaced the four independent ledger reads with one `LedgerQueryPort.getDashboardSummary()` that reads `listNonDeleted()` once and folds every figure from that snapshot (`computeDashboardSummary`). This removes the duplicate scan and the torn-read risk CodeRabbit flagged — the correct model for future multi-user/per-tenant reads. Since all figures now come from one fetch via pure folds, the per-section «partial»/«unavailable» states were unreachable, so they (and their copy) were removed in favour of the whole-page error state; empty / insufficient-trend / error states kept. (2) **Test nits:** the dashboard smoke test now asserts the rendered monthly-trend (FR-DASH-04 month labels) and saves/restores `DATABASE_URL` so the suite can't leak env state. Updated the dashboard baseline spec scenario (single-snapshot error semantics), the eval-case copy refs, and the ledger service/state tests.
+
+**Accepted with rationale (not folded)** — degraded-read server logging (no shared logger; NFR-OBS-01 wants a silent console; failure is already surfaced via the error state); MD041 H3 in the generated slice-report (generated artifact); the archived `green-run.json` «full suite» wording (frozen evidence; the claim is true). The submission-rubric items CodeRabbit repeated across files — **real author name + 1–2 min demo video link + Agentic-practice summary** — are deferred to project end per the owner; they are human inputs and were not fabricated.
+
+**Coverage note** — the refactor removed above-average-covered code (the partial/unavailable branches + their tests), so the global ratchet dipped (branches 90.06→89.78, lines 66.84→66.24) even though the dashboard code itself is **100% covered** (page.tsx, dashboard-view.ts) and the only uncovered branches are pre-existing unreachable defensive ones in `ledger-query.ts`. No untested code was added; baseline reset to the new actual with this rationale (a net simplification, not loosened quality). Fallow introduced-complexity is now **0** (the previous `DashboardPage` cc12 finding is gone).
+
+**Current state** — gates green on the merged+refactored tree: lint, `tsc --noEmit`, `test:run` (41 files / 231 tests), `next build` (`/dashboard` dynamic), coverage ratchet (66.24/66.24/80.43/89.78), `openspec validate --all --strict` (10), `check:trace` (0 failures), `check:trajectory` (0 failures, 2 inherited), `check:red-green --strict`, `check:claims`, `check:eval` (ua-error-clarity 93). PR #11 → `dev` is MERGEABLE.
+
+**Next steps** — push the follow-up; re-trigger CodeRabbit on PR #11; owner to add author name + demo-video link before final submission. Then slice 10 `add-settings` (FR-SET-*).
+
+**Open questions / blockers** — none. Note: the archived `2026-06-29-add-dashboard` change folder still describes the original `getMonthlyTrends` port method (historical record); the live behavior is `getDashboardSummary` — evolution recorded here rather than rewriting archived evidence.
+
+---
+
 ## 2026-06-30 07:56 UTC — iPhone receipt upload limit raised for PR #10
 
 **What was done** — addressed the live iPhone photo upload failure by adding a v1 receipt-photo file cap of 10 MiB and raising the Next.js Server Actions transport limit. `next.config.ts` now sets `experimental.serverActions.bodySizeLimit` to `11mb` so a valid 10 MiB multipart file has envelope headroom; `app/imports/files/actions.ts` rejects files over `MAX_RECEIPT_PHOTO_BYTES` before `arrayBuffer()`; `src/domain/receipt-photo.ts` enforces the same 10 MiB cap during deterministic validation. UI/spec copy now says JPEG/PNG/WEBP up to 10 МБ.
