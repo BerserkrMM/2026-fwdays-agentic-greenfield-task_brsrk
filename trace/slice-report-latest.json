@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-29T23:53:45.550Z",
+  "generatedAt": "2026-06-30T08:35:14.449Z",
   "generatedBy": "scripts/slice-report.mjs",
   "slice": "add-dashboard",
   "commands": {
@@ -35,23 +35,23 @@
   "metrics": {
     "openspecPassed": 10,
     "activeChanges": 0,
-    "testFilesPassed": 37,
-    "testsPassed": 199,
+    "testFilesPassed": 41,
+    "testsPassed": 233,
     "traceFailures": 0,
-    "traceWarnings": 70,
+    "traceWarnings": 66,
     "trajectoryFailures": 0,
     "trajectoryWarnings": 2,
-    "changedFiles": 35,
+    "changedFiles": 36,
     "evalBaseline": {
       "ua-ux-clarity": 95,
       "explicit-state-clarity": 96,
       "ua-error-clarity": 93
     },
     "coverageBaseline": {
-      "lines": 64.21,
-      "statements": 64.21,
-      "functions": 79.06,
-      "branches": 89.49
+      "lines": 66.84,
+      "statements": 66.84,
+      "functions": 80.79,
+      "branches": 90.06
     },
     "reviewFindings": "clean",
     "rawReviewEvidenceRefs": 5,

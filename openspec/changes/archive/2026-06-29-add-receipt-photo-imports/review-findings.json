@@ -1,0 +1,59 @@
+{
+  "slice": "add-receipt-photo-imports",
+  "clean": true,
+  "rawEvidence": [
+    "reviews/code-reviewer.md",
+    "reviews/security-reviewer.md",
+    "reviews/spec-compliance-reviewer.md",
+    "reviews/eval-judge.md"
+  ],
+  "summary": "Maker≠checker review ran in one round with four fresh independent reviewers over the staged diff (this session wrote the code). Verdicts: code APPROVE_WITH_NITS (no blocker/major), security PASS_WITH_NOTES, spec-compliance PASS (8/8 scenarios implemented, 0 missing/contradicted), eval-judge 93/100 PASS (ua-error-clarity, on par with the 93 baseline). Three actionable findings were folded with regression coverage: BYTELENGTH-ACCURACY (code MINOR-1 + security MINOR-1), RETRY-MIME-FALLBACK (code MINOR-2), and EXIF-SPEC-HONESTY (security NOTE-2 / code #5 / spec-compliance #3). The disclosed TC-MOD-02 shared-contract change (ParserPayload.image + the OpenAI vision branch) is accepted as the smallest seam the channel needs — the parsing baseline already declared kind:\"photo\" — and is recorded here as the coordination-exception sign-off. The remaining notes (no upload size cap, EXIF not stripped, retry UI not wired) are accepted/deferred with rationale below.",
+  "verdicts": {
+    "code": "APPROVE_WITH_NITS",
+    "security": "PASS_WITH_NOTES",
+    "spec-compliance": "PASS",
+    "eval-judge": "93/100 PASS"
+  },
+  "fixed": [
+    {
+      "id": "BYTELENGTH-ACCURACY",
+      "severity": "minor",
+      "round": 1,
+      "evidence": "src/domain/parsing.ts dataUriByteLength now returns the real decoded byte count (base64 length adjusted for padding) instead of the base64 character count, so the redacted parser_runs traceability metadata is accurate. Regression assertion in src/modules/file-imports/service.test.ts checks stored image.byteLength === original byte length."
+    },
+    {
+      "id": "RETRY-MIME-FALLBACK",
+      "severity": "minor",
+      "round": 1,
+      "evidence": "src/modules/file-imports/service.ts retryInputEvent now derives the MIME from the stored data: URI prefix (mimeTypeFromDataUri) when event.mimeType is null, so a non-JPEG retry is never relabeled image/jpeg. importPhoto always writes a non-null detected mime, so this only hardens the redacted traceability path."
+    },
+    {
+      "id": "EXIF-SPEC-HONESTY",
+      "severity": "minor",
+      "round": 1,
+      "evidence": "openspec/changes/add-receipt-photo-imports/specs/file-imports/spec.md preprocessing requirement reworded: it no longer claims 'no PII' (EXIF inside the image is PII), now states embedded image metadata is NOT removed before the AI call (binary EXIF stripping deferred), and documents that the raw image base64 is not re-persisted into parser_runs.normalized_payload."
+    }
+  ],
+  "acceptedOrDeferred": [
+    {
+      "id": "SHARED-CONTRACT-COORDINATION",
+      "severity": "accepted",
+      "evidence": "ParserPayload.image + the OpenAI vision branch touch the parsing module/contract from a channel slice (TC-MOD-02). Disclosed in proposal.md and design.md, mirrors the bank-slice precedent, and completes the pre-declared kind:\"photo\" seam. Accepted as the smallest necessary seam; reviewer sign-off recorded here."
+    },
+    {
+      "id": "NO-UPLOAD-SIZE-CAP",
+      "severity": "deferred",
+      "evidence": "FR-FILE-01 intends no hard size limit; there is no app-level cap and a very large photo exceeding the framework default server-action body limit would fail as a generic error rather than the friendly file-invalid redirect (security NOTE-1). Raising serverActions.bodySizeLimit is a shared next.config (foundation/TC-MOD-02) concern affecting all upload channels and is not introduced by this slice (bank has the same gap). Tracked as deferred."
+    },
+    {
+      "id": "EXIF-STRIPPING-DEFERRED",
+      "severity": "deferred",
+      "evidence": "Binary EXIF/metadata stripping is deferred per the confirmed v1 product decision; the original bytes (incl. any EXIF) are preserved on the input_event and sent to the AI provider. Documented in spec.md and design.md. Revisit before any multi-user/production exposure."
+    },
+    {
+      "id": "RETRY-UI-NOT-WIRED",
+      "severity": "deferred",
+      "evidence": "FileImportService.retryInputEvent implements + unit-tests re-parse over the preserved input_event, but the user-reachable retry is FR-ITEM-07 (owned by ledger-items), explicitly deferred — consistent with the manual-input and bank precedents. The v1 /imports/files retry UX is a re-upload. Spec scenario 6 only requires the input_event + failed parser_run preserved and a retry action shown, both satisfied."
+    }
+  ]
+}

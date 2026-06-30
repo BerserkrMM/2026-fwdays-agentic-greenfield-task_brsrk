@@ -4,6 +4,18 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-30 07:56 UTC — iPhone receipt upload limit raised for PR #10
+
+**What was done** — addressed the live iPhone photo upload failure by adding a v1 receipt-photo file cap of 10 MiB and raising the Next.js Server Actions transport limit. `next.config.ts` now sets `experimental.serverActions.bodySizeLimit` to `11mb` so a valid 10 MiB multipart file has envelope headroom; `app/imports/files/actions.ts` rejects files over `MAX_RECEIPT_PHOTO_BYTES` before `arrayBuffer()`; `src/domain/receipt-photo.ts` enforces the same 10 MiB cap during deterministic validation. UI/spec copy now says JPEG/PNG/WEBP up to 10 МБ.
+
+**Current state** — targeted validation is green: `npx tsc --noEmit`, `npm run test:run -- src/domain/receipt-photo.test.ts src/app-actions/import-files-action.redirect.test.ts src/modules/file-imports/ui/file-import-content.test.ts` (19 tests), `npm run build`, `npx eslint . --ignore-pattern '.claude/**'`, `npx openspec validate --all --strict`, and `npm run check:claims`. The Next build reports the expected `serverActions` experiment line because this Next 16 config key still lives under `experimental`.
+
+**Next steps** — run `npm run check:handoff`, commit/push the limit fix to `add-receipt-photo-imports`, and re-trigger CodeRabbit on PR #10.
+
+**Open questions / blockers** — OpenAI image limits should be verified against current provider docs before production hardening; current public OpenAI vision guidance is commonly 20 MB per image and 50 MB total image bytes per request, so a 10 MiB app cap is comfortably below the per-image limit.
+
+---
+
 ## 2026-06-29 23:54 UTC — add-dashboard slice SHIPPED (slice 9: `/dashboard` read-only overview)
 
 **What was done** — built slice 9 `add-dashboard` (capability `dashboard`, FR-DASH-01..05) on branch `add-dashboard` cut from `origin/dev` (it depends only on the merged `ledger` query capability, not on the still-open receipt-photo PR). Built in a separate git worktree because another agent is active in the main checkout. Replaced the foundation placeholder at `/dashboard` with the real read-only financial overview. Tests-first with durable RED→GREEN evidence; archived after a clean four-reviewer maker≠checker round and a graded eval.
@@ -53,6 +65,70 @@ Command exits: openspecValidate=0, openspecList=0, tests=0, trace=0, trajectory=
 **Deferred work** — settings incl. AI key storage + CSV export with formula-injection hardening (slice 10); degraded-read server-side observability/logging on the Dashboard; optional per-account balance chips on the Dashboard. Live OpenAI behavior remains intentionally deferred to the settings slice.
 
 **Open questions / blockers** — none.
+
+---
+
+## 2026-06-29 23:26 UTC — PR #10 CodeRabbit pass triaged; small follow-ups ready to push
+
+**What was done** — triggered CodeRabbit on PR #10 with `@coderabbitai review`, waited for the review to finish, and triaged its 10 comments. Folded the valid code/spec/doc nits: `ParserPayload` is now a discriminated union that requires `image` for `kind: "photo"`; the runtime malformed-photo guard remains covered; the file-imports spec wording now matches the shipped payload (isolated image plus parser instruction/source-reference metadata, no surrounding raw input-event context); and the archived code-review note has the markdown blank line CodeRabbit requested. Rechecked the bundled `docs/test_bank_statements/check.JPEG` fixture: 80,831 bytes, detected as `image/jpeg`, data URI prefix `data:image/jpeg;base64,`.
+
+**Current state** — local code/spec checks are green after the follow-ups: `npx eslint . --ignore-pattern '.claude/**'`, `npx tsc --noEmit`, `npm run test:run` (37 files / 212 tests), `npm run build`, `npx openspec validate --all --strict`, `npm run check:trace` (0 failures / 70 warnings), `npm run check:trajectory` (0 failures / 2 inherited warnings), `npm run check:claims`, and `npm run check:handoff`. Note: plain `npm run lint` is currently blocked only by an unrelated ignored local worktree at `.claude/worktrees/add-dashboard`; CI/clean checkout is unaffected, and lint over this checkout excluding `.claude/**` is green.
+
+**Next steps** — commit these PR #10 follow-ups, push `add-receipt-photo-imports`, then trigger CodeRabbit again for the pushed commit and leave the PR for owner review.
+
+**Open questions / blockers** — CodeRabbit also requested a hard upload size limit and real author/demo-video submission fields. The hard size limit was **not** added because the accepted slice/spec explicitly says “no hard file-size limit in v1”; adding one would contradict the recorded product decision. The real author name and 1–2 minute demo video remain human-provided submission inputs and were not fabricated.
+
+---
+
+## 2026-06-29 22:54 UTC — add-receipt-photo-imports slice SHIPPED (channel 3: `/imports/files`)
+
+**What was done** — built slice 8 (the last import channel), `add-receipt-photo-imports` (capability `file-imports`, FR-FILE-01..05), on branch `add-receipt-photo-imports` off `origin/dev` (it depends on foundation/parsing/ledger-items — all merged — not on the still-open bank PR #9). Tests-first with durable RED→GREEN evidence; archived after a clean four-reviewer maker≠checker round and a graded eval. Two v1 product decisions were confirmed by the owner up front: store the original photo bytes as a `data:` URI in `input_events.storage_uri` (no new infra), and do deterministic validation + magic-byte MIME detection only (binary EXIF stripping deferred).
+
+**Scope delivered** — FR-FILE-01..05:
+- FR-FILE-01: real `/imports/files` server-component upload form (one image, `accept=image/jpeg,png,webp`); non-image/PDF/empty rejected via deterministic magic-byte validation (`src/domain/receipt-photo.ts`) with an explicit Ukrainian error; no hard size limit.
+- FR-FILE-02 / NFR-PRIV-02: original stored as an `input_event` source `photo` with `storage_uri` (data URI) + detected `mime_type`, before any parse.
+- FR-FILE-03 / NFR-PRIV-01 / BC-PRIVACY-01: keyless deterministic preprocessing (validation + magic-byte MIME); only the isolated image is sent to AI; original preserved; the raw image base64 is NOT duplicated into `parser_runs.normalized_payload` (`redactParserPayloadForStorage`).
+- FR-FILE-04 / FR-PARSE-06: AI **vision** parse via the existing OpenAI adapter boundary — a `kind: "photo"` payload carries the image and the adapter builds an `image_url` vision message with a receipt-specific system prompt; parse failure surfaces an explicit Ukrainian error + retry, preserving the `input_event` and failed `parser_run`.
+- FR-FILE-05 / FR-ITEM-04: one `pending` ledger item per valid draft via the item-creation contract (partial-success; malformed line items tolerated and counted as failed via `tolerateInvalidDrafts`); redirect to `/ledger?imported=&failed=` with the shared summary banner (no preview gate).
+
+**Scope NOT delivered (deferred, justified)** — input_event-level retry **UI**: `FileImportService.retryInputEvent` implements + unit-tests re-parse over the preserved photo event, but the user-reachable retry is FR-ITEM-07 (owned by ledger-items), explicitly deferred — consistent with the manual-input/bank precedents. The v1 `/imports/files` retry UX is a re-upload. Binary EXIF/metadata stripping is deferred (confirmed product decision). Live OpenAI vision behavior needs a key (Settings slice, FR-SET-02); with no key a real upload surfaces `parse-failed` by design.
+
+**Process evidence produced** — real RED/GREEN JSON under the archived change (`check:red-green --strict` green); strict OpenSpec validate + archive (10 specs, MODIFIED delta on the backfilled `file-imports` baseline synced with no drift); eval case `evals/cases/file-imports.eval.ts` (dimension `ua-error-clarity`, graded **93/100 PASS** by a fresh eval-judge, on par with the 93 baseline; recorded in `evals/results/latest.json`, ratchet green); clean maker≠checker review with **4** raw evidence files (`reviews/{code,security,spec-compliance}-reviewer.md`, `reviews/eval-judge.md`) and `review-findings.json` (`clean:true`, `rawEvidence` linked); regenerated trace/trajectory + slice report.
+
+**Process evidence NOT produced** — no live LLM trajectory-eval (waived; `trajectory-eval-waiver.md`); no UI recording/vision proof of the rendered screen (later QA phase; the route is covered by build + smoke + redirect tests). Honest boundary: deterministic G4 checks + a clean four-reviewer maker≠checker round + a graded eval all pass; this is **not** a claim that an end-to-end trajectory-eval ran.
+
+**Maker≠checker findings** — verdicts: code **APPROVE_WITH_NITS**, security **PASS_WITH_NOTES**, spec-compliance **PASS** (8/8 scenarios, 0 missing/contradicted), eval-judge **93/100 PASS**. Folded three with regression coverage: `byteLength` now reports real decoded bytes not base64 char count (code+security MINOR-1); `retryInputEvent` derives the MIME from the stored data URI instead of a hard-coded `image/jpeg` (code MINOR-2); spec wording tightened so it no longer claims "no PII" (EXIF inside the image is PII) and documents the no-base64-duplication behavior (security NOTE-2 / spec-compliance #3). Accepted with rationale: the disclosed TC-MOD-02 shared-contract change (`ParserPayload.image` + the vision branch — smallest seam, baseline already declared `kind:"photo"`, bank-slice precedent), no upload size cap (FR-FILE-01 intends none; body-limit config is a foundation concern shared with bank), EXIF deferral, and the deferred retry UI.
+
+**Fallow audit** — `FALLOW_AGENT_SOURCE=pi npx fallow audit --base origin/dev`. Verdict `fail` (new-only gate) with **advisory-only** findings, no runtime defect: 1 unused file (`evals/cases/file-imports.eval.ts` — runner-loaded, same accepted pattern as sibling eval cases); 1 complexity finding (`src/modules/parsing/adapters.ts:parse` cyclomatic 13, `introduced:false`/inherited); 3 duplication clone groups (the `vi.hoisted`/`redirect` test-mock boilerplate shared across the channel action redirect tests). Fixed introduced findings during the pass: refactored `detectImageMimeType` to a table-driven matcher (cyclomatic 23 → resolved) and removed the unused `SUPPORTED_IMAGE_MIMES` export. Not a green fallow; accepted with rationale.
+
+<!-- slice-report:start -->
+### Generated slice report: add-receipt-photo-imports
+
+Generated by `node scripts/slice-report.mjs --slice add-receipt-photo-imports` at 2026-06-29T22:54:29.634Z. Do not hand-write these metrics.
+
+| Metric | Value |
+|---|---:|
+| OpenSpec validated specs | 10 |
+| Active OpenSpec changes | 0 |
+| Test files / tests passed | 37 / 212 |
+| Trace failures / warnings | 0 / 70 |
+| Trajectory failures / warnings | 0 / 2 |
+| Changed files vs origin/dev | 37 |
+| Review findings | clean |
+| Raw review evidence refs | 4 |
+| Slice trailer commits | 1 |
+| Refs | FR-FILE-01, FR-FILE-02, FR-FILE-03, FR-FILE-04, FR-FILE-05 |
+
+Command exits: openspecValidate=0, openspecList=0, tests=0, trace=0, trajectory=0, evals=0, coverage=0.
+<!-- slice-report:end -->
+
+**Current state** — slice archived; review clean; deterministic gates green: lint, `tsc --noEmit`, `test:run` (37 files / 212 tests), `next build` (`/imports/files` dynamic), coverage ratchet (lines/stmts 61.11, fns 78.03, branches 89.81 — all above the origin/dev baseline), `openspec validate --all --strict` (10 specs), `check:trace` (0 failures), `check:trajectory` (0 failures, 2 inherited foundation-shell warnings), `check:red-green --strict`, `check:claims`, `check:eval`. Slice committed on `add-receipt-photo-imports` with `Slice:`/`Refs:` trailers; ready to push and open a PR to `dev`.
+
+**Next steps** — push branch, open PR to `dev`, address CI / CodeRabbit. With slices 1–8 done, the remaining MVP work is slice 9 `add-dashboard` (FR-DASH-*) and slice 10 `add-settings` (FR-SET-*, incl. AI key storage + CSV export with formula-injection hardening). Note PR #9 (`add-bank-statement-imports`) is still open against `dev`; this branch was cut from `origin/dev` and does not depend on it.
+
+**Deferred work** — input_event-level retry **UI** (FR-ITEM-07, owned by ledger-items); binary EXIF/metadata stripping for receipt photos; an upload size cap / `serverActions.bodySizeLimit` (foundation, shared with bank); dashboard (slice 9); settings incl. AI key storage + CSV export (slice 10). Optional hardening: de-duplicate the shared channel action-test mock boilerplate (fallow advisory).
+
+**Open questions / blockers** — none. Live OpenAI vision behavior remains intentionally deferred to the settings slice.
 
 ---
 
