@@ -94,7 +94,9 @@
         "openspec/specs/foundation/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/modules/foundation/ui/content.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -910,10 +912,6 @@
   ],
   "failures": [],
   "warnings": [
-    {
-      "check": "test-trace",
-      "msg": "FR-SHELL-01 has no test annotated \"@trace FR-SHELL-01\""
-    },
     {
       "check": "test-trace",
       "msg": "FR-SHELL-02 has no test annotated \"@trace FR-SHELL-02\""
