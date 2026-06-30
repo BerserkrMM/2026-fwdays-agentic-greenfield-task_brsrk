@@ -9,18 +9,18 @@ one-commit-per-slice history) — those are graded by the trajectory-eval workfl
 Scope: 10 archived slice(s).
 Result: PASS, 2 warning(s)
 
-| Slice | Review evidence | Raw review refs | Trailer commits | design+tasks | lib domains touched |
-|---|---|---|---|---|---|
-| 2026-06-26-add-foundation-shell | **missing** | missing | **0** | yes | - |
-| 2026-06-28-add-accounts | clean | 4 linked | 1 | yes | - |
-| 2026-06-28-add-ledger-queries | clean | 3 linked | 1 | yes | - |
-| 2026-06-29-add-bank-statement-imports | clean | 7 linked | 1 | yes | - |
-| 2026-06-29-add-dashboard | clean | 5 linked | 1 | yes | - |
-| 2026-06-29-add-ledger-items-review | clean | 5 linked | 1 | yes | - |
-| 2026-06-29-add-manual-text-input | clean | 4 linked | 1 | yes | - |
-| 2026-06-29-add-parsing-pipeline | clean | 5 linked | 1 | yes | - |
-| 2026-06-29-add-receipt-photo-imports | clean | 4 linked | 1 | yes | - |
-| 2026-06-30-add-settings | clean | 5 linked | 1 | yes | - |
+| Slice | Review evidence | Raw review refs | Trailer commits | design+tasks | release waiver | lib domains touched |
+|---|---|---|---|---|---|---|
+| 2026-06-26-add-foundation-shell | **missing** | missing | **0** | yes | yes | - |
+| 2026-06-28-add-accounts | clean | 4 linked | 1 | yes | - | - |
+| 2026-06-28-add-ledger-queries | clean | 3 linked | 1 | yes | - | - |
+| 2026-06-29-add-bank-statement-imports | clean | 7 linked | 1 | yes | - | - |
+| 2026-06-29-add-dashboard | clean | 5 linked | 1 | yes | - | - |
+| 2026-06-29-add-ledger-items-review | clean | 5 linked | 1 | yes | - | - |
+| 2026-06-29-add-manual-text-input | clean | 4 linked | 1 | yes | - | - |
+| 2026-06-29-add-parsing-pipeline | clean | 5 linked | 1 | yes | - | - |
+| 2026-06-29-add-receipt-photo-imports | clean | 4 linked | 1 | yes | - | - |
+| 2026-06-30-add-settings | clean | 5 linked | 1 | yes | - | - |
 
 ## Cross-slice module overlap
 
@@ -32,5 +32,5 @@ None.
 
 ## Warnings
 
-- **review-evidence**: 2026-06-26-add-foundation-shell: review-findings.json is missing (review must have run clean before archive)
-- **trailer**: 2026-06-26-add-foundation-shell: no commit carries a "Slice: add-foundation-shell" trailer
+- **review-evidence**: 2026-06-26-add-foundation-shell: review-findings.json is missing, accepted by trajectory-release-waiver.md
+- **trailer**: 2026-06-26-add-foundation-shell: no commit carries a "Slice: add-foundation-shell" trailer, accepted by trajectory-release-waiver.md

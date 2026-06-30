@@ -4,6 +4,18 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-30 19:06 UTC — release trajectory waiver for historical foundation slice
+
+**What was done** — implemented the chosen “Variant B” fix for the failing `main` CI release trajectory gate. Added `openspec/changes/archive/2026-06-26-add-foundation-shell/trajectory-release-waiver.md` documenting that the missing `review-findings.json` and missing `Slice: add-foundation-shell` trailer are a historical retrofit gap from before stricter Project Factory evidence discipline. Updated `scripts/check-trajectory.mjs` so release mode treats those two findings as warnings when an archived slice has this explicit waiver, while new slices without a waiver still fail in `--release`. Regenerated `docs/qa/trajectory-report.md` and `trace/trajectory.json` to show the waiver column.
+
+**Current state** — validation for the fix is green: `node scripts/check-trajectory.mjs --release` exits 0 with two documented warnings for the historical foundation slice, and `node scripts/check-trajectory.mjs --check-fresh` exits 0. This addresses the `main` CI failure cause from run `28465156128` (trajectory release mode converting the old foundation warnings into failures).
+
+**Next steps** — commit and push to `dev`; then merge/fast-forward `dev` into `main` or open the appropriate PR so `main` receives the waiver-aware trajectory checker and regenerated trajectory artifacts.
+
+**Open questions / blockers** — none.
+
+---
+
 ## 2026-06-30 18:08 UTC — mention PWA/mobile positioning on `/about`
 
 **What was done** — updated the `/about` presentation copy to explicitly mention that Finup is a PWA (Progressive Web App) and that the UI is optimized for phone/mobile usage. Added a fourth product-function card (`PWA / Mobile`) and adjusted the feature-card grid to `sm:grid-cols-2 lg:grid-cols-4` so the layout stays balanced. Added content-test coverage for the PWA/mobile wording.
