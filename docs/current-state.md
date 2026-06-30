@@ -4,6 +4,18 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-30 14:59 UTC — PR #12 merged; dev updated; worktrees cleaned
+
+**What was done** — pulled `origin/dev` after PR #12 (`add-settings`) was merged, fast-forwarding local `dev` to merge commit `45f1b04`. Removed the now-unneeded `add-settings` worktree and pruned temporary fallow audit worktrees; only the main `dev` worktree remains.
+
+**Current state** — local `dev` is clean and matches `origin/dev`. The MVP capability slices 1–10 are merged into `dev` (foundation, accounts, ledger, ledger-items, parsing, manual text, bank import, receipt photo import, dashboard, settings). PR #12 follow-up commit `32de060` is included in `dev`; CI for that PR was green before merge.
+
+**Next steps** — final project wrap-up: run final verification on `dev`, perform manual/UAT QA with a real OpenAI key, prepare final submission materials, and address only non-blocking hardening/backlog items as time allows.
+
+**Open questions / blockers** — final course-submission metadata still needs owner-provided real author name and demo-video URL. Optional final QA evidence/recordings are still not produced.
+
+---
+
 ## 2026-06-30 14:51 UTC — PR #12 CodeRabbit follow-up folded
 
 **What was done** — triaged CodeRabbit's 13 inline comments on PR #12 from the earlier review run (the later status comment only said review skipped for the branch policy). Folded the still-valid code/evidence nits: import-channel actions now consume `configuredOpenAiAdapter` through the settings port barrel; the Settings eval output labels are Ukrainian; route/action/page tests now cover blank-key preservation, CSV BOM + `no-store`, and no secret leakage through input props; `validateOpenAiApiKey("")` now fails the test if it does not throw; `settingsErrorMessage()` only accepts own error-map keys; generated slice-report artifacts were regenerated from this tree and the embedded handoff block was synced.
