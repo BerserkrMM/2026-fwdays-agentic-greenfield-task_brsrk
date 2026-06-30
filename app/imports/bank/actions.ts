@@ -14,7 +14,7 @@ import { AccountsService } from "@/src/modules/accounts/service";
 import { BankImportService } from "@/src/modules/bank-imports/service";
 import { ItemCreationService } from "@/src/modules/foundation/item-creation";
 import { ParsingService } from "@/src/modules/parsing/service";
-import { configuredOpenAiAdapter } from "@/src/modules/settings/service";
+import { configuredOpenAiAdapter } from "@/src/modules/settings/ports";
 
 function readString(formData: FormData, name: string, errorCode: string): string {
   const value = formData.get(name);

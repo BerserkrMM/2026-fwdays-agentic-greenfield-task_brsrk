@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-30T13:52:56.595Z",
+  "generatedAt": "2026-06-30T14:50:37.414Z",
   "generatedBy": "scripts/slice-report.mjs",
   "slice": "add-settings",
   "commands": {
@@ -21,7 +21,7 @@
     },
     "trajectory": {
       "command": "node scripts/check-trajectory.mjs --check-fresh",
-      "exitCode": 1
+      "exitCode": 0
     },
     "evals": {
       "command": "node scripts/check-eval-ratchet.mjs",
@@ -36,12 +36,12 @@
     "openspecPassed": 10,
     "activeChanges": 0,
     "testFilesPassed": 48,
-    "testsPassed": 275,
+    "testsPassed": 277,
     "traceFailures": 0,
     "traceWarnings": 64,
     "trajectoryFailures": 0,
-    "trajectoryWarnings": 3,
-    "changedFiles": 47,
+    "trajectoryWarnings": 2,
+    "changedFiles": 48,
     "evalBaseline": {
       "ua-ux-clarity": 95,
       "explicit-state-clarity": 96,

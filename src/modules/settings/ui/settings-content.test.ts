@@ -21,4 +21,13 @@ describe("settingsErrorMessage", () => {
       "Не вдалося зберегти налаштування. Спробуйте ще раз.",
     );
   });
+
+  it("does not resolve inherited object keys from the query string", () => {
+    expect(settingsErrorMessage("__proto__")).toBe(
+      "Не вдалося зберегти налаштування. Спробуйте ще раз.",
+    );
+    expect(settingsErrorMessage("constructor")).toBe(
+      "Не вдалося зберегти налаштування. Спробуйте ще раз.",
+    );
+  });
 });

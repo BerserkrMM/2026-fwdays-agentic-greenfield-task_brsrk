@@ -32,11 +32,33 @@ afterEach(async () => {
   await resetDbBoundaryForTests();
 });
 
-async function render(
+async function renderTree(
   searchParams: { formError?: string; saved?: string } = {},
 ) {
   const { default: SettingsPage } = await import("@/app/settings/page");
-  return collectText(await SettingsPage({ searchParams: Promise.resolve(searchParams) }));
+  return SettingsPage({ searchParams: Promise.resolve(searchParams) });
+}
+
+async function render(
+  searchParams: { formError?: string; saved?: string } = {},
+) {
+  return collectText(await renderTree(searchParams));
+}
+
+function collectInputProps(node: unknown): Record<string, unknown>[] {
+  if (node == null || typeof node === "boolean") return [];
+  if (Array.isArray(node)) return node.flatMap(collectInputProps);
+  if (typeof node !== "object") return [];
+
+  const el = node as { type?: unknown; props?: Record<string, unknown> };
+  if (typeof el.type === "function") {
+    const renderComponent = el.type as (props: unknown) => unknown;
+    return collectInputProps(renderComponent(el.props ?? {}));
+  }
+
+  const props = el.props ?? {};
+  const current = el.type === "input" ? [props] : [];
+  return [...current, ...collectInputProps(props.children)];
 }
 
 describe("SettingsPage (FR-SET-01/02/03)", () => {
@@ -59,10 +81,14 @@ describe("SettingsPage (FR-SET-01/02/03)", () => {
       openAiModel: "gpt-4o",
     });
 
-    const text = await render();
+    const tree = await renderTree();
+    const text = collectText(tree);
     expect(text).toContain(SETTINGS.configuredBadge);
     expect(text).toContain("gpt-4o");
     expect(text).not.toContain("sk-super-secret-value");
+    expect(JSON.stringify(collectInputProps(tree))).not.toContain(
+      "sk-super-secret-value",
+    );
   });
 
   // @trace FR-SET-02, FR-SHELL-03

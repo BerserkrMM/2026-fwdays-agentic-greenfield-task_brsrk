@@ -12,7 +12,7 @@ import { AccountsService } from "@/src/modules/accounts/service";
 import { FileImportService } from "@/src/modules/file-imports/service";
 import { ItemCreationService } from "@/src/modules/foundation/item-creation";
 import { ParsingService } from "@/src/modules/parsing/service";
-import { configuredOpenAiAdapter } from "@/src/modules/settings/service";
+import { configuredOpenAiAdapter } from "@/src/modules/settings/ports";
 
 function readFile(formData: FormData): File {
   const value = formData.get("photo");

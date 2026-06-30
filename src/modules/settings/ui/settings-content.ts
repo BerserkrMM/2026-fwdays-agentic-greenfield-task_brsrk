@@ -48,11 +48,13 @@ export const SETTINGS_ERRORS: Record<SettingsErrorCode, string> = {
     "API-ключ не може містити пробіли. Перевірте скопійоване значення.",
 };
 
+const SETTINGS_ERROR_FALLBACK =
+  "Не вдалося зберегти налаштування. Спробуйте ще раз.";
+
 /** Maps a `?formError=` code to its banner message; null when there is no error. */
 export function settingsErrorMessage(code: string | undefined): string | null {
   if (!code) return null;
-  return (
-    SETTINGS_ERRORS[code as SettingsErrorCode] ??
-    "Не вдалося зберегти налаштування. Спробуйте ще раз."
-  );
+  return Object.hasOwn(SETTINGS_ERRORS, code)
+    ? SETTINGS_ERRORS[code as SettingsErrorCode]
+    : SETTINGS_ERROR_FALLBACK;
 }

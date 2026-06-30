@@ -17,7 +17,9 @@ describe("validateOpenAiApiKey (FR-SET-02)", () => {
     expect(() => validateOpenAiApiKey("   ")).toThrowError(SettingsError);
     try {
       validateOpenAiApiKey("");
+      throw new Error("should have thrown");
     } catch (error) {
+      expect(error).toBeInstanceOf(SettingsError);
       expect((error as SettingsError).code).toBe("api-key-required");
     }
   });

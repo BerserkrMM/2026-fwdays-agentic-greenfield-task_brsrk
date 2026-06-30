@@ -56,6 +56,25 @@ describe("settings actions (FR-SET-02)", () => {
   });
 
   // @trace FR-SET-02
+  it("preserves an existing stored key when the action receives a blank key", async () => {
+    await h.repos.appConfig.upsert({ openAiApiKey: "sk-existing", openAiModel: "gpt-4o" });
+    const { saveAiProviderAction } = await import("@/app/settings/actions");
+    await expect(saveAiProviderAction(saveForm("   ", "gpt-4o-mini"))).rejects.toThrow(
+      "redirect:/settings?saved=config",
+    );
+    const settings = new SettingsService(
+      h.repos.appConfig,
+      h.repos.ledgerItems,
+      h.repos.accounts,
+    );
+    expect(await settings.getAiProviderStatus()).toEqual({
+      configured: true,
+      model: "gpt-4o-mini",
+    });
+    expect((await settings.getOpenAiAdapterConfig()).apiKey).toBe("sk-existing");
+  });
+
+  // @trace FR-SET-02
   it("removes the stored key and redirects to the removed state", async () => {
     await h.repos.appConfig.upsert({ openAiApiKey: "sk-old", openAiModel: "gpt-4o" });
     const { removeApiKeyAction } = await import("@/app/settings/actions");

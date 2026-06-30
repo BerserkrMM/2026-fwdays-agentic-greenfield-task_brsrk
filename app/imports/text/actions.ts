@@ -16,7 +16,7 @@ import { AccountsService } from "@/src/modules/accounts/service";
 import { ItemCreationService } from "@/src/modules/foundation/item-creation";
 import { ManualInputService } from "@/src/modules/manual-input/service";
 import { ParsingService } from "@/src/modules/parsing/service";
-import { configuredOpenAiAdapter } from "@/src/modules/settings/service";
+import { configuredOpenAiAdapter } from "@/src/modules/settings/ports";
 
 async function service(): Promise<ManualInputService> {
   const repos = getRepositories();

@@ -50,8 +50,11 @@ describe("GET /settings/export (FR-SET-03)", () => {
     expect(res.headers.get("content-type") ?? "").toContain("text/csv");
     expect(res.headers.get("content-disposition") ?? "").toContain("attachment");
     expect(res.headers.get("content-disposition") ?? "").toContain("filename");
+    expect(res.headers.get("cache-control")).toBe("no-store");
 
-    const body = await res.text();
+    const bytes = new Uint8Array(await res.arrayBuffer());
+    expect([...bytes.slice(0, 3)]).toEqual([0xef, 0xbb, 0xbf]);
+    const body = new TextDecoder("utf-8").decode(bytes);
     expect(body).toContain("кава");
     expect(body).toContain("-60.00");
 
