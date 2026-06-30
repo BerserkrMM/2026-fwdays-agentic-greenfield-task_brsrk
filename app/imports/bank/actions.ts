@@ -13,8 +13,8 @@ import { ParsingError } from "@/src/domain/parsing";
 import { AccountsService } from "@/src/modules/accounts/service";
 import { BankImportService } from "@/src/modules/bank-imports/service";
 import { ItemCreationService } from "@/src/modules/foundation/item-creation";
-import { OpenAiParserAdapter } from "@/src/modules/parsing/adapters";
 import { ParsingService } from "@/src/modules/parsing/service";
+import { configuredOpenAiAdapter } from "@/src/modules/settings/ports";
 
 function readString(formData: FormData, name: string, errorCode: string): string {
   const value = formData.get(name);
@@ -30,10 +30,12 @@ function readFile(formData: FormData): File {
   return value;
 }
 
-function service(): BankImportService {
+async function service(): Promise<BankImportService> {
   const repos = getRepositories();
   const accounts = new AccountsService(repos.accounts);
-  const parsing = new ParsingService(repos, new OpenAiParserAdapter());
+  // The OpenAI adapter is built from the stored Settings config (FR-PARSE-06),
+  // falling back to OPENAI_API_KEY when none is configured.
+  const parsing = new ParsingService(repos, await configuredOpenAiAdapter(repos));
   const itemCreation = new ItemCreationService(repos, accounts);
   return new BankImportService(repos, parsing, itemCreation);
 }
@@ -67,7 +69,8 @@ export async function importBankAction(formData: FormData): Promise<void> {
     });
     const repos = getRepositories();
     await new AccountsService(repos.accounts).ensureSeededDefault();
-    summary = await service().importStatement({
+    const svc = await service();
+    summary = await svc.importStatement({
       provider,
       fileName: file.name,
       mimeType: file.type || null,

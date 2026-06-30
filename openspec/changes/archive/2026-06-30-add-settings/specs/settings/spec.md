@@ -1,12 +1,5 @@
-# settings
+## MODIFIED Requirements
 
-## Purpose
-
-The Settings capability owns the technical configuration screen for Finup v1. In
-v1 it is scoped to AI-provider configuration and ledger-item export to CSV. It
-exposes configuration without changing the single-user, UAH-only product scope and
-provides no destructive data-reset action.
-## Requirements
 ### Requirement: Settings screen manages technical configuration
 
 The Settings screen SHALL manage technical configuration for the application. In
@@ -98,4 +91,3 @@ action. (FR-SET-03, FR-CAT-04)
 
 - **WHEN** the user views the data section of Settings
 - **THEN** no full-reset or clear-all action is available in v1
-

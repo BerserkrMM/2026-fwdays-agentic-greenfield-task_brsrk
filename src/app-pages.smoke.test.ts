@@ -13,16 +13,17 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
-// @trace FR-SHELL-03, FR-IMPORT-01, FR-FILE-01, FR-SET-01
+// @trace FR-SHELL-03, FR-IMPORT-01, FR-FILE-01
+// NOTE: /settings is no longer a static placeholder — it is a real server
+// component that reads the DB boundary, covered by app-settings-page.smoke.test.ts
+// (with DATABASE_URL isolation), so it is intentionally not exercised here.
 describe("static app pages", () => {
   it("renders placeholder/static routes without server dependencies", async () => {
     const { default: ImportsHubPage } = await import("@/app/imports/page");
     const { default: ImportFilesPage } = await import("@/app/imports/files/page");
-    const { default: SettingsPage } = await import("@/app/settings/page");
 
     expect(ImportsHubPage()).toBeTruthy();
     expect(await ImportFilesPage({ searchParams: Promise.resolve({}) })).toBeTruthy();
-    expect(SettingsPage()).toBeTruthy();
   });
 
   it("renders the receipt-photo page error state from a formError param", async () => {

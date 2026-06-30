@@ -15,13 +15,15 @@ import { ParsingError } from "@/src/domain/parsing";
 import { AccountsService } from "@/src/modules/accounts/service";
 import { ItemCreationService } from "@/src/modules/foundation/item-creation";
 import { ManualInputService } from "@/src/modules/manual-input/service";
-import { OpenAiParserAdapter } from "@/src/modules/parsing/adapters";
 import { ParsingService } from "@/src/modules/parsing/service";
+import { configuredOpenAiAdapter } from "@/src/modules/settings/ports";
 
-function service(): ManualInputService {
+async function service(): Promise<ManualInputService> {
   const repos = getRepositories();
   const accounts = new AccountsService(repos.accounts);
-  const parsing = new ParsingService(repos, new OpenAiParserAdapter());
+  // The OpenAI adapter is built from the stored Settings config (FR-PARSE-06),
+  // falling back to OPENAI_API_KEY when none is configured.
+  const parsing = new ParsingService(repos, await configuredOpenAiAdapter(repos));
   const itemCreation = new ItemCreationService(repos, accounts);
   return new ManualInputService(repos, parsing, itemCreation);
 }
@@ -47,7 +49,8 @@ export async function importTextAction(formData: FormData): Promise<void> {
   const repos = getRepositories();
   await new AccountsService(repos.accounts).ensureSeededDefault();
   try {
-    summary = await service().importText(text);
+    const svc = await service();
+    summary = await svc.importText(text);
   } catch (error) {
     if (error instanceof ManualTextError) {
       redirect(`/imports/text?formError=${encodeURIComponent(error.code)}`);

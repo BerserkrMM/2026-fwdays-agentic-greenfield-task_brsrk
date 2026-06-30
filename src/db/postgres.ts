@@ -4,11 +4,13 @@
 
 import type { Sql } from "postgres";
 import type { Account } from "@/src/domain/account";
+import type { AppConfig } from "@/src/domain/app-config";
 import type { InputEvent, NewInputEvent } from "@/src/domain/input-event";
 import type { LedgerItem } from "@/src/domain/ledger-item";
 import type { NewParserRun, ParserRun } from "@/src/domain/parser-run";
 import type {
   AccountRepository,
+  AppConfigRepository,
   InputEventRepository,
   LedgerItemRepository,
   ParserRunRepository,
@@ -18,16 +20,43 @@ import {
   fromAccount,
   fromLedgerItem,
   toAccount,
+  toAppConfig,
   toInputEvent,
   toLedgerItem,
   toParserRun,
 } from "./mappers";
 import type {
   AccountRow,
+  AppConfigRow,
   InputEventRow,
   LedgerItemRow,
   ParserRunRow,
 } from "./rows";
+
+class PgAppConfigRepository implements AppConfigRepository {
+  constructor(private readonly sql: Sql) {}
+
+  async get(): Promise<AppConfig | null> {
+    const [row] = await this.sql<AppConfigRow[]>`
+      SELECT * FROM app_config WHERE id LIMIT 1`;
+    return row ? toAppConfig(row) : null;
+  }
+
+  async upsert(patch: {
+    openAiApiKey: string | null;
+    openAiModel: string | null;
+  }): Promise<AppConfig> {
+    const [row] = await this.sql<AppConfigRow[]>`
+      INSERT INTO app_config (id, openai_api_key, openai_model)
+      VALUES (true, ${patch.openAiApiKey}, ${patch.openAiModel})
+      ON CONFLICT (id) DO UPDATE
+        SET openai_api_key = EXCLUDED.openai_api_key,
+            openai_model = EXCLUDED.openai_model,
+            updated_at = now()
+      RETURNING *`;
+    return toAppConfig(row);
+  }
+}
 
 class PgAccountRepository implements AccountRepository {
   constructor(private readonly sql: Sql) {}
@@ -215,5 +244,6 @@ export function createPostgresRepositories(sql: Sql): Repositories {
     parserRuns: new PgParserRunRepository(sql),
     ledgerItems: new PgLedgerItemRepository(sql),
     accounts: new PgAccountRepository(sql),
+    appConfig: new PgAppConfigRepository(sql),
   };
 }

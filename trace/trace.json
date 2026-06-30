@@ -110,17 +110,20 @@
       "id": "FR-SHELL-03",
       "specs": [
         "openspec/specs/dashboard/spec.md",
-        "openspec/specs/foundation/spec.md"
+        "openspec/specs/foundation/spec.md",
+        "openspec/specs/settings/spec.md"
       ],
       "planned": true,
       "tests": [
         "src/app-dashboard-page.smoke.test.ts",
         "src/app-dashboard-page.states.test.ts",
         "src/app-pages.smoke.test.ts",
+        "src/app-settings-page.smoke.test.ts",
         "src/modules/dashboard/ui/dashboard-view.test.ts",
         "src/modules/foundation/ui/content.test.ts",
         "evals/cases/dashboard.eval.ts",
-        "evals/cases/foundation.eval.ts"
+        "evals/cases/foundation.eval.ts",
+        "evals/cases/settings.eval.ts"
       ],
       "recordings": []
     },
@@ -721,7 +724,8 @@
       "id": "FR-CAT-04",
       "specs": [
         "openspec/specs/dashboard/spec.md",
-        "openspec/specs/ledger-items/spec.md"
+        "openspec/specs/ledger-items/spec.md",
+        "openspec/specs/settings/spec.md"
       ],
       "planned": true,
       "tests": [
@@ -738,7 +742,8 @@
       ],
       "planned": true,
       "tests": [
-        "src/app-pages.smoke.test.ts"
+        "src/app-settings-page.smoke.test.ts",
+        "evals/cases/settings.eval.ts"
       ],
       "recordings": []
     },
@@ -748,7 +753,12 @@
         "openspec/specs/settings/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/app-actions/settings-action.test.ts",
+        "src/app-settings-page.smoke.test.ts",
+        "src/modules/settings/ui/settings-content.test.ts",
+        "evals/cases/settings.eval.ts"
+      ],
       "recordings": []
     },
     {
@@ -757,7 +767,10 @@
         "openspec/specs/settings/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/app-settings-export-route.test.ts",
+        "evals/cases/settings.eval.ts"
+      ],
       "recordings": []
     },
     {
@@ -908,14 +921,6 @@
     {
       "check": "test-trace",
       "msg": "FR-SHELL-04 has no test annotated \"@trace FR-SHELL-04\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-SET-02 has no test annotated \"@trace FR-SET-02\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-SET-03 has no test annotated \"@trace FR-SET-03\""
     },
     {
       "check": "test-trace",

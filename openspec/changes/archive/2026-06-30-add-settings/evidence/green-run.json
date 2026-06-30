@@ -1,0 +1,20 @@
+{
+  "slice": "add-settings",
+  "phase": "green",
+  "command": "npx vitest run",
+  "exitCode": 0,
+  "gitHead": "33947a7ab7fc1ce51187aea4373efba41771822e",
+  "timestamp": "2026-06-30T13:48:06Z",
+  "summary": "After implementing the settings slice (app_config schema + repository, app-config + csv-export domain, SettingsService, /settings page + actions + CSV export Route Handler, and the parsing-config wiring on the three import actions) and folding the maker≠checker review findings (readable account name + Ukrainian type/status labels + Kyiv date + raw-amount column in the CSV export), the full suite is green: 48 files / 275 tests pass, including the new settings tests and the unchanged import-channel tests.",
+  "testFiles": 48,
+  "tests": 275,
+  "newTests": [
+    "src/domain/csv-export.test.ts",
+    "src/domain/app-config.test.ts",
+    "src/modules/settings/service.test.ts",
+    "src/modules/settings/ui/settings-content.test.ts",
+    "src/app-settings-page.smoke.test.ts",
+    "src/app-settings-export-route.test.ts",
+    "src/app-actions/settings-action.test.ts"
+  ]
+}

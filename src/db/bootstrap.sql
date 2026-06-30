@@ -87,6 +87,19 @@ CREATE UNIQUE INDEX IF NOT EXISTS ux_ledger_items_input_event_row
 ALTER TABLE ledger_items
   ADD COLUMN IF NOT EXISTS confidence numeric CHECK (confidence IS NULL OR (confidence >= 0 AND confidence <= 1));
 
+-- Application configuration — owned by the `settings` capability, introduced as a
+-- coordination change to the shared schema (openspec/changes/add-settings). A
+-- singleton row (the boolean primary key + CHECK allows at most one) holds the AI
+-- provider configuration: the OpenAI API key (stored server-side, never returned
+-- to the client — write-only over the wire, FR-SET-02) and an optional model
+-- override. v1: single-user, no per-tenant config (BC-SCOPE-01).
+CREATE TABLE IF NOT EXISTS app_config (
+  id             boolean PRIMARY KEY DEFAULT true CHECK (id),
+  openai_api_key text,
+  openai_model   text,
+  updated_at     timestamptz NOT NULL DEFAULT now()
+);
+
 -- Deferred FK from ledger_items.account_id to accounts. Foundation created the
 -- NOT NULL column but left the FK for the `accounts` coordination change (this
 -- one). Idempotent: skip silently if it already exists so re-running bootstrap.sql

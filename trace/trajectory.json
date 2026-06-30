@@ -72,6 +72,14 @@
       "trailerCommits": 1,
       "libDomains": [],
       "processComplete": true
+    },
+    {
+      "slice": "2026-06-30-add-settings",
+      "reviewEvidence": "clean",
+      "rawReviewEvidence": "5 linked",
+      "trailerCommits": 1,
+      "libDomains": [],
+      "processComplete": true
     }
   ],
   "overlaps": [],
