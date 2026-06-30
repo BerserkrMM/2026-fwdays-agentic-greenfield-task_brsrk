@@ -4,6 +4,44 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-30 15:35 UTC — About page (`/about`) added on branch `add-about-page`
+
+**What was done** — built a new richly-designed About page on a fresh branch `add-about-page` cut from `dev` (per request). It narrates what Finup is and how it was built, with copy taken faithfully from `crash_course/video-presentation-script.md` (the visible 5-part spine) layered with the richer process detail from `crash_course/presentation.md`. New files: `app/about/page.tsx` (server component, no DB/mutations — navigation only) and `src/modules/foundation/ui/about-content.ts` (single-source-of-truth Ukrainian copy as structured data). Added a `/about` nav item to `nav-items.ts` (sidebar only; `primary:false`, so it stays off the mobile bottom bar) and content tests in `content.test.ts`. Design uses only the foundation `fin-*` tokens: dark hero, numbered sections, hand-built styled flow diagrams (pipeline + per-feature cycle), a red/green "not vibe coding" comparison, three-level gate cards, maker≠checker reviewer list, and a CTA — no client JS or chart deps.
+
+**Current state** — green locally: `tsc --noEmit`, `eslint` (new/changed files), `vitest run content.test.ts` (12 tests), and `npm run build` (`/about` prerenders as a static route). Rendered and visually verified at 1280px and 390px via Playwright (using the installed chromium-1223 executable) — layout, flow-diagram wrapping, and palette all read well on desktop and mobile. Work is **uncommitted** on `add-about-page`; not pushed.
+
+**Next steps** — owner review of the page; if approved, commit (with `Slice:`/`Refs:` trailers if treating as a slice) and open a PR to `dev`. Optional: run the remaining deterministic gates (`check:trace`/`trajectory`/`coverage`/`claims`/`handoff`) if this is to go through the formal slice loop. Note: `docs/current-state.md` also still carries the two prior uncommitted investigation entries (Vercel deploy, Dashboard tap) that pre-existed this branch.
+
+**Hydration / stale-SW fix** — adding the `/about` nav item surfaced the previously-documented service-worker issue: `ServiceWorkerRegister` registered `/sw.js` unconditionally (incl. dev), and the SW serves `/_next/static/*` cache-first. In dev those chunk URLs are stable (not content-hashed), so a browser controlled by an old SW served a stale app bundle that has no `/about` route → blank page + React hydration mismatch. Two-part fix: (1) `ServiceWorkerRegister.tsx` registration is now **production-only**; (2) `public/sw.js` is now **dev-safe and self-healing** — on `localhost`/`127.0.0.1`/`[::1]` it caches nothing (network passthrough) and on activate it purges all caches, calls `registration.unregister()`, and reloads controlled tabs; production keeps shell caching (cache bumped `finup-shell-v1`→`v2`, so the stale v1 cache is dropped). Because browsers always revalidate the SW *script* over the network, an already-stale worker gets replaced by this self-destructing one on the next load. **Verified by reproduction** (Playwright, real dev server): after a SW registers on localhost it self-unregisters within ~1s (`regCount:0`, no controller, `caches:[]`), and `/about` then renders (`<h1>Finup</h1>`, 6113 chars) with **zero** console/page errors. `tsc`/`eslint`/`build` green. User action: **one reload** (occasionally two) breaks an already-affected tab out; no manual DevTools step needed.
+
+**Open questions / blockers** — none. The About page is intentionally a meta/marketing narrative (product + engineering process), not tied to an FR; if it should map to a requirement/OpenSpec capability for traceability, that needs an owner decision.
+
+---
+
+## 2026-06-30 15:24 UTC — Vercel deploy skill installed; deployment state checked
+
+**What was done** — installed the `vercel-labs/agent-skills@deploy-to-vercel` skill globally via `npx skills add ... -g -y`. Checked deployment prerequisites: Git remote exists (`BerserkrMM/2026-fwdays-agentic-greenfield-task_brsrk`), local Vercel CLI is authenticated as `berserkrmm`, one Vercel team is available (`bersproject` / `bersteam`), and the repo is not locally linked because `.vercel/project.json` / `.vercel/repo.json` is absent.
+
+**Current state** — deployment is ready to proceed through Vercel CLI linking or through the existing GitHub-connected Vercel dashboard. Working tree has a modified `docs/current-state.md` from investigation/deployment notes only. The app needs production env/database setup for persistence: without `DATABASE_URL`, it falls back to process-local in-memory storage.
+
+**Next steps** — link the repo with `vercel link --repo --scope bersproject` if CLI-based management is desired, configure Vercel env vars (`DATABASE_URL`, optionally `OPENAI_API_KEY`), apply `src/db/bootstrap.sql` to the production Postgres database, then push the deployment branch configured in Vercel or run a preview deploy.
+
+**Open questions / blockers** — need to confirm Vercel production branch (`main` vs `dev`) and which Postgres provider/connection string will be used.
+
+---
+
+## 2026-06-30 15:16 UTC — Investigated Dashboard tap/crash report
+
+**What was done** — inspected the app shell/navigation, `/` redirect, `/dashboard` page, PWA manifest, service worker, and Next dev behavior around direct `/dashboard` requests. Confirmed `/` redirects to `/dashboard` and direct `/dashboard` returns 200 on the running dev server; no app code changes were made.
+
+**Current state** — the only route-specific difference found is navigation mode: tapping the app's Dashboard nav uses Next `<Link>` client-side navigation from `MobileNav`/`SideNav`, while typing `/` performs a full document navigation then server redirect. The service worker is registered unconditionally and cache-first serves `/_next/static/*`, which can leave stale dev/client router assets controlling localhost and explain a client-only close/crash while direct server navigation still renders.
+
+**Next steps** — clear/unregister the localhost service worker and site data to confirm; for a fix, gate service-worker registration to production and/or bump/cache-bust the service worker cache. If the crash persists after unregistering SW, capture browser console logs during the Dashboard tap.
+
+**Open questions / blockers** — exact device/browser and whether this is an installed standalone PWA vs normal browser tab are not yet known.
+
+---
+
 ## 2026-06-30 14:59 UTC — PR #12 merged; dev updated; worktrees cleaned
 
 **What was done** — pulled `origin/dev` after PR #12 (`add-settings`) was merged, fast-forwarding local `dev` to merge commit `45f1b04`. Removed the now-unneeded `add-settings` worktree and pruned temporary fallow audit worktrees; only the main `dev` worktree remains.

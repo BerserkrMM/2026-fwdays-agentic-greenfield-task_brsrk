@@ -17,6 +17,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
   { href: "/imports", label: "Імпорт", glyph: "↥", primary: true },
   { href: "/accounts", label: "Рахунки", glyph: "▤", primary: true },
   { href: "/settings", label: "Налаштування", glyph: "⚙", primary: false },
+  { href: "/about", label: "Про проєкт", glyph: "ℹ", primary: false },
 ];
 
 /** Is `pathname` within the section owned by `href`? */
