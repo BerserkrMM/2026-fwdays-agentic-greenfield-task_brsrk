@@ -26,7 +26,7 @@ export const cases: EvalCase[] = [
     dimension: "ua-error-clarity",
     capability: "dashboard",
     scenario:
-      "A user opens the read-only Dashboard when there is no data, too little history for a trend, a partial read failure, or a full read failure.",
+      "A user opens the read-only Dashboard when there is no data, too little history for a trend, or the read fails.",
     produce: async () => {
       const { DASHBOARD } = await import(
         "@/src/modules/dashboard/ui/dashboard-content"
@@ -41,8 +41,6 @@ export const cases: EvalCase[] = [
         `Insufficient-trend title: ${DASHBOARD.trendInsufficientTitle}`,
         `Insufficient-trend description: ${DASHBOARD.trendInsufficientDescription}`,
         `Breakdown empty: ${DASHBOARD.breakdownEmpty}`,
-        `Partial title: ${DASHBOARD.partialTitle}`,
-        `Partial description: ${DASHBOARD.partialDescription}`,
         `Error title: ${DASHBOARD.errorTitle}`,
         `Error description: ${DASHBOARD.errorDescription}`,
         `Retry: ${DASHBOARD.retryLabel}`,
@@ -54,7 +52,7 @@ export const cases: EvalCase[] = [
       "CRITICAL: every string is Ukrainian-first with no English product jargon",
       "CRITICAL: the empty state explains there are no operations yet AND points to importing as the next step (not a dead blank screen)",
       "CRITICAL: the insufficient-trend state explains WHY the trend is missing (needs at least two months) rather than showing an empty chart with no reason",
-      "the partial and error states distinguish a degraded read from a total failure and offer a clear retry",
+      "the error state explains the failure and offers a clear retry, distinct from the empty and insufficient-data states",
       "the read-only nature is conveyed and the balance hint clarifies which statuses count, in a calm, finance-oriented tone — never a generic 'something went wrong'",
     ],
   },

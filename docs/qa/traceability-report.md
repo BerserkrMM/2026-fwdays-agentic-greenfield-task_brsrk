@@ -63,9 +63,9 @@ Result: PASS, 66 warning(s)
 | FR-LEDGER-03 | yes | yes | 3 | - |
 | FR-LEDGER-04 | yes | yes | 4 | - |
 | FR-LEDGER-05 | yes | yes | 3 | - |
-| FR-DASH-01 | yes | yes | 3 | - |
-| FR-DASH-02 | yes | yes | 1 | - |
-| FR-DASH-03 | yes | yes | 3 | - |
+| FR-DASH-01 | yes | yes | 4 | - |
+| FR-DASH-02 | yes | yes | 2 | - |
+| FR-DASH-03 | yes | yes | 4 | - |
 | FR-DASH-04 | yes | yes | 6 | - |
 | FR-DASH-05 | yes | yes | 2 | - |
 

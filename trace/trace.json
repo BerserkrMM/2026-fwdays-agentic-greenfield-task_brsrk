@@ -835,6 +835,7 @@
       "tests": [
         "src/app-dashboard-page.smoke.test.ts",
         "src/modules/dashboard/ui/dashboard-view.test.ts",
+        "src/modules/ledger/service.test.ts",
         "evals/cases/dashboard.eval.ts"
       ],
       "recordings": []
@@ -846,7 +847,8 @@
       ],
       "planned": true,
       "tests": [
-        "src/app-dashboard-page.smoke.test.ts"
+        "src/app-dashboard-page.smoke.test.ts",
+        "src/modules/ledger/service.test.ts"
       ],
       "recordings": []
     },
@@ -859,7 +861,8 @@
       "tests": [
         "src/app-dashboard-page.smoke.test.ts",
         "src/app-dashboard-page.states.test.ts",
-        "src/modules/dashboard/ui/dashboard-view.test.ts"
+        "src/modules/dashboard/ui/dashboard-view.test.ts",
+        "src/modules/ledger/service.test.ts"
       ],
       "recordings": []
     },

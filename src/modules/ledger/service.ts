@@ -11,12 +11,12 @@ import {
   computeAccountBalances,
   computeAggregates,
   computeCategoryTotals,
-  computeMonthlyTrends,
+  computeDashboardSummary,
   computeOverallBalance,
   type AccountBalance,
   type CategoryTotal,
+  type DashboardSummary,
   type LedgerAggregates,
-  type MonthlyTrendPoint,
 } from "@/src/domain/ledger-query";
 import type { LedgerItemRepository, LedgerQueryPort } from "@/src/domain/ports";
 
@@ -43,7 +43,9 @@ export class LedgerQueryService implements LedgerQueryPort {
     return computeCategoryTotals(await this.ledgerItems.listNonDeleted());
   }
 
-  async getMonthlyTrends(): Promise<MonthlyTrendPoint[]> {
-    return computeMonthlyTrends(await this.ledgerItems.listNonDeleted());
+  async getDashboardSummary(): Promise<DashboardSummary> {
+    // One read of the non-deleted snapshot, folded into every Dashboard figure,
+    // so the widgets are mutually consistent and the scan is not repeated.
+    return computeDashboardSummary(await this.ledgerItems.listNonDeleted());
   }
 }

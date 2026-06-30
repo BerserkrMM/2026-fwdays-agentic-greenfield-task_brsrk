@@ -44,6 +44,20 @@ export interface MonthlyTrendPoint {
   netMinor: AmountMinor;
 }
 
+/**
+ * Every figure the read-only Dashboard needs, derived from a SINGLE snapshot of
+ * non-deleted items (FR-DASH-01..04). Computing them all from one `listNonDeleted`
+ * read keeps the widgets mutually consistent (no torn reads across separate
+ * queries) and avoids repeating the scan — important once reads become
+ * per-user/multi-tenant.
+ */
+export interface DashboardSummary {
+  overallBalanceMinor: AmountMinor;
+  aggregates: LedgerAggregates;
+  categoryTotals: CategoryTotal[];
+  trends: MonthlyTrendPoint[];
+}
+
 /** Non-deleted items only — the inclusion rule for every balance/aggregate. */
 function balanceItems(items: readonly LedgerItem[]): readonly LedgerItem[] {
   return items.filter((item) => affectsBalance(item.status));
@@ -147,4 +161,21 @@ export function computeMonthlyTrends(
       expenseMinor: b.expenseMinor,
       netMinor: b.incomeMinor + b.expenseMinor,
     }));
+}
+
+/**
+ * Computes the whole Dashboard read-model from a single item snapshot — balance,
+ * income/expense aggregates, category totals, and the monthly trend — so every
+ * widget reflects the same consistent set of non-deleted items (FR-DASH-01..04,
+ * FR-LEDGER-05).
+ */
+export function computeDashboardSummary(
+  items: readonly LedgerItem[],
+): DashboardSummary {
+  return {
+    overallBalanceMinor: computeOverallBalance(items),
+    aggregates: computeAggregates(items),
+    categoryTotals: computeCategoryTotals(items),
+    trends: computeMonthlyTrends(items),
+  };
 }

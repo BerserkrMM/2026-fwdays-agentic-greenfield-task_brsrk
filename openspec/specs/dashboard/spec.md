@@ -11,29 +11,24 @@ accounts.
 ### Requirement: Dashboard aggregates cover the full history
 
 All Dashboard figures SHALL be computed over the full history of non-deleted
-ledger items (all-time). v1 SHALL NOT provide a period filter on the Dashboard.
-A failure to load one aggregate SHALL degrade that section gracefully and SHALL
-NOT blank or crash the whole page. (FR-DASH-01, FR-DASH-02, FR-DASH-03,
-FR-DASH-04, FR-SHELL-03)
+ledger items (all-time), from a single consistent snapshot so the widgets cannot
+disagree. v1 SHALL NOT provide a period filter on the Dashboard. A failure to
+load the snapshot SHALL show an explicit error state and SHALL NOT blank or crash
+the whole page. (FR-DASH-01, FR-DASH-02, FR-DASH-03, FR-DASH-04, FR-SHELL-03)
 
-#### Scenario: Dashboard uses all-time data
+#### Scenario: Dashboard uses all-time data from one snapshot
 
 - **WHEN** the Dashboard renders any summary, total, breakdown, or trend
 - **THEN** it is computed from all non-deleted ledger items regardless of date
+- **AND** every figure derives from the same single read so they are mutually consistent
 - **AND** no period selector restricts the figures
 
-#### Scenario: A failed aggregate read degrades gracefully
+#### Scenario: A failed read shows an explicit error state
 
-- **WHEN** at least one aggregate read fails but the balance read succeeds
-- **THEN** the Dashboard shows a partial-data state for the affected section
-- **AND** the sections that loaded are still shown
-- **AND** no data is created, updated, or deleted
-
-#### Scenario: A failed primary read shows an explicit error state
-
-- **WHEN** the primary balance read fails
+- **WHEN** the Dashboard snapshot read fails
 - **THEN** the Dashboard shows an explicit error state with a way to retry
 - **AND** the page does not render a blank screen or an unhandled error
+- **AND** no data is created, updated, or deleted
 
 ### Requirement: Dashboard shows current balance summary
 

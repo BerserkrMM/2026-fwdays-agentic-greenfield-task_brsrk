@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getRepositories, resetDbBoundaryForTests } from "@/src/db/client";
 import type { LedgerItem } from "@/src/domain/ledger-item";
 import { collectServerTreeText as collectText } from "@/src/test-support/server-tree";
+import { DASHBOARD } from "@/src/modules/dashboard/ui/dashboard-content";
 
 vi.mock("next/link", () => ({
   default: ({ href, children }: { href: string; children: unknown }) => ({
@@ -31,12 +32,18 @@ function item(amountMinor: number, category: string, occurredAt: Date): LedgerIt
   };
 }
 
+let savedDatabaseUrl: string | undefined;
+
 beforeEach(async () => {
-  delete process.env.DATABASE_URL;
+  savedDatabaseUrl = process.env.DATABASE_URL;
+  delete process.env.DATABASE_URL; // force the in-memory fallback for these tests
   await resetDbBoundaryForTests();
 });
 
 afterEach(async () => {
+  // Restore the original env so this suite never leaks DATABASE_URL state.
+  if (savedDatabaseUrl === undefined) delete process.env.DATABASE_URL;
+  else process.env.DATABASE_URL = savedDatabaseUrl;
   await resetDbBoundaryForTests();
 });
 
@@ -55,6 +62,10 @@ describe("DashboardPage (read-only overview)", () => {
     expect(text).toContain("400,00 ₴"); // overall balance 40 000,00 grouped
     expect(text).toContain("Їжа");
     expect(text).toContain("Транспорт");
+    // Trend renders (FR-DASH-04): two distinct months (May, June) → month labels.
+    expect(text).toContain(DASHBOARD.trendHeading);
+    expect(text).toContain("Тра"); // May label
+    expect(text).toContain("Чер"); // June label
   });
 
   // @trace FR-DASH-01, FR-SHELL-03

@@ -16,10 +16,6 @@ export const DASHBOARD = {
   breakdownSubtitle: "за текстом категорії",
   breakdownEmpty: "Ще немає витрат для розподілу за категоріями.",
 
-  // Shown when a single section's read failed — distinct from "no data yet", so a
-  // failed load is never mistaken for an empty/insufficient state.
-  sectionUnavailable: "Не вдалося завантажити цей розділ. Спробуйте оновити сторінку.",
-
   trendHeading: "Тренд за місяцями",
   trendIncomeLabel: "Доходи",
   trendExpenseLabel: "Витрати",
@@ -31,10 +27,6 @@ export const DASHBOARD = {
   emptyDescription:
     "Додайте першу операцію через імпорт — і тут з’являться баланс, доходи, витрати та тренди.",
   emptyCta: "Перейти до імпорту",
-
-  partialTitle: "Показано частину огляду",
-  partialDescription:
-    "Деякі показники не вдалося завантажити. Доступні дані показані нижче — спробуйте оновити сторінку.",
 
   errorTitle: "Не вдалося завантажити огляд",
   errorDescription:

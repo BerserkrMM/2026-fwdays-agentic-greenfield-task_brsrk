@@ -1,9 +1,10 @@
-// Dashboard screen (FR-DASH-01..05). Read-only financial overview: it reads
-// balances/aggregates/trends through the Ledger query capability and never
-// mutates anything (FR-DASH-05, FR-LEDGER-05). Server component — the DB boundary
-// is never imported into a client bundle (TC-STACK-02). Each read is isolated so
-// one failing aggregate degrades a section instead of blanking the page
-// (FR-SHELL-03). Ukrainian-first copy lives in dashboard-content.ts.
+// Dashboard screen (FR-DASH-01..05). Read-only financial overview: it reads the
+// whole figure set through the Ledger query capability and never mutates anything
+// (FR-DASH-05, FR-LEDGER-05). Server component — the DB boundary is never imported
+// into a client bundle (TC-STACK-02). All figures come from ONE consistent
+// snapshot (`getDashboardSummary`), so the widgets can't disagree and the scan is
+// not repeated; a read failure shows an explicit error state instead of a blank
+// page (FR-SHELL-03). Ukrainian-first copy lives in dashboard-content.ts.
 
 import Link from "next/link";
 import { getRepositories } from "@/src/db/client";
@@ -18,19 +19,9 @@ import {
   type TrendView,
 } from "@/src/modules/dashboard/ui/dashboard-view";
 import { PageHeader } from "@/src/modules/foundation/ui/PageHeader";
-import { EmptyState, ErrorState, PartialState } from "@/src/modules/foundation/ui/states";
+import { EmptyState, ErrorState } from "@/src/modules/foundation/ui/states";
 
 export const dynamic = "force-dynamic";
-
-type ReadResult<T> = { ok: true; value: T } | { ok: false };
-
-async function read<T>(fn: () => Promise<T>): Promise<ReadResult<T>> {
-  try {
-    return { ok: true, value: await fn() };
-  } catch {
-    return { ok: false };
-  }
-}
 
 // Calm spend palette for the breakdown bar — repeats for long category lists.
 const BREAKDOWN_COLORS = [
@@ -39,14 +30,8 @@ const BREAKDOWN_COLORS = [
 
 const CARD_CLASS = "rounded-fin border border-fin-border bg-fin-surface p-5 shadow-fin";
 
-/** Expense-by-category card (FR-DASH-03), with unavailable/empty/list states. */
-function CategoryBreakdownCard({
-  ok,
-  breakdown,
-}: {
-  ok: boolean;
-  breakdown: CategorySlice[];
-}) {
+/** Expense-by-category card (FR-DASH-03): empty-spend note or the breakdown list. */
+function CategoryBreakdownCard({ breakdown }: { breakdown: CategorySlice[] }) {
   return (
     <div className={CARD_CLASS}>
       <h2 className="mb-4 text-base font-semibold text-fin-fg">
@@ -55,9 +40,7 @@ function CategoryBreakdownCard({
           · {DASHBOARD.breakdownSubtitle}
         </span>
       </h2>
-      {!ok ? (
-        <p className="text-sm text-fin-fg-muted">{DASHBOARD.sectionUnavailable}</p>
-      ) : breakdown.length === 0 ? (
+      {breakdown.length === 0 ? (
         <p className="text-sm text-fin-fg-muted">{DASHBOARD.breakdownEmpty}</p>
       ) : (
         <>
@@ -96,16 +79,14 @@ function CategoryBreakdownCard({
   );
 }
 
-/** Monthly income/expense trend card (FR-DASH-04): unavailable/insufficient/bars. */
-function MonthlyTrendCard({ ok, trend }: { ok: boolean; trend: TrendView }) {
+/** Monthly income/expense trend card (FR-DASH-04): insufficient-data note or bars. */
+function MonthlyTrendCard({ trend }: { trend: TrendView }) {
   return (
     <div className={CARD_CLASS}>
       <h2 className="mb-4 text-base font-semibold text-fin-fg">
         {DASHBOARD.trendHeading}
       </h2>
-      {!ok ? (
-        <p className="text-sm text-fin-fg-muted">{DASHBOARD.sectionUnavailable}</p>
-      ) : !trend.hasSufficientTrend ? (
+      {!trend.hasSufficientTrend ? (
         <div className="rounded-fin border border-fin-border bg-fin-surface-muted px-4 py-6 text-center">
           <p className="text-sm font-medium text-fin-fg">
             {DASHBOARD.trendInsufficientTitle}
@@ -154,21 +135,16 @@ function MonthlyTrendCard({ ok, trend }: { ok: boolean; trend: TrendView }) {
 export default async function DashboardPage() {
   const ledger = new LedgerQueryService(getRepositories().ledgerItems);
 
-  // Reads run concurrently; each isolates its own failure, so one degraded
-  // aggregate never blanks the page (FR-SHELL-03).
-  const [balance, aggregates, categoryTotals, trends] = await Promise.all([
-    read(() => ledger.getOverallBalance()),
-    read(() => ledger.getAggregates()),
-    read(() => ledger.getCategoryTotals()),
-    read(() => ledger.getMonthlyTrends()),
-  ]);
-
   const header = (
     <PageHeader title={DASHBOARD.title} description={DASHBOARD.subtitle} />
   );
 
-  // Primary read failed → explicit error state with a read-only retry link.
-  if (!balance.ok) {
+  // One consistent snapshot of every figure (FR-LEDGER-05). If it fails, show an
+  // explicit error state with a read-only retry instead of a blank page.
+  let summary;
+  try {
+    summary = await ledger.getDashboardSummary();
+  } catch {
     return (
       <>
         {header}
@@ -188,12 +164,10 @@ export default async function DashboardPage() {
     );
   }
 
-  const categories = categoryTotals.ok ? categoryTotals.value : [];
-  const trendPoints = trends.ok ? trends.value : [];
+  const { overallBalanceMinor, aggregates, categoryTotals, trends } = summary;
 
-  // Truly empty (no non-deleted items) → onboarding CTA. Only when the reads that
-  // decide emptiness actually succeeded, so a failed read is treated as partial.
-  if (categoryTotals.ok && trends.ok && isEmptyOverview(categories.length, trendPoints.length)) {
+  // No non-deleted items at all → onboarding CTA, never fabricated figures.
+  if (isEmptyOverview(categoryTotals.length, trends.length)) {
     return (
       <>
         {header}
@@ -213,29 +187,19 @@ export default async function DashboardPage() {
     );
   }
 
-  const hasPartial = !aggregates.ok || !categoryTotals.ok || !trends.ok;
-  const breakdown = toExpenseBreakdown(categories);
-  const trend = toTrendView(trendPoints);
+  const breakdown = toExpenseBreakdown(categoryTotals);
+  const trend = toTrendView(trends);
 
   return (
     <>
       {header}
-
-      {hasPartial ? (
-        <div className="mb-6">
-          <PartialState
-            title={DASHBOARD.partialTitle}
-            description={DASHBOARD.partialDescription}
-          />
-        </div>
-      ) : null}
 
       {/* Balance + income/expense summary (FR-DASH-01, FR-DASH-02). */}
       <section className="grid gap-4 sm:grid-cols-3">
         <div className="rounded-fin bg-fin-fg p-5 text-fin-surface shadow-fin sm:col-span-1">
           <div className="text-sm text-fin-surface/70">{DASHBOARD.balanceLabel}</div>
           <div className="mt-1 text-3xl font-semibold tabular-nums tracking-tight">
-            {formatUahMinor(balance.value)}
+            {formatUahMinor(overallBalanceMinor)}
           </div>
           <p className="mt-3 text-xs text-fin-surface/60">{DASHBOARD.balanceHint}</p>
         </div>
@@ -243,21 +207,21 @@ export default async function DashboardPage() {
         <div className="rounded-fin border border-fin-border bg-fin-surface p-5 shadow-fin">
           <div className="text-sm text-fin-fg-muted">{DASHBOARD.incomeLabel}</div>
           <div className="mt-1 text-2xl font-semibold tabular-nums text-fin-success-fg">
-            {aggregates.ok ? formatUahMinor(aggregates.value.incomeMinor) : "—"}
+            {formatUahMinor(aggregates.incomeMinor)}
           </div>
         </div>
 
         <div className="rounded-fin border border-fin-border bg-fin-surface p-5 shadow-fin">
           <div className="text-sm text-fin-fg-muted">{DASHBOARD.expenseLabel}</div>
           <div className="mt-1 text-2xl font-semibold tabular-nums text-fin-error-fg">
-            {aggregates.ok ? formatUahMinor(aggregates.value.expenseMinor) : "—"}
+            {formatUahMinor(aggregates.expenseMinor)}
           </div>
         </div>
       </section>
 
       <section className="mt-4 grid gap-4 lg:grid-cols-2">
-        <CategoryBreakdownCard ok={categoryTotals.ok} breakdown={breakdown} />
-        <MonthlyTrendCard ok={trends.ok} trend={trend} />
+        <CategoryBreakdownCard breakdown={breakdown} />
+        <MonthlyTrendCard trend={trend} />
       </section>
 
       <p className="mt-6 text-xs text-fin-fg-subtle">{DASHBOARD.readOnlyNote}</p>

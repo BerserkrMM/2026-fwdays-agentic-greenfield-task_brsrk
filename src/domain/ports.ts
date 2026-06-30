@@ -9,8 +9,8 @@ import type { LedgerItem } from "./ledger-item";
 import type {
   AccountBalance,
   CategoryTotal,
+  DashboardSummary,
   LedgerAggregates,
-  MonthlyTrendPoint,
 } from "./ledger-query";
 import type { NewParserRun, ParserRun } from "./parser-run";
 import type { ParsedLedgerItemDraft } from "./parsed-draft";
@@ -111,10 +111,12 @@ export interface LedgerQueryPort {
   /** Per-category totals over non-deleted items, by raw category text. */
   getCategoryTotals(): Promise<CategoryTotal[]>;
   /**
-   * Income/expense grouped by calendar month (Europe/Kyiv) over non-deleted
-   * items, ascending — the all-time Dashboard trend (FR-DASH-04, FR-LEDGER-04).
+   * The whole read-only Dashboard read-model — balance, income/expense
+   * aggregates, category totals, and the monthly trend — from a SINGLE snapshot
+   * of non-deleted items, so every widget is mutually consistent and the scan is
+   * not repeated (FR-DASH-01..04, FR-LEDGER-05).
    */
-  getMonthlyTrends(): Promise<MonthlyTrendPoint[]>;
+  getDashboardSummary(): Promise<DashboardSummary>;
 }
 
 // --- Item-creation contract (the only sanctioned ledger-item write path) ---
