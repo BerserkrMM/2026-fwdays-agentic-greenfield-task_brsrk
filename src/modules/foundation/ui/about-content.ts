@@ -66,7 +66,7 @@ export const ABOUT = {
     eyebrow: "Про проєкт",
     title: "Finup",
     lede:
-      "Фінансовий трекер, де користувач вносить фінансові дані зручним способом — " +
+      "Фінансовий трекер (PWA, Progressive Web App), де користувач вносить дані зручним способом — " +
       "текстом, фото чека або банківською випискою — а система приводить це до єдиного " +
       "результату: редагованих фінансових операцій у ledger.",
     tagline:
@@ -80,7 +80,8 @@ export const ABOUT = {
     title: "Що таке Finup",
     summary:
       "Система зберігає input, очищує дані, парсить через AI та створює редаговані " +
-      "ledger_items — атомарні фінансові операції. Dashboard показує фінансову картину операцій.",
+      "ledger_items — атомарні фінансові операції. Dashboard показує фінансову картину операцій. " +
+      "Інтерфейс зроблений як PWA: його можна встановити на телефон, а навігація адаптована під mobile-first сценарій.",
     pipelineHeading: "Ключовий pipeline",
     pipeline: [
       { label: "input_event", note: "акт внесення" },
@@ -153,6 +154,11 @@ export const ABOUT = {
         glyph: "◎",
         title: "Dashboard — Огляд",
         description: "Баланс, доходи, витрати, категорії та місячний тренд.",
+      },
+      {
+        glyph: "▣",
+        title: "PWA / Mobile",
+        description: "Installable shell, mobile navigation і safe-area-friendly layout для телефону.",
       },
     ] satisfies FeatureCard[],
   },

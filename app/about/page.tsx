@@ -178,7 +178,7 @@ export default function AboutPage() {
         <p className="mb-5 max-w-3xl text-sm leading-relaxed text-fin-fg-muted">
           {features.summary}
         </p>
-        <div className="grid gap-4 sm:grid-cols-3">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {features.cards.map((c) => (
             <div key={c.title} className={`${CARD} flex flex-col gap-2`}>
               <span aria-hidden className="text-2xl leading-none text-fin-primary">

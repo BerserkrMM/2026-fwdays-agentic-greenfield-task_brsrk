@@ -68,7 +68,8 @@ describe("about page content (/about)", () => {
 
   it("opens with the product one-liner and the five numbered sections", () => {
     expect(ABOUT.hero.title).toBe("Finup");
-    expect(ABOUT.product.summary.trim().length).toBeGreaterThan(0);
+    expect(ABOUT.hero.lede).toContain("PWA");
+    expect(ABOUT.product.summary).toContain("телефон");
     expect([
       ABOUT.product.index,
       ABOUT.features.index,
@@ -76,6 +77,10 @@ describe("about page content (/about)", () => {
       ABOUT.role.index,
       ABOUT.next.index,
     ]).toEqual(["01", "02", "03", "04", "05"]);
+  });
+
+  it("mentions the mobile/PWA surface among product functions", () => {
+    expect(ABOUT.features.cards.map((card) => card.title)).toContain("PWA / Mobile");
   });
 
   it("keeps the product pipeline order from input_event to dashboard", () => {

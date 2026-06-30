@@ -4,6 +4,18 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-30 18:08 UTC — mention PWA/mobile positioning on `/about`
+
+**What was done** — updated the `/about` presentation copy to explicitly mention that Finup is a PWA (Progressive Web App) and that the UI is optimized for phone/mobile usage. Added a fourth product-function card (`PWA / Mobile`) and adjusted the feature-card grid to `sm:grid-cols-2 lg:grid-cols-4` so the layout stays balanced. Added content-test coverage for the PWA/mobile wording.
+
+**Current state** — changes are local and ready to commit/push to `dev` per owner request. Targeted validation is green: `npm run test:run -- src/modules/foundation/ui/content.test.ts src/app-pages.smoke.test.ts` (18 tests) and `npx tsc --noEmit`.
+
+**Next steps** — commit/push the copy/layout follow-up to `dev`, then investigate the failing GitHub CI run on `main`.
+
+**Open questions / blockers** — none.
+
+---
+
 ## 2026-06-30 17:56 UTC — PR #14 CodeRabbit follow-up: cache `/about` shell route
 
 **What was done** — triaged CodeRabbit's 4 comments on PR #14. Folded the valid technical finding: `public/sw.js` now includes `/about` in both `SHELL_ROUTES` and `PRECACHE`, matching the new deployed landing route while preserving the existing dev self-healing / no-cache behavior. Accepted/deferred the three submission-input comments (real author name, 1–2 minute demo video link, recording reference) because they are owner-provided final submission data and were not fabricated; owner also confirmed the author name should not be shown on the `/about` page.
