@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { collectServerTreeText } from "./test-support/server-tree";
 
 vi.mock("next/link", () => ({
   default: ({ href, children }: { href: string; children: unknown }) => ({
@@ -35,9 +36,20 @@ describe("static app pages", () => {
     expect(rendered).toBeTruthy();
   });
 
-  it("redirects the home route to dashboard", async () => {
+  it("renders the about presentation page narrative", async () => {
+    const { default: AboutPage } = await import("@/app/about/page");
+
+    const text = collectServerTreeText(AboutPage());
+
+    expect(text).toContain("Finup");
+    expect(text).toContain("Команди, якими проходили gates");
+    expect(text).toContain("docs/current-state.md");
+    expect(text).toContain("/dashboard");
+  });
+
+  it("redirects the home route to the about presentation page", async () => {
     const { default: Home } = await import("@/app/page");
 
-    expect(() => Home()).toThrow("redirect:/dashboard");
+    expect(() => Home()).toThrow("redirect:/about");
   });
 });

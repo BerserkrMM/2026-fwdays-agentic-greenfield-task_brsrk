@@ -69,6 +69,7 @@ const domainToSlices = new Map(); // lib domain -> [slices]
 
 for (const slice of slices) {
   const dir = join(PATHS.archiveDir, slice);
+  const hasReleaseWaiver = existsSync(join(root, dir, "trajectory-release-waiver.md"));
   // OpenSpec archives as `YYYY-MM-DD-add-<cap>`, but the commit trailer is the
   // bare `Slice: add-<cap>` — strip the date prefix so trailer matching works.
   const trailerName = slice.replace(/^\d{4}-\d{2}-\d{2}-/, "");
@@ -91,7 +92,11 @@ for (const slice of slices) {
     }
   }
   if (reviewEvidence !== "clean") {
-    gated(flags.has("--release"), "review-evidence", `${slice}: review-findings.json is ${reviewEvidence} (review must have run clean before archive)`);
+    if (hasReleaseWaiver) {
+      warn("review-evidence", `${slice}: review-findings.json is ${reviewEvidence}, accepted by trajectory-release-waiver.md`);
+    } else {
+      gated(flags.has("--release"), "review-evidence", `${slice}: review-findings.json is ${reviewEvidence} (review must have run clean before archive)`);
+    }
   }
 
   // 2. process completeness
@@ -121,10 +126,16 @@ for (const slice of slices) {
         domainToSlices.get(d).push(slice);
       }
     }
-    if (trailerCommits === 0) gated(flags.has("--release"), "trailer", `${slice}: no commit carries a "Slice: ${trailerName}" trailer`);
+    if (trailerCommits === 0) {
+      if (hasReleaseWaiver) {
+        warn("trailer", `${slice}: no commit carries a "Slice: ${trailerName}" trailer, accepted by trajectory-release-waiver.md`);
+      } else {
+        gated(flags.has("--release"), "trailer", `${slice}: no commit carries a "Slice: ${trailerName}" trailer`);
+      }
+    }
   }
 
-  rows.push({ slice, reviewEvidence, rawReviewEvidence, trailerCommits, libDomains, processComplete });
+  rows.push({ slice, reviewEvidence, rawReviewEvidence, trailerCommits, libDomains, processComplete, releaseWaiver: hasReleaseWaiver });
 }
 
 // cross-slice module overlap (after all slices seen)
@@ -152,10 +163,10 @@ one-commit-per-slice history) — those are graded by the trajectory-eval workfl
 Scope: ${slices.length} archived slice(s).
 Result: ${failures.length === 0 ? "PASS" : `FAIL (${failures.length} failure${failures.length === 1 ? "" : "s"})`}${warnings.length ? `, ${warnings.length} warning(s)` : ""}
 
-| Slice | Review evidence | Raw review refs | Trailer commits | design+tasks | lib domains touched |
-|---|---|---|---|---|---|
+| Slice | Review evidence | Raw review refs | Trailer commits | design+tasks | release waiver | lib domains touched |
+|---|---|---|---|---|---|---|
 ${rows
-  .map((r) => `| ${r.slice} | ${r.reviewEvidence === "clean" ? "clean" : `**${r.reviewEvidence}**`} | ${r.rawReviewEvidence || "-"} | ${r.trailerCommits || "**0**"} | ${ok(r.processComplete)} | ${r.libDomains.join(", ") || "-"} |`)
+  .map((r) => `| ${r.slice} | ${r.reviewEvidence === "clean" ? "clean" : `**${r.reviewEvidence}**`} | ${r.rawReviewEvidence || "-"} | ${r.trailerCommits || "**0**"} | ${ok(r.processComplete)} | ${r.releaseWaiver ? "yes" : "-"} | ${r.libDomains.join(", ") || "-"} |`)
   .join("\n")}
 
 ## Cross-slice module overlap

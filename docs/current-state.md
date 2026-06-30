@@ -4,6 +4,92 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-30 19:06 UTC — release trajectory waiver for historical foundation slice
+
+**What was done** — implemented the chosen “Variant B” fix for the failing `main` CI release trajectory gate. Added `openspec/changes/archive/2026-06-26-add-foundation-shell/trajectory-release-waiver.md` documenting that the missing `review-findings.json` and missing `Slice: add-foundation-shell` trailer are a historical retrofit gap from before stricter Project Factory evidence discipline. Updated `scripts/check-trajectory.mjs` so release mode treats those two findings as warnings when an archived slice has this explicit waiver, while new slices without a waiver still fail in `--release`. Regenerated `docs/qa/trajectory-report.md` and `trace/trajectory.json` to show the waiver column.
+
+**Current state** — validation for the fix is green: `node scripts/check-trajectory.mjs --release` exits 0 with two documented warnings for the historical foundation slice, and `node scripts/check-trajectory.mjs --check-fresh` exits 0. This addresses the `main` CI failure cause from run `28465156128` (trajectory release mode converting the old foundation warnings into failures).
+
+**Next steps** — commit and push to `dev`; then merge/fast-forward `dev` into `main` or open the appropriate PR so `main` receives the waiver-aware trajectory checker and regenerated trajectory artifacts.
+
+**Open questions / blockers** — none.
+
+---
+
+## 2026-06-30 18:08 UTC — mention PWA/mobile positioning on `/about`
+
+**What was done** — updated the `/about` presentation copy to explicitly mention that Finup is a PWA (Progressive Web App) and that the UI is optimized for phone/mobile usage. Added a fourth product-function card (`PWA / Mobile`) and adjusted the feature-card grid to `sm:grid-cols-2 lg:grid-cols-4` so the layout stays balanced. Added content-test coverage for the PWA/mobile wording.
+
+**Current state** — changes are local and ready to commit/push to `dev` per owner request. Targeted validation is green: `npm run test:run -- src/modules/foundation/ui/content.test.ts src/app-pages.smoke.test.ts` (18 tests) and `npx tsc --noEmit`.
+
+**Next steps** — commit/push the copy/layout follow-up to `dev`, then investigate the failing GitHub CI run on `main`.
+
+**Open questions / blockers** — none.
+
+---
+
+## 2026-06-30 17:56 UTC — PR #14 CodeRabbit follow-up: cache `/about` shell route
+
+**What was done** — triaged CodeRabbit's 4 comments on PR #14. Folded the valid technical finding: `public/sw.js` now includes `/about` in both `SHELL_ROUTES` and `PRECACHE`, matching the new deployed landing route while preserving the existing dev self-healing / no-cache behavior. Accepted/deferred the three submission-input comments (real author name, 1–2 minute demo video link, recording reference) because they are owner-provided final submission data and were not fabricated; owner also confirmed the author name should not be shown on the `/about` page.
+
+**Current state** — targeted validation is green: `npx eslint public/sw.js src/modules/foundation/ui/ServiceWorkerRegister.tsx` and `npm run test:run -- src/modules/foundation/ui/content.test.ts src/app-pages.smoke.test.ts` (17 tests). PR #14 remains the active PR for `/about` landing-page support.
+
+**Next steps** — commit/push the service-worker follow-up and re-trigger CodeRabbit. Later, owner to add real author name and demo-video link to the final PR/submission materials.
+
+**Open questions / blockers** — none.
+
+---
+
+## 2026-06-30 16:53 UTC — make `/about` the deployed landing page and enrich presentation page
+
+**What was done** — made the app root redirect to `/about` so deployed Vercel reviewers land on the course/demo presentation first. Refined `/about` copy to reduce contrast-heavy phrasing, renamed process-evidence wording from gates to checks, added concrete gate commands, an evidence artifact map, and a short glossary for process terms (`regression coverage`, `accepted with rationale`, `trade-off`, `ratchet`). Updated the content tests for the new copy structure.
+
+**Current state** — the landing-page commits were created and pushed. The first `bash crash_course/run-all-checks.sh` exposed one expected regression in `src/app-pages.smoke.test.ts`: the home route assertion still expected `redirect:/dashboard`. Fixed it to expect `redirect:/about` and added an `/about` presentation-page smoke assertion so coverage does not drop from the large static page. The rerun of `bash crash_course/run-all-checks.sh` is green: **13/13 gates passed**. Coverage improved over baseline (lines/statements 69.05→73.41, functions 80.71→80.9, branches 90.08→90.37), so the ratchet passes without updating the baseline. PR #14 (`add-about-page` → `dev`) is open and MERGEABLE: https://github.com/BerserkrMM/2026-fwdays-agentic-greenfield-task_brsrk/pull/14. CodeRabbit was triggered with `@coderabbitai review`. `/about` remains a read-only presentation/support page for the course submission, not a new Finup MVP capability.
+
+**Next steps** — wait for CodeRabbit on PR #14, triage/fold useful findings, then owner should add real author name and video link before final submission. Owner can use `bash crash_course/run-all-checks.sh` during the demo; optional flags: `--quick` for rehearsal or `--with-fallow` for advisory structural audit.
+
+**Open questions / blockers** — none.
+
+---
+
+## 2026-06-30 15:35 UTC — About page (`/about`) added on branch `add-about-page`
+
+**What was done** — built a new richly-designed About page on a fresh branch `add-about-page` cut from `dev` (per request). It narrates what Finup is and how it was built, with copy taken faithfully from `crash_course/video-presentation-script.md` (the visible 5-part spine) layered with the richer process detail from `crash_course/presentation.md`. New files: `app/about/page.tsx` (server component, no DB/mutations — navigation only) and `src/modules/foundation/ui/about-content.ts` (single-source-of-truth Ukrainian copy as structured data). Added a `/about` nav item to `nav-items.ts` (sidebar only; `primary:false`, so it stays off the mobile bottom bar) and content tests in `content.test.ts`. Design uses only the foundation `fin-*` tokens: dark hero, numbered sections, hand-built styled flow diagrams (pipeline + per-feature cycle), a red/green "not vibe coding" comparison, three-level gate cards, maker≠checker reviewer list, and a CTA — no client JS or chart deps.
+
+**Current state** — green locally: `tsc --noEmit`, `eslint` (new/changed files), `vitest run content.test.ts` (12 tests), and `npm run build` (`/about` prerenders as a static route). Rendered and visually verified at 1280px and 390px via Playwright (using the installed chromium-1223 executable) — layout, flow-diagram wrapping, and palette all read well on desktop and mobile. Work is **uncommitted** on `add-about-page`; not pushed.
+
+**Next steps** — owner review of the page; if approved, commit (with `Slice:`/`Refs:` trailers if treating as a slice) and open a PR to `dev`. Optional: run the remaining deterministic gates (`check:trace`/`trajectory`/`coverage`/`claims`/`handoff`) if this is to go through the formal slice loop. Note: `docs/current-state.md` also still carries the two prior uncommitted investigation entries (Vercel deploy, Dashboard tap) that pre-existed this branch.
+
+**Hydration / stale-SW fix** — adding the `/about` nav item surfaced the previously-documented service-worker issue: `ServiceWorkerRegister` registered `/sw.js` unconditionally (incl. dev), and the SW serves `/_next/static/*` cache-first. In dev those chunk URLs are stable (not content-hashed), so a browser controlled by an old SW served a stale app bundle that has no `/about` route → blank page + React hydration mismatch. Two-part fix: (1) `ServiceWorkerRegister.tsx` registration is now **production-only**; (2) `public/sw.js` is now **dev-safe and self-healing** — on `localhost`/`127.0.0.1`/`[::1]` it caches nothing (network passthrough) and on activate it purges all caches, calls `registration.unregister()`, and reloads controlled tabs; production keeps shell caching (cache bumped `finup-shell-v1`→`v2`, so the stale v1 cache is dropped). Because browsers always revalidate the SW *script* over the network, an already-stale worker gets replaced by this self-destructing one on the next load. **Verified by reproduction** (Playwright, real dev server): after a SW registers on localhost it self-unregisters within ~1s (`regCount:0`, no controller, `caches:[]`), and `/about` then renders (`<h1>Finup</h1>`, 6113 chars) with **zero** console/page errors. `tsc`/`eslint`/`build` green. User action: **one reload** (occasionally two) breaks an already-affected tab out; no manual DevTools step needed.
+
+**Open questions / blockers** — none. The About page is intentionally a meta/marketing narrative (product + engineering process), not tied to an FR; if it should map to a requirement/OpenSpec capability for traceability, that needs an owner decision.
+
+---
+
+## 2026-06-30 15:24 UTC — Vercel deploy skill installed; deployment state checked
+
+**What was done** — installed the `vercel-labs/agent-skills@deploy-to-vercel` skill globally via `npx skills add ... -g -y`. Checked deployment prerequisites: Git remote exists (`BerserkrMM/2026-fwdays-agentic-greenfield-task_brsrk`), local Vercel CLI is authenticated as `berserkrmm`, one Vercel team is available (`bersproject` / `bersteam`), and the repo is not locally linked because `.vercel/project.json` / `.vercel/repo.json` is absent.
+
+**Current state** — deployment is ready to proceed through Vercel CLI linking or through the existing GitHub-connected Vercel dashboard. Working tree has a modified `docs/current-state.md` from investigation/deployment notes only. The app needs production env/database setup for persistence: without `DATABASE_URL`, it falls back to process-local in-memory storage.
+
+**Next steps** — link the repo with `vercel link --repo --scope bersproject` if CLI-based management is desired, configure Vercel env vars (`DATABASE_URL`, optionally `OPENAI_API_KEY`), apply `src/db/bootstrap.sql` to the production Postgres database, then push the deployment branch configured in Vercel or run a preview deploy.
+
+**Open questions / blockers** — need to confirm Vercel production branch (`main` vs `dev`) and which Postgres provider/connection string will be used.
+
+---
+
+## 2026-06-30 15:16 UTC — Investigated Dashboard tap/crash report
+
+**What was done** — inspected the app shell/navigation, `/` redirect, `/dashboard` page, PWA manifest, service worker, and Next dev behavior around direct `/dashboard` requests. Confirmed `/` redirects to `/dashboard` and direct `/dashboard` returns 200 on the running dev server; no app code changes were made.
+
+**Current state** — the only route-specific difference found is navigation mode: tapping the app's Dashboard nav uses Next `<Link>` client-side navigation from `MobileNav`/`SideNav`, while typing `/` performs a full document navigation then server redirect. The service worker is registered unconditionally and cache-first serves `/_next/static/*`, which can leave stale dev/client router assets controlling localhost and explain a client-only close/crash while direct server navigation still renders.
+
+**Next steps** — clear/unregister the localhost service worker and site data to confirm; for a fix, gate service-worker registration to production and/or bump/cache-bust the service worker cache. If the crash persists after unregistering SW, capture browser console logs during the Dashboard tap.
+
+**Open questions / blockers** — exact device/browser and whether this is an installed standalone PWA vs normal browser tab are not yet known.
+
+---
+
 ## 2026-06-30 14:59 UTC — PR #12 merged; dev updated; worktrees cleaned
 
 **What was done** — pulled `origin/dev` after PR #12 (`add-settings`) was merged, fast-forwarding local `dev` to merge commit `45f1b04`. Removed the now-unneeded `add-settings` worktree and pruned temporary fallow audit worktrees; only the main `dev` worktree remains.

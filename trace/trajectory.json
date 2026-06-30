@@ -7,7 +7,8 @@
       "rawReviewEvidence": "missing",
       "trailerCommits": 0,
       "libDomains": [],
-      "processComplete": true
+      "processComplete": true,
+      "releaseWaiver": true
     },
     {
       "slice": "2026-06-28-add-accounts",
@@ -15,7 +16,8 @@
       "rawReviewEvidence": "4 linked",
       "trailerCommits": 1,
       "libDomains": [],
-      "processComplete": true
+      "processComplete": true,
+      "releaseWaiver": false
     },
     {
       "slice": "2026-06-28-add-ledger-queries",
@@ -23,7 +25,8 @@
       "rawReviewEvidence": "3 linked",
       "trailerCommits": 1,
       "libDomains": [],
-      "processComplete": true
+      "processComplete": true,
+      "releaseWaiver": false
     },
     {
       "slice": "2026-06-29-add-bank-statement-imports",
@@ -31,7 +34,8 @@
       "rawReviewEvidence": "7 linked",
       "trailerCommits": 1,
       "libDomains": [],
-      "processComplete": true
+      "processComplete": true,
+      "releaseWaiver": false
     },
     {
       "slice": "2026-06-29-add-dashboard",
@@ -39,7 +43,8 @@
       "rawReviewEvidence": "5 linked",
       "trailerCommits": 1,
       "libDomains": [],
-      "processComplete": true
+      "processComplete": true,
+      "releaseWaiver": false
     },
     {
       "slice": "2026-06-29-add-ledger-items-review",
@@ -47,7 +52,8 @@
       "rawReviewEvidence": "5 linked",
       "trailerCommits": 1,
       "libDomains": [],
-      "processComplete": true
+      "processComplete": true,
+      "releaseWaiver": false
     },
     {
       "slice": "2026-06-29-add-manual-text-input",
@@ -55,7 +61,8 @@
       "rawReviewEvidence": "4 linked",
       "trailerCommits": 1,
       "libDomains": [],
-      "processComplete": true
+      "processComplete": true,
+      "releaseWaiver": false
     },
     {
       "slice": "2026-06-29-add-parsing-pipeline",
@@ -63,7 +70,8 @@
       "rawReviewEvidence": "5 linked",
       "trailerCommits": 1,
       "libDomains": [],
-      "processComplete": true
+      "processComplete": true,
+      "releaseWaiver": false
     },
     {
       "slice": "2026-06-29-add-receipt-photo-imports",
@@ -71,7 +79,8 @@
       "rawReviewEvidence": "4 linked",
       "trailerCommits": 1,
       "libDomains": [],
-      "processComplete": true
+      "processComplete": true,
+      "releaseWaiver": false
     },
     {
       "slice": "2026-06-30-add-settings",
@@ -79,7 +88,8 @@
       "rawReviewEvidence": "5 linked",
       "trailerCommits": 1,
       "libDomains": [],
-      "processComplete": true
+      "processComplete": true,
+      "releaseWaiver": false
     }
   ],
   "overlaps": [],
@@ -87,11 +97,11 @@
   "warnings": [
     {
       "check": "review-evidence",
-      "msg": "2026-06-26-add-foundation-shell: review-findings.json is missing (review must have run clean before archive)"
+      "msg": "2026-06-26-add-foundation-shell: review-findings.json is missing, accepted by trajectory-release-waiver.md"
     },
     {
       "check": "trailer",
-      "msg": "2026-06-26-add-foundation-shell: no commit carries a \"Slice: add-foundation-shell\" trailer"
+      "msg": "2026-06-26-add-foundation-shell: no commit carries a \"Slice: add-foundation-shell\" trailer, accepted by trajectory-release-waiver.md"
     }
   ]
 }
