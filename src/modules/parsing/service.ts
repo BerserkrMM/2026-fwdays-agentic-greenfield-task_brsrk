@@ -6,6 +6,7 @@ import {
   type ParserPayload,
   ParsingError,
   type ParsingResult,
+  redactParserPayloadForStorage,
 } from "@/src/domain/parsing";
 import type { Repositories } from "@/src/domain/ports";
 
@@ -32,7 +33,7 @@ export class ParsingService {
     }
 
     const normalizedPayload = normalizeParserPayload(input.payload);
-    const serializedPayload = stableJson(normalizedPayload);
+    const serializedPayload = stableJson(redactParserPayloadForStorage(normalizedPayload));
 
     try {
       const adapterResult = await this.adapter.parse(normalizedPayload);
@@ -48,7 +49,7 @@ export class ParsingService {
         ),
         error: null,
       });
-      return { parserRun, drafts };
+      return { parserRun, drafts, invalidDrafts };
     } catch (cause) {
       const message = errorMessage(cause);
       await this.repos.parserRuns.create({

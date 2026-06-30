@@ -4,6 +4,7 @@ import {
   canonicalizeParserDrafts,
   normalizeParserPayload,
   ParsingError,
+  redactParserPayloadForStorage,
 } from "./parsing";
 
 // @trace FR-PARSE-02, FR-PARSE-03, FR-PARSE-04
@@ -98,5 +99,32 @@ describe("normalizeParserPayload", () => {
     expect(normalized.content).toBe(
       "row 2026-06-01; row 27.02.2025 18:04:09; mono 28.02.1830 18:42:01; phone [phone]; card [number]",
     );
+  });
+});
+
+describe("redactParserPayloadForStorage", () => {
+  it("returns the payload unchanged when there is no image", () => {
+    const payload = { kind: "text" as const, content: "кава 45" };
+    expect(redactParserPayloadForStorage(payload)).toBe(payload);
+  });
+
+  it("strips the raw base64 and reports the real decoded byte length", () => {
+    // "AQID" => 3 bytes (no padding); "AQI=" => 2 bytes (one pad); "AQ==" => 1 byte (two pads).
+    const cases: Array<[string, number]> = [
+      ["data:image/png;base64,AQID", 3],
+      ["data:image/png;base64,AQI=", 2],
+      ["data:image/png;base64,AQ==", 1],
+      ["data:image/png;base64,", 0],
+      ["data:image/png", 0],
+    ];
+    for (const [dataUri, expected] of cases) {
+      const redacted = redactParserPayloadForStorage({
+        kind: "photo",
+        content: "чек",
+        image: { dataUri, mimeType: "image/png" },
+      }) as { image: { mimeType: string; byteLength: number }; content: string };
+      expect(redacted.image).toEqual({ mimeType: "image/png", byteLength: expected });
+      expect(JSON.stringify(redacted)).not.toContain("base64,");
+    }
   });
 });

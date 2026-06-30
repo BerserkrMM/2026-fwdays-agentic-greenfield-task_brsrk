@@ -56,6 +56,14 @@
       "trailerCommits": 1,
       "libDomains": [],
       "processComplete": true
+    },
+    {
+      "slice": "2026-06-29-add-receipt-photo-imports",
+      "reviewEvidence": "clean",
+      "rawReviewEvidence": "4 linked",
+      "trailerCommits": 1,
+      "libDomains": [],
+      "processComplete": true
     }
   ],
   "overlaps": [],

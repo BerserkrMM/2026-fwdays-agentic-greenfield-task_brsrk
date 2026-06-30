@@ -23,8 +23,17 @@ describe("static app pages", () => {
 
     expect(DashboardPage()).toBeTruthy();
     expect(ImportsHubPage()).toBeTruthy();
-    expect(ImportFilesPage()).toBeTruthy();
+    expect(await ImportFilesPage({ searchParams: Promise.resolve({}) })).toBeTruthy();
     expect(SettingsPage()).toBeTruthy();
+  });
+
+  it("renders the receipt-photo page error state from a formError param", async () => {
+    const { default: ImportFilesPage } = await import("@/app/imports/files/page");
+    // An array param exercises the `firstParam` array branch and the error ternary.
+    const rendered = await ImportFilesPage({
+      searchParams: Promise.resolve({ formError: ["file-invalid", "ignored"] }),
+    });
+    expect(rendered).toBeTruthy();
   });
 
   it("redirects the home route to dashboard", async () => {

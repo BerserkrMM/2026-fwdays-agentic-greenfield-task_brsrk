@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-29T12:48:00Z",
+  "generatedAt": "2026-06-29T22:43:46Z",
   "threshold": 70,
   "dimensions": {
     "ua-ux-clarity": 95,
@@ -83,6 +83,23 @@
       "judges": 1,
       "disagreement": false,
       "notes": "Fresh eval-judge (maker≠checker) over the produced output, verified to match the live manual-input-content.ts + import-summary.ts. All three CRITICAL criteria hold: every span is Ukrainian (AI localized as «ШІ»); the parse-failure error states what failed and gives two next actions («Не вдалося розпізнати текст. Перевірте налаштування ШІ або спробуйте ще раз.»); the empty-text validation is a direct imperative («Введіть текст для імпорту.»). Summary states created/failed counts explicitly and only when relevant; calm finance tone, no generic 'something went wrong' in the visible output. Minor: a generic fallback exists for unmapped codes (not in graded output). Held at 93, on par with the sibling baseline, not inflated."
+    },
+    {
+      "id": "eval-file-import-error-clarity",
+      "dimension": "ua-error-clarity",
+      "trace": [
+        "FR-FILE-01",
+        "FR-FILE-03",
+        "FR-FILE-04",
+        "FR-FILE-05",
+        "NFR-I18N-01"
+      ],
+      "capability": "file-imports",
+      "score": 93,
+      "pass": true,
+      "judges": 1,
+      "disagreement": false,
+      "notes": "Fresh eval-judge (maker≠checker) over the produced output, reconstructed from the live file-import-content.ts + import-summary.ts. All four CRITICAL criteria met: fully Ukrainian-first; file-invalid lists JPEG/PNG/WEBP and excludes PDF; parse-failure is recoverable («Перевірте, що фото чітке, або спробуйте ще раз») not a 500; recognized items go to the Журнал with no preview gate. Both quality criteria met (explicit created/failed counts; calm finance tone). -7 for verb shift розпізнати→зберегти in the partial summary and a dense hint sentence. On par with the ua-error-clarity baseline (93)."
     }
   ]
 }
