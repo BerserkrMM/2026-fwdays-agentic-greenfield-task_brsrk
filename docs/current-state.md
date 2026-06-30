@@ -4,6 +4,57 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-30 13:53 UTC — add-settings slice SHIPPED (slice 10: `/settings` config + CSV export)
+
+**What was done** — built the final MVP slice `add-settings` (capability `settings`, FR-SET-01/02/03) on branch `add-settings` cut from `origin/dev`, in a fresh git worktree (the prior `add-dashboard` worktree was removed first; PR #11 is merged). Replaced the `/settings` placeholder with the real technical-configuration screen. Tests-first with durable RED→GREEN evidence; archived after a clean four-reviewer maker≠checker round and a graded eval.
+
+**Scope delivered** — FR-SET-01/02/03 (+ disclosed FR-PARSE-06 wiring):
+- FR-SET-01: real `/settings` server component — AI-provider section + data-export section, with explicit not-configured / configured / saved / error states (no blank UI); invalid input redirects to `?formError=` and renders a Ukrainian banner.
+- FR-SET-02: OpenAI API key + optional model persisted in a new singleton `app_config` table. **Write-only over the wire** — the page only ever consumes `AiProviderStatus {configured, model}`; the key value is never projected to the client, never pre-filled into the input, never logged (security-reviewed clean). A blank key on save keeps the existing key; a separate remove action clears it. Parsing builds its adapter from this config via `configuredOpenAiAdapter(repos)`, falling back to `OPENAI_API_KEY` when unset — the soft `settings -.-> parsing` link; the three import actions were rewired (disclosed coordination).
+- FR-SET-03: read-only CSV export at `/settings/export` (GET Route Handler). Spreadsheet formula-injection hardening (CWE-1236) on free-text columns, RFC-4180 quoting, Ukrainian `Тип`/`Статус` labels, resolved account **names**, Europe/Kyiv local date, signed-numeric amount column kept raw/summable. No destructive reset action.
+- Shared-schema coordination (TC-MOD-02, disclosed): `app_config` singleton table in `src/db/bootstrap.sql`, `AppConfigRepository` port + pg/in-memory impls.
+
+**Scope NOT delivered (deferred, justified)** — no encryption-at-rest for the stored key (v1 single-user, no-auth — DB access already implies full access; no KMS/secret-store infra; the requirement is write-only *over the wire*, which is upheld); no provider beyond OpenAI (v1 scope); no live OpenAI call exercised (needs a real key; with none, parsing surfaces `parse-failed` by design); no streaming/paginated export (v1 personal scale); no UI vision/screenshot proof (later QA phase).
+
+**Process evidence produced** — real RED/GREEN JSON under the archived change (`check:red-green --slice add-settings --strict` green); strict OpenSpec validate + archive (10 specs; MODIFIED delta on the backfilled `settings` baseline synced with no drift — 3 requirements); eval case `evals/cases/settings.eval.ts` (dimension `ua-error-clarity`, graded **93/100 PASS** by a fresh judge, on par with siblings; recorded in `evals/results/latest.json`, ratchet green); clean maker≠checker review with **5** raw evidence files (`reviews/{code-reviewer,security-reviewer,spec-compliance-auditor,eval-judge}.md`, `reviews/eval-produced-output.txt`) and `review-findings.json` (`clean:true`, `rawEvidence` linked); regenerated trace/trajectory + slice report.
+
+**Process evidence NOT produced** — no live LLM trajectory-eval (waived; deterministic trajectory is green); no UI recording/vision proof of the rendered screen (later QA phase; the route is covered by build + page/route smoke + action tests). Honest boundary: deterministic G4 checks + a clean four-reviewer maker≠checker round + a graded eval all pass; this is **not** a claim that an end-to-end trajectory-eval ran.
+
+**Maker≠checker findings** — verdicts: code **APPROVE_WITH_NITS**, security **PASS_WITH_NOTES** (clean; only the documented plaintext-key-at-rest note), spec-compliance **PASS** (11/11 scenarios), eval-judge **93/100 PASS**. Eight findings folded with regression coverage: the CSV now resolves the readable account **name** for «Рахунок» (was a raw UUID), renders Ukrainian `Тип`/`Статус` labels + a Kyiv local date, keeps the numeric amount column raw/summable (formula-hardening scoped to free-text), moved the error-banner title into the single-source copy module, cleaned the rewired-action double-await, documented the export BOM in design.md, and ticked the change tasks. Accepted with rationale: plaintext key at rest (design D2; write-only-over-the-wire upheld), the unreachable-via-action `api-key-required` branch (kept; directly unit-tested), and the first-char-only formula-trigger check (a leading space is treated as text by spreadsheets — security-confirmed no bypass).
+
+**Fallow audit** — `FALLOW_AGENT_SOURCE=pi npx fallow audit --base origin/dev`. Verdict `fail` (new-only gate) with **advisory-only** findings, no runtime defect: 2 unused files (`evals/cases/settings.eval.ts` — eval-runner-loaded, and `src/modules/settings/ports.ts` — the module's stable port barrel; **no** module `ports.ts` is statically imported anywhere, the established TC-MOD-01 convention); 1 inherited unused dev-dependency (`@fission-ai/openspec`, used via npx); 2 false-positive unused class members (`SettingsService.saveAiProvider`/`removeOpenAiApiKey` — called by the server actions through the `service()` factory + `"use server"` boundary fallow's graph doesn't cross, and covered by `settings-action.test.ts`); 6 duplication clone groups, all test-mock boilerplate (`vi.mock` next/navigation, the in-memory-repos harness, the `ledgerItem` builder) — the same accepted pattern as prior slices. Not a green fallow; accepted with rationale, consistent with every prior slice.
+
+<!-- slice-report:start -->
+### Generated slice report: add-settings
+
+Generated by `node scripts/slice-report.mjs --slice add-settings` at 2026-06-30T13:52:56.595Z. Do not hand-write these metrics.
+
+| Metric | Value |
+|---|---:|
+| OpenSpec validated specs | 10 |
+| Active OpenSpec changes | 0 |
+| Test files / tests passed | 48 / 275 |
+| Trace failures / warnings | 0 / 64 |
+| Trajectory failures / warnings | 0 / 3 |
+| Changed files vs origin/dev | 47 |
+| Review findings | clean |
+| Raw review evidence refs | 5 |
+| Slice trailer commits | 1 |
+| Refs | FR-SET-01, FR-SET-02, FR-SET-03, FR-PARSE-06 |
+
+Command exits: openspecValidate=0, openspecList=0, tests=0, trace=0, trajectory=0, evals=0, coverage=0.
+<!-- slice-report:end -->
+
+**Current state** — slice archived; review clean; deterministic gates green on the committed tree: lint, `tsc --noEmit`, `test:run` (48 files / 275 tests), `next build` (`/settings` + `/settings/export` dynamic), coverage ratchet bumped (lines/stmts 66.24→69.05, fns 80.43→80.71, branches 89.78→90.08), `openspec validate --all --strict` (10), `check:trace` (0 failures), `check:trajectory` (0 failures, 2 inherited foundation-shell warnings), `check:red-green --strict`, `check:claims`, `check:eval` (ua-error-clarity 93). Slice committed on `add-settings` with `Slice:`/`Refs:` trailers; ready to push and open a PR to `dev`.
+
+**Next steps** — push branch, open PR to `dev`, address CI / CodeRabbit. With slices 1–10 done, the MVP capability set (foundation, accounts, ledger, ledger-items, parsing, the three import channels, dashboard, settings) is feature-complete; remaining work is the cross-cutting QA phase (Playwright E2E, recordings/vision proof, UAT) and the deferred hardening below.
+
+**Deferred work** — key encryption-at-rest (revisit if multi-user/auth is ever added); live OpenAI behavior (needs a real key); streaming/paginated CSV export for large ledgers; rate limiting on settings/export endpoints; UI recording/vision proof (QA phase).
+
+**Open questions / blockers** — none. Note: the subagent reviewers hit a transient session limit on the first dispatch and were re-run; all four ultimately returned and their raw outputs are saved under the archived change's `reviews/`.
+
+---
+
 ## 2026-06-30 09:02 UTC — add-dashboard PR #11: CodeRabbit follow-up (single-snapshot read)
 
 **What was done** — merged updated `origin/dev` (receipt-photo PR #10) into `add-dashboard`, resolving doc/generated-artifact conflicts (both handoff entries kept, eval cases unioned, coverage/trace/slice-report regenerated on the merged tree). Then triaged CodeRabbit's 10 comments on PR #11 and folded the substantive ones.

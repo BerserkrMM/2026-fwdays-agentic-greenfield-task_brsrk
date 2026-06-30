@@ -77,7 +77,7 @@
       "slice": "2026-06-30-add-settings",
       "reviewEvidence": "clean",
       "rawReviewEvidence": "5 linked",
-      "trailerCommits": 0,
+      "trailerCommits": 1,
       "libDomains": [],
       "processComplete": true
     }
@@ -92,10 +92,6 @@
     {
       "check": "trailer",
       "msg": "2026-06-26-add-foundation-shell: no commit carries a \"Slice: add-foundation-shell\" trailer"
-    },
-    {
-      "check": "trailer",
-      "msg": "2026-06-30-add-settings: no commit carries a \"Slice: add-settings\" trailer"
     }
   ]
 }

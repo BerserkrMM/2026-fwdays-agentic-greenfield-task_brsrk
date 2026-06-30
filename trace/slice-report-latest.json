@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-30T13:49:36.906Z",
+  "generatedAt": "2026-06-30T13:52:56.595Z",
   "generatedBy": "scripts/slice-report.mjs",
   "slice": "add-settings",
   "commands": {
@@ -21,7 +21,7 @@
     },
     "trajectory": {
       "command": "node scripts/check-trajectory.mjs --check-fresh",
-      "exitCode": 0
+      "exitCode": 1
     },
     "evals": {
       "command": "node scripts/check-eval-ratchet.mjs",
@@ -41,7 +41,7 @@
     "traceWarnings": 64,
     "trajectoryFailures": 0,
     "trajectoryWarnings": 3,
-    "changedFiles": 0,
+    "changedFiles": 47,
     "evalBaseline": {
       "ua-ux-clarity": 95,
       "explicit-state-clarity": 96,
@@ -53,9 +53,14 @@
       "functions": 80.71,
       "branches": 90.08
     },
-    "reviewFindings": "missing",
-    "rawReviewEvidenceRefs": 0,
-    "sliceTrailerCommits": 0,
-    "refs": []
+    "reviewFindings": "clean",
+    "rawReviewEvidenceRefs": 5,
+    "sliceTrailerCommits": 1,
+    "refs": [
+      "FR-SET-01",
+      "FR-SET-02",
+      "FR-SET-03",
+      "FR-PARSE-06"
+    ]
   }
 }
