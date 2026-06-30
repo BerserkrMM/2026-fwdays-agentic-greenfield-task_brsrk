@@ -12,8 +12,8 @@ vision parsing, and creates pending ledger items from parsed receipt drafts.
 The system SHALL let the user upload one receipt photo on `/imports/files`.
 Multiple-photo receipts are out of scope for v1. The system SHALL validate that
 the upload is a supported image (JPEG, PNG, or WEBP) by inspecting its content
-(magic bytes), not by trusting the client-supplied name or MIME, and SHALL NOT
-impose a hard file-size limit in v1. (FR-FILE-01)
+(magic bytes), not by trusting the client-supplied name or MIME, and SHALL reject
+receipt-photo files larger than 10 MiB in v1. (FR-FILE-01)
 
 #### Scenario: Single photo upload is accepted
 
@@ -24,7 +24,7 @@ impose a hard file-size limit in v1. (FR-FILE-01)
 #### Scenario: Non-image file is rejected
 
 - **WHEN** the user uploads a file whose content is not a supported image (for
-  example a PDF, a text file, or an empty file)
+  example a PDF, a text file, or an empty file), or a receipt image larger than 10 MiB
 - **THEN** the system rejects it with an explicit Ukrainian validation message
 - **AND** no `input_event` is parsed for the rejected file
 

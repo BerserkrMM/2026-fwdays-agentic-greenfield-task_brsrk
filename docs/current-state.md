@@ -4,6 +4,18 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 ---
 
+## 2026-06-30 07:56 UTC — iPhone receipt upload limit raised for PR #10
+
+**What was done** — addressed the live iPhone photo upload failure by adding a v1 receipt-photo file cap of 10 MiB and raising the Next.js Server Actions transport limit. `next.config.ts` now sets `experimental.serverActions.bodySizeLimit` to `11mb` so a valid 10 MiB multipart file has envelope headroom; `app/imports/files/actions.ts` rejects files over `MAX_RECEIPT_PHOTO_BYTES` before `arrayBuffer()`; `src/domain/receipt-photo.ts` enforces the same 10 MiB cap during deterministic validation. UI/spec copy now says JPEG/PNG/WEBP up to 10 МБ.
+
+**Current state** — targeted validation is green: `npx tsc --noEmit`, `npm run test:run -- src/domain/receipt-photo.test.ts src/app-actions/import-files-action.redirect.test.ts src/modules/file-imports/ui/file-import-content.test.ts` (19 tests), `npm run build`, `npx eslint . --ignore-pattern '.claude/**'`, `npx openspec validate --all --strict`, and `npm run check:claims`. The Next build reports the expected `serverActions` experiment line because this Next 16 config key still lives under `experimental`.
+
+**Next steps** — run `npm run check:handoff`, commit/push the limit fix to `add-receipt-photo-imports`, and re-trigger CodeRabbit on PR #10.
+
+**Open questions / blockers** — OpenAI image limits should be verified against current provider docs before production hardening; current public OpenAI vision guidance is commonly 20 MB per image and 50 MB total image bytes per request, so a 10 MiB app cap is comfortably below the per-image limit.
+
+---
+
 ## 2026-06-29 23:26 UTC — PR #10 CodeRabbit pass triaged; small follow-ups ready to push
 
 **What was done** — triggered CodeRabbit on PR #10 with `@coderabbitai review`, waited for the review to finish, and triaged its 10 comments. Folded the valid code/spec/doc nits: `ParserPayload` is now a discriminated union that requires `image` for `kind: "photo"`; the runtime malformed-photo guard remains covered; the file-imports spec wording now matches the shipped payload (isolated image plus parser instruction/source-reference metadata, no surrounding raw input-event context); and the archived code-review note has the markdown blank line CodeRabbit requested. Rechecked the bundled `docs/test_bank_statements/check.JPEG` fixture: 80,831 bytes, detected as `image/jpeg`, data URI prefix `data:image/jpeg;base64,`.

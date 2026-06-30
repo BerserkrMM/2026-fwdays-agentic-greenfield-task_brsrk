@@ -2,6 +2,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import {
+  MAX_RECEIPT_PHOTO_BYTES,
   ReceiptPhotoError,
   assertSupportedReceiptPhoto,
   detectImageMimeType,
@@ -82,6 +83,14 @@ describe("assertSupportedReceiptPhoto", () => {
       expect(error).toBeInstanceOf(ReceiptPhotoError);
       expect((error as ReceiptPhotoError).code).toBe("file-invalid");
     }
+  });
+
+  it("rejects images larger than the 10 MiB v1 limit", () => {
+    const bytes = new Uint8Array(MAX_RECEIPT_PHOTO_BYTES + 1);
+    bytes.set(JPEG, 0);
+    expect(() =>
+      assertSupportedReceiptPhoto({ fileName: "large.jpg", mimeType: "image/jpeg", bytes }),
+    ).toThrow(/larger than 10 MiB/);
   });
 });
 

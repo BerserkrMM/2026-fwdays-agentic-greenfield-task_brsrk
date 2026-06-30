@@ -4,7 +4,10 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getRepositories } from "@/src/db/client";
 import { ParsingError } from "@/src/domain/parsing";
-import { ReceiptPhotoError } from "@/src/domain/receipt-photo";
+import {
+  MAX_RECEIPT_PHOTO_BYTES,
+  ReceiptPhotoError,
+} from "@/src/domain/receipt-photo";
 import { AccountsService } from "@/src/modules/accounts/service";
 import { FileImportService } from "@/src/modules/file-imports/service";
 import { ItemCreationService } from "@/src/modules/foundation/item-creation";
@@ -13,7 +16,11 @@ import { ParsingService } from "@/src/modules/parsing/service";
 
 function readFile(formData: FormData): File {
   const value = formData.get("photo");
-  if (!(value instanceof File) || value.size === 0) {
+  if (
+    !(value instanceof File) ||
+    value.size === 0 ||
+    value.size > MAX_RECEIPT_PHOTO_BYTES
+  ) {
     redirect("/imports/files?formError=file-invalid");
   }
   return value;

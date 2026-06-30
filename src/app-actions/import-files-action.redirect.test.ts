@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { createInMemoryRepositories } from "@/src/db/memory";
 import { ParsingError } from "@/src/domain/parsing";
+import { MAX_RECEIPT_PHOTO_BYTES } from "@/src/domain/receipt-photo";
 import type { ParsedLedgerItemDraft } from "@/src/domain/parsed-draft";
 import type { Repositories } from "@/src/domain/ports";
 
@@ -88,6 +89,18 @@ describe("importPhotoAction redirects", () => {
     const { importPhotoAction } = await import("@/app/imports/files/actions");
 
     await expect(importPhotoAction(new FormData())).rejects.toThrow(
+      "redirect:/imports/files?formError=file-invalid",
+    );
+    expect(h.parse).not.toHaveBeenCalled();
+  });
+
+  it("redirects an oversized photo before reading/parsing it", async () => {
+    const { importPhotoAction } = await import("@/app/imports/files/actions");
+    const oversized = new File([new Uint8Array(MAX_RECEIPT_PHOTO_BYTES + 1)], "large.jpg", {
+      type: "image/jpeg",
+    });
+
+    await expect(importPhotoAction(form(oversized))).rejects.toThrow(
       "redirect:/imports/files?formError=file-invalid",
     );
     expect(h.parse).not.toHaveBeenCalled();

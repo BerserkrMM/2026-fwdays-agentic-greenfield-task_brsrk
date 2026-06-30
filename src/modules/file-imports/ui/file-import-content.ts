@@ -8,7 +8,7 @@ export const FILE_IMPORT_PAGE = {
   fileLabel: "Фото чека",
   submitLabel: "Розпізнати чек",
   hint:
-    "Підтримуються зображення JPEG, PNG або WEBP. PDF не підтримується. Оригінал зберігається перед обробкою; позиції потраплять у Журнал, де їх можна перевірити, змінити або видалити.",
+    "Підтримуються зображення JPEG, PNG або WEBP до 10 МБ. PDF не підтримується. Оригінал зберігається перед обробкою; позиції потраплять у Журнал, де їх можна перевірити, змінити або видалити.",
   errorTitle: "Не вдалося імпортувати чек",
 } as const;
 
@@ -16,7 +16,7 @@ export function fileImportErrorMessage(code: string | undefined): string | null 
   if (!code) return null;
   switch (code) {
     case "file-invalid":
-      return "Завантажте одне фото чека у форматі JPEG, PNG або WEBP. PDF не підтримується.";
+      return "Завантажте одне фото чека у форматі JPEG, PNG або WEBP до 10 МБ. PDF не підтримується.";
     case "parse-failed":
       return "Не вдалося розпізнати чек. Перевірте, що фото чітке, або спробуйте ще раз.";
     default:

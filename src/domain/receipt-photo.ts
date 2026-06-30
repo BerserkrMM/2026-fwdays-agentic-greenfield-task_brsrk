@@ -7,6 +7,9 @@
 
 export type SupportedImageMime = "image/jpeg" | "image/png" | "image/webp";
 
+/** User-selected v1 guardrail for receipt-photo uploads (10 MiB). */
+export const MAX_RECEIPT_PHOTO_BYTES = 10 * 1024 * 1024;
+
 export type ReceiptPhotoErrorCode = "file-invalid";
 
 export class ReceiptPhotoError extends Error {
@@ -87,6 +90,9 @@ export function assertSupportedReceiptPhoto(input: {
   const { bytes } = input;
   if (!bytes || bytes.length === 0) {
     throw new ReceiptPhotoError("file-invalid", "file-invalid: empty upload");
+  }
+  if (bytes.length > MAX_RECEIPT_PHOTO_BYTES) {
+    throw new ReceiptPhotoError("file-invalid", "file-invalid: image is larger than 10 MiB");
   }
   const mimeType = detectImageMimeType(bytes);
   if (!mimeType) {
