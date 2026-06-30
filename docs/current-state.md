@@ -8,9 +8,9 @@ Running handoff log. Most recent entry on top. See `AGENTS.md` for the rules on 
 
 **What was done** — made the app root redirect to `/about` so deployed Vercel reviewers land on the course/demo presentation first. Refined `/about` copy to reduce contrast-heavy phrasing, renamed process-evidence wording from gates to checks, added concrete gate commands, an evidence artifact map, and a short glossary for process terms (`regression coverage`, `accepted with rationale`, `trade-off`, `ratchet`). Updated the content tests for the new copy structure.
 
-**Current state** — product code changes are ready to validate and commit. `/about` remains a read-only presentation/support page for the course submission, not a new Finup MVP capability.
+**Current state** — the landing-page commit was created, then `bash crash_course/run-all-checks.sh` exposed one expected regression in `src/app-pages.smoke.test.ts`: the home route assertion still expected `redirect:/dashboard`. The test has been updated to expect `redirect:/about`, and targeted validation is green (`npm run test:run -- src/app-pages.smoke.test.ts src/modules/foundation/ui/content.test.ts`, `npx tsc --noEmit`). `/about` remains a read-only presentation/support page for the course submission, not a new Finup MVP capability.
 
-**Next steps** — commit the landing-page/presentation-page updates, then run `bash crash_course/run-all-checks.sh` as the presentation verification script. If any gate fails, inspect the failing command output and either fix the issue or document the known limitation.
+**Next steps** — commit the test-fix/handoff update, then rerun `bash crash_course/run-all-checks.sh` as the presentation verification script. If any remaining gate fails, inspect the failing command output and either fix the issue or document the known limitation.
 
 **Open questions / blockers** — none.
 

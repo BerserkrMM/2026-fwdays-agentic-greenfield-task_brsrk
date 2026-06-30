@@ -35,9 +35,9 @@ describe("static app pages", () => {
     expect(rendered).toBeTruthy();
   });
 
-  it("redirects the home route to dashboard", async () => {
+  it("redirects the home route to the about presentation page", async () => {
     const { default: Home } = await import("@/app/page");
 
-    expect(() => Home()).toThrow("redirect:/dashboard");
+    expect(() => Home()).toThrow("redirect:/about");
   });
 });
