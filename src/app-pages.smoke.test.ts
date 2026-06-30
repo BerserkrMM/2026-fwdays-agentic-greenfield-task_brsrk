@@ -13,15 +13,13 @@ vi.mock("next/navigation", () => ({
   }),
 }));
 
-// @trace FR-SHELL-03, FR-IMPORT-01, FR-FILE-01, FR-DASH-01, FR-SET-01
+// @trace FR-SHELL-03, FR-IMPORT-01, FR-FILE-01, FR-SET-01
 describe("static app pages", () => {
   it("renders placeholder/static routes without server dependencies", async () => {
-    const { default: DashboardPage } = await import("@/app/dashboard/page");
     const { default: ImportsHubPage } = await import("@/app/imports/page");
     const { default: ImportFilesPage } = await import("@/app/imports/files/page");
     const { default: SettingsPage } = await import("@/app/settings/page");
 
-    expect(DashboardPage()).toBeTruthy();
     expect(ImportsHubPage()).toBeTruthy();
     expect(await ImportFilesPage({ searchParams: Promise.resolve({}) })).toBeTruthy();
     expect(SettingsPage()).toBeTruthy();

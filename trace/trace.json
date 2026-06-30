@@ -109,12 +109,17 @@
     {
       "id": "FR-SHELL-03",
       "specs": [
+        "openspec/specs/dashboard/spec.md",
         "openspec/specs/foundation/spec.md"
       ],
       "planned": true,
       "tests": [
+        "src/app-dashboard-page.smoke.test.ts",
+        "src/app-dashboard-page.states.test.ts",
         "src/app-pages.smoke.test.ts",
+        "src/modules/dashboard/ui/dashboard-view.test.ts",
         "src/modules/foundation/ui/content.test.ts",
+        "evals/cases/dashboard.eval.ts",
         "evals/cases/foundation.eval.ts"
       ],
       "recordings": []
@@ -721,6 +726,7 @@
       "planned": true,
       "tests": [
         "src/domain/ledger-query.test.ts",
+        "src/modules/dashboard/ui/dashboard-view.test.ts",
         "src/modules/ledger/service.test.ts"
       ],
       "recordings": []
@@ -800,6 +806,7 @@
       "planned": true,
       "tests": [
         "src/domain/ledger-query.test.ts",
+        "src/domain/ledger-query.trends.test.ts",
         "src/modules/ledger/ledger.smoke.test.ts",
         "src/modules/ledger/service.test.ts"
       ],
@@ -826,7 +833,10 @@
       ],
       "planned": true,
       "tests": [
-        "src/app-pages.smoke.test.ts"
+        "src/app-dashboard-page.smoke.test.ts",
+        "src/modules/dashboard/ui/dashboard-view.test.ts",
+        "src/modules/ledger/service.test.ts",
+        "evals/cases/dashboard.eval.ts"
       ],
       "recordings": []
     },
@@ -836,7 +846,10 @@
         "openspec/specs/dashboard/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/app-dashboard-page.smoke.test.ts",
+        "src/modules/ledger/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -845,7 +858,12 @@
         "openspec/specs/dashboard/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/app-dashboard-page.smoke.test.ts",
+        "src/app-dashboard-page.states.test.ts",
+        "src/modules/dashboard/ui/dashboard-view.test.ts",
+        "src/modules/ledger/service.test.ts"
+      ],
       "recordings": []
     },
     {
@@ -854,7 +872,14 @@
         "openspec/specs/dashboard/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/app-dashboard-page.smoke.test.ts",
+        "src/app-dashboard-page.states.test.ts",
+        "src/domain/ledger-query.trends.test.ts",
+        "src/modules/dashboard/ui/dashboard-view.test.ts",
+        "src/modules/ledger/service.test.ts",
+        "evals/cases/dashboard.eval.ts"
+      ],
       "recordings": []
     },
     {
@@ -863,7 +888,10 @@
         "openspec/specs/dashboard/spec.md"
       ],
       "planned": true,
-      "tests": [],
+      "tests": [
+        "src/app-dashboard-page.states.test.ts",
+        "evals/cases/dashboard.eval.ts"
+      ],
       "recordings": []
     }
   ],
@@ -892,22 +920,6 @@
     {
       "check": "test-trace",
       "msg": "FR-LEDGER-01 has no test annotated \"@trace FR-LEDGER-01\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-DASH-02 has no test annotated \"@trace FR-DASH-02\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-DASH-03 has no test annotated \"@trace FR-DASH-03\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-DASH-04 has no test annotated \"@trace FR-DASH-04\""
-    },
-    {
-      "check": "test-trace",
-      "msg": "FR-DASH-05 has no test annotated \"@trace FR-DASH-05\""
     },
     {
       "check": "recording-evidence",

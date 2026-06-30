@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-29T22:54:29.634Z",
+  "generatedAt": "2026-06-30T09:02:21.954Z",
   "generatedBy": "scripts/slice-report.mjs",
-  "slice": "add-receipt-photo-imports",
+  "slice": "add-dashboard",
   "commands": {
     "openspecValidate": {
       "command": "npx openspec validate --all --strict",
@@ -35,33 +35,33 @@
   "metrics": {
     "openspecPassed": 10,
     "activeChanges": 0,
-    "testFilesPassed": 37,
-    "testsPassed": 212,
+    "testFilesPassed": 41,
+    "testsPassed": 231,
     "traceFailures": 0,
-    "traceWarnings": 70,
+    "traceWarnings": 66,
     "trajectoryFailures": 0,
     "trajectoryWarnings": 2,
-    "changedFiles": 37,
+    "changedFiles": 36,
     "evalBaseline": {
       "ua-ux-clarity": 95,
       "explicit-state-clarity": 96,
       "ua-error-clarity": 93
     },
     "coverageBaseline": {
-      "lines": 61.11,
-      "statements": 61.11,
-      "functions": 78.03,
-      "branches": 89.81
+      "lines": 66.24,
+      "statements": 66.24,
+      "functions": 80.43,
+      "branches": 89.78
     },
     "reviewFindings": "clean",
-    "rawReviewEvidenceRefs": 4,
+    "rawReviewEvidenceRefs": 5,
     "sliceTrailerCommits": 1,
     "refs": [
-      "FR-FILE-01",
-      "FR-FILE-02",
-      "FR-FILE-03",
-      "FR-FILE-04",
-      "FR-FILE-05"
+      "FR-DASH-01",
+      "FR-DASH-02",
+      "FR-DASH-03",
+      "FR-DASH-04",
+      "FR-DASH-05"
     ]
   }
 }

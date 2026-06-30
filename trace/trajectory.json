@@ -34,6 +34,14 @@
       "processComplete": true
     },
     {
+      "slice": "2026-06-29-add-dashboard",
+      "reviewEvidence": "clean",
+      "rawReviewEvidence": "5 linked",
+      "trailerCommits": 1,
+      "libDomains": [],
+      "processComplete": true
+    },
+    {
       "slice": "2026-06-29-add-ledger-items-review",
       "reviewEvidence": "clean",
       "rawReviewEvidence": "5 linked",

@@ -75,4 +75,30 @@ describe("LedgerQueryService (over the in-memory repository)", () => {
       { category: "Транспорт", totalMinor: -3000 },
     ]);
   });
+
+  // @trace FR-DASH-01, FR-DASH-02, FR-DASH-03, FR-DASH-04, FR-LEDGER-04
+  it("returns the whole dashboard summary from a single non-deleted snapshot", async () => {
+    const summary = await service.getDashboardSummary();
+    expect(summary.overallBalanceMinor).toBe(7000); // 12000 - 2000 - 3000
+    expect(summary.aggregates).toEqual({
+      incomeMinor: 12000,
+      expenseMinor: -5000,
+      netMinor: 7000,
+    });
+    expect(summary.categoryTotals).toEqual([
+      { category: "Зарплата", totalMinor: 12000 },
+      { category: "Їжа", totalMinor: -2000 },
+      { category: "Транспорт", totalMinor: -3000 },
+    ]);
+    // All seeded items share the current month (occurredAt null → createdAt now),
+    // so they fold into a single trend point; precise grouping is covered by the
+    // domain test. Deleted items are excluded from every figure.
+    expect(summary.trends).toHaveLength(1);
+    expect(summary.trends[0]).toMatchObject({
+      incomeMinor: 12000,
+      expenseMinor: -5000,
+      netMinor: 7000,
+    });
+    expect(summary.trends[0].month).toMatch(/^\d{4}-\d{2}$/);
+  });
 });

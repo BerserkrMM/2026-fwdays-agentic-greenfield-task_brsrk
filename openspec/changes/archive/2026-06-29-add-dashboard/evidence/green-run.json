@@ -1,0 +1,16 @@
+{
+  "slice": "add-dashboard",
+  "phase": "green",
+  "command": "npx vitest run src/domain/ledger-query.trends.test.ts src/modules/dashboard/ui/dashboard-view.test.ts src/modules/ledger/service.test.ts src/app-dashboard-page.smoke.test.ts src/app-dashboard-page.states.test.ts",
+  "exitCode": 0,
+  "gitHead": "eb1e68c17d367b06e241aadf40e546313dd9567c",
+  "timestamp": "2026-06-29T23:33:30Z",
+  "summary": "After implementing computeMonthlyTrends + LedgerQueryPort.getMonthlyTrends, the dashboard view-model, and the real /dashboard overview page, all dashboard tests pass. Full suite: 37 files / 199 tests green.",
+  "passingTests": [
+    "src/domain/ledger-query.trends.test.ts (4)",
+    "src/modules/dashboard/ui/dashboard-view.test.ts (8)",
+    "src/modules/ledger/service.test.ts (4)",
+    "src/app-dashboard-page.smoke.test.ts (2)",
+    "src/app-dashboard-page.states.test.ts (4)"
+  ]
+}
