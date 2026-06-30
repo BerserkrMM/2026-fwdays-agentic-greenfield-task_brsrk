@@ -1,0 +1,9 @@
+{
+  "command": "npm run test:run",
+  "exitCode": 0,
+  "gitHead": "a4c0b841e090c259d208e31e8473d837ee74c28f",
+  "timestamp": "2026-06-28T20:48:46.000Z",
+  "testFiles": 11,
+  "tests": 51,
+  "notes": "GREEN after implementing src/domain/ledger-query.ts, src/modules/ledger/service.ts, the LedgerItemRepository.listNonDeleted primitive (in-memory + Postgres), formatUahMinor, and the FR-ACCT-02 accounts-screen wiring. The three new suites from red-run.json (ledger-query, ledger service, ledger smoke) now pass. gitHead matches the working tree at GREEN time (changes staged for the slice commit)."
+}

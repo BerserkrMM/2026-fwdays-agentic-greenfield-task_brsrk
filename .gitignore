@@ -25,3 +25,77 @@ venv/
 target/
 bin/
 obj/
+
+
+# Next.js
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# Project Factory: recording scratch (QA proof under docs/qa/ IS committed)
+**/raw/
+
+# Local agent skills/tool packages (do not vendor into homework PRs)
+.agents/skills/
+.claude/skills/
+.pi/skills/
+skills-lock.json
+
+# Local agent/editor state and vendored factory/tooling
+.github/*
+!.github/
+!.github/pull_request_template.md
+!.github/workflows/
+!.github/workflows/ci.yml
+.claude/settings.json
+.claude/agents/
+.claude/workflows/
+.codex/
+.cursor/
+.project-factory/
+.github/prompts/
+.githooks/
+/automations/
+trace/*
+!trace/
+!trace/*.json
+
+# Local course slide decks
+crash_course

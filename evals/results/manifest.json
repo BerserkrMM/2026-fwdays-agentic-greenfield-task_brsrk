@@ -1,0 +1,27 @@
+{
+  "generatedAt": "2026-06-28T17:20:00Z",
+  "kind": "eval",
+  "results": [
+    {
+      "id": "eval-foundation-imports-hub-clarity",
+      "dimension": "ua-ux-clarity",
+      "proof": "FR-IMPORT-01, FR-SHELL-03, NFR-I18N-01",
+      "score": 95,
+      "pass": true
+    },
+    {
+      "id": "eval-foundation-placeholder-state-clarity",
+      "dimension": "explicit-state-clarity",
+      "proof": "FR-SHELL-03, BC-BRAND-01, NFR-I18N-01",
+      "score": 96,
+      "pass": true
+    },
+    {
+      "id": "eval-accounts-error-clarity",
+      "dimension": "ua-error-clarity",
+      "proof": "FR-ACCT-05, FR-ACCT-01, NFR-I18N-01",
+      "score": 93,
+      "pass": true
+    }
+  ]
+}

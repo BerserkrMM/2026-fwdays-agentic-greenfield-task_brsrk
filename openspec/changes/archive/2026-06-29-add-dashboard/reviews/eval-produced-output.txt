@@ -1,0 +1,28 @@
+# eval-dashboard-state-clarity [dimension=ua-error-clarity] capability=dashboard
+Scenario: A user opens the read-only Dashboard when there is no data, too little history for a trend, a partial read failure, or a full read failure.
+Trace: FR-DASH-01, FR-DASH-04, FR-DASH-05, FR-SHELL-03, NFR-I18N-01
+
+--- PRODUCED OUTPUT ---
+Route: /dashboard (read-only)
+Heading: Огляд фінансів
+Subtitle: Весь час · Europe/Kyiv
+Empty title: Ще немає операцій
+Empty description: Додайте першу операцію через імпорт — і тут з’являться баланс, доходи, витрати та тренди.
+Empty CTA: Перейти до імпорту
+Insufficient-trend title: Замало даних для тренду
+Insufficient-trend description: Тренд з’явиться, коли операції охоплять щонайменше два різні місяці.
+Breakdown empty: Ще немає витрат для розподілу за категоріями.
+Partial title: Показано частину огляду
+Partial description: Деякі показники не вдалося завантажити. Доступні дані показані нижче — спробуйте оновити сторінку.
+Error title: Не вдалося завантажити огляд
+Error description: Дані балансу зараз недоступні. Перевірте з’єднання та спробуйте ще раз.
+Retry: Спробувати ще раз
+Balance hint: Враховано «очікує» + «підтверджено». Видалені — поза балансом.
+Read-only note: Лише перегляд. Групування витрат — за текстом категорії (вкл. «Без категорії»). Огляд нічого не змінює.
+
+--- RUBRIC ---
+1. CRITICAL: every string is Ukrainian-first with no English product jargon
+2. CRITICAL: the empty state explains there are no operations yet AND points to importing as the next step (not a dead blank screen)
+3. CRITICAL: the insufficient-trend state explains WHY the trend is missing (needs at least two months) rather than showing an empty chart with no reason
+4. the partial and error states distinguish a degraded read from a total failure and offer a clear retry
+5. the read-only nature is conveyed and the balance hint clarifies which statuses count, in a calm, finance-oriented tone — never a generic 'something went wrong'

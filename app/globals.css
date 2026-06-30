@@ -1,0 +1,96 @@
+@import "tailwindcss";
+
+/*
+ * Finup design tokens — see DESIGN.md §3.
+ * Palette is the calm financial-minimal light theme (emerald accent).
+ * Feature code consumes tokens (var(--fin-*) or Tailwind fin-* utilities), never raw hex.
+ * Dark theme is "compatible / future" (DESIGN.md §2) — tokens TBD; do not auto-flip yet.
+ *
+ * OWNERSHIP (TC-MOD-02, FR-SHELL-04): this file, app/layout.tsx, app/page.tsx, and
+ * the fin-* tokens are owned by Foundation. They change ONLY through a Foundation /
+ * Coordination change. The sole sanctioned literal-hex copies of these colors live
+ * in app/manifest.ts (theme/background) and the layout's viewport.themeColor, which
+ * are JS and cannot read CSS variables — keep them in sync with the tokens.
+ */
+:root {
+  /* surfaces */
+  --fin-bg:            #f7faf8;
+  --fin-bg-subtle:     #eef3f0;
+  --fin-surface:       #ffffff;
+  --fin-surface-muted: #f2f6f4;
+
+  /* text */
+  --fin-fg:            #14241d;
+  --fin-fg-muted:      #4a5b53;
+  --fin-fg-subtle:     #7c8b83;
+  --fin-fg-faint:      #9fb0a7;
+
+  /* borders */
+  --fin-border:        #e4ebe7;
+  --fin-border-strong: #d6e0da;
+
+  /* brand / primary (emerald) */
+  --fin-primary:       #1f8a5b;
+  --fin-primary-hover: #167049;
+  --fin-primary-soft:  #e6f2eb;
+
+  /* status: success / warning / error / info */
+  --fin-success-fg: #167049; --fin-success-bg: #e6f2eb; --fin-success-border: #cfe6da;
+  --fin-warning-fg: #92500a; --fin-warning-bg: #fff4e2; --fin-warning-border: #f5dcb0;
+  --fin-error-fg:   #be123c; --fin-error-bg:   #fce7ec; --fin-error-border:   #f6c9d4;
+  --fin-info-fg:    #2563eb; --fin-info-bg:    #e8edfb; --fin-info-border:    #cdd9f7;
+
+  /* shape & elevation */
+  --fin-radius:    14px;
+  --fin-radius-sm: 10px;
+  --fin-shadow:    0 1px 2px rgba(20, 36, 29, .04), 0 6px 20px rgba(20, 36, 29, .05);
+
+  /* app surface drives body */
+  --background: var(--fin-bg);
+  --foreground: var(--fin-fg);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* expose fin tokens as Tailwind utilities: bg-fin-surface, text-fin-primary, border-fin-border, … */
+  --color-fin-bg:            var(--fin-bg);
+  --color-fin-bg-subtle:     var(--fin-bg-subtle);
+  --color-fin-surface:       var(--fin-surface);
+  --color-fin-surface-muted: var(--fin-surface-muted);
+  --color-fin-fg:            var(--fin-fg);
+  --color-fin-fg-muted:      var(--fin-fg-muted);
+  --color-fin-fg-subtle:     var(--fin-fg-subtle);
+  --color-fin-fg-faint:      var(--fin-fg-faint);
+  --color-fin-border:        var(--fin-border);
+  --color-fin-border-strong: var(--fin-border-strong);
+  --color-fin-primary:       var(--fin-primary);
+  --color-fin-primary-hover: var(--fin-primary-hover);
+  --color-fin-primary-soft:  var(--fin-primary-soft);
+  --color-fin-success-fg:     var(--fin-success-fg);
+  --color-fin-success-bg:     var(--fin-success-bg);
+  --color-fin-success-border: var(--fin-success-border);
+  --color-fin-warning-fg:     var(--fin-warning-fg);
+  --color-fin-warning-bg:     var(--fin-warning-bg);
+  --color-fin-warning-border: var(--fin-warning-border);
+  --color-fin-error-fg:       var(--fin-error-fg);
+  --color-fin-error-bg:       var(--fin-error-bg);
+  --color-fin-error-border:   var(--fin-error-border);
+  --color-fin-info-fg:        var(--fin-info-fg);
+  --color-fin-info-bg:        var(--fin-info-bg);
+  --color-fin-info-border:    var(--fin-info-border);
+
+  /* rounded-fin / rounded-fin-sm, shadow-fin */
+  --radius-fin:    var(--fin-radius);
+  --radius-fin-sm: var(--fin-radius-sm);
+  --shadow-fin:    var(--fin-shadow);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}

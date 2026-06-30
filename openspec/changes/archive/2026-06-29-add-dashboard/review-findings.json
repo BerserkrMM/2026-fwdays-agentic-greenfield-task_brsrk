@@ -1,0 +1,61 @@
+{
+  "slice": "add-dashboard",
+  "clean": true,
+  "rawEvidence": [
+    "reviews/code-reviewer.md",
+    "reviews/security-reviewer.md",
+    "reviews/spec-compliance-auditor.md",
+    "reviews/eval-judge.md",
+    "reviews/eval-produced-output.txt"
+  ],
+  "summary": "Single-round maker≠checker review by four fresh reviewers over the uncommitted slice diff (the maker did not review). Verdicts: code APPROVE_WITH_NITS, security PASS (clean), spec-compliance PASS (9/10 implemented, 1 partial reconciled), eval-judge 93/100 PASS. Three findings were folded with regression coverage: (CODE-1) a failed section read now renders an explicit «Не вдалося завантажити цей розділ» state instead of masquerading as empty/insufficient; (CODE-2) the four ledger reads now run via Promise.all (isolation preserved); (SPEC-1) the FR-DASH-03 spec delta was specialized to an expense/spend breakdown to match the design reference and implementation. Minor doc drift (tasks.md test paths) reconciled. Accepted with rationale: server-side logging of degraded reads (no shared logger; NFR-OBS-01 prefers a silent console; the per-section unavailable state already surfaces failure to the user) and the cosmetic rounded-percent-sum / partial-state retry-wording nits.",
+  "verdicts": {
+    "code": "APPROVE_WITH_NITS",
+    "security": "PASS",
+    "spec-compliance": "PASS",
+    "eval-judge": "93/100 PASS"
+  },
+  "fixed": [
+    {
+      "id": "CODE-1-FAILED-SECTION-MASQUERADE",
+      "severity": "minor",
+      "round": 1,
+      "evidence": "app/dashboard/page.tsx renders DASHBOARD.sectionUnavailable when categoryTotals/trends read failed (!ok), before the empty/insufficient branches, so a failed load is no longer shown as «Ще немає витрат…» / «Замало даних…». src/app-dashboard-page.states.test.ts asserts the unavailable copy appears and the misleading no-data copy does NOT, when both section reads fail."
+    },
+    {
+      "id": "CODE-2-SEQUENTIAL-READS",
+      "severity": "minor",
+      "round": 1,
+      "evidence": "app/dashboard/page.tsx awaits the four read() wrappers via Promise.all; each wrapper still catches its own error so per-section isolation is preserved."
+    },
+    {
+      "id": "SPEC-1-FR-DASH-03-SPEND-ONLY",
+      "severity": "major",
+      "round": 1,
+      "evidence": "openspec/changes/add-dashboard/specs/dashboard/spec.md FR-DASH-03 requirement reworded to an expense/spend breakdown (matching the design reference «Витрати за категоріями» and toExpenseBreakdown's t.totalMinor<0 filter), with an added 'Breakdown is spend-only' scenario and the «Без категорії when it has spend» clause. openspec validate --strict passes."
+    },
+    {
+      "id": "DOC-TASKS-TEST-PATHS",
+      "severity": "minor",
+      "round": 1,
+      "evidence": "openspec/changes/add-dashboard/tasks.md 1.1/1.4 updated to the real test files (ledger-query.trends.test.ts, src/app-dashboard-page.{smoke,states}.test.ts)."
+    }
+  ],
+  "acceptedOrDeferred": [
+    {
+      "id": "CODE-3-DEGRADED-READ-LOGGING",
+      "severity": "minor",
+      "rationale": "read() swallows the caught error with no server-side log. Accepted: no shared logging convention exists in src/modules/foundation, and NFR-OBS-01 wants a silent console on healthy sessions. The per-section unavailable state (CODE-1) and the PartialState banner already surface the failure to the user. Tracked as future observability work."
+    },
+    {
+      "id": "EVAL-NIT-PARTIAL-RETRY-WORDING",
+      "severity": "nit",
+      "rationale": "The partial banner says «спробуйте оновити сторінку» while the error state uses a «Спробувати ще раз» Link to /dashboard; both are the same GET re-fetch. Left as-is — accurate recovery guidance; not gating (eval-judge passed at 93)."
+    },
+    {
+      "id": "SEC-NOTE-PERCENT-SUM",
+      "severity": "nit",
+      "rationale": "Per-category Math.round percents may not sum to exactly 100 (cosmetic bar-width drift); the stacked bar uses overflow-hidden. Documented in design D5 as sums-tolerant."
+    }
+  ]
+}

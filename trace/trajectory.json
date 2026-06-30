@@ -1,0 +1,97 @@
+{
+  "generatedBy": "scripts/check-trajectory.mjs",
+  "slices": [
+    {
+      "slice": "2026-06-26-add-foundation-shell",
+      "reviewEvidence": "missing",
+      "rawReviewEvidence": "missing",
+      "trailerCommits": 0,
+      "libDomains": [],
+      "processComplete": true
+    },
+    {
+      "slice": "2026-06-28-add-accounts",
+      "reviewEvidence": "clean",
+      "rawReviewEvidence": "4 linked",
+      "trailerCommits": 1,
+      "libDomains": [],
+      "processComplete": true
+    },
+    {
+      "slice": "2026-06-28-add-ledger-queries",
+      "reviewEvidence": "clean",
+      "rawReviewEvidence": "3 linked",
+      "trailerCommits": 1,
+      "libDomains": [],
+      "processComplete": true
+    },
+    {
+      "slice": "2026-06-29-add-bank-statement-imports",
+      "reviewEvidence": "clean",
+      "rawReviewEvidence": "7 linked",
+      "trailerCommits": 1,
+      "libDomains": [],
+      "processComplete": true
+    },
+    {
+      "slice": "2026-06-29-add-dashboard",
+      "reviewEvidence": "clean",
+      "rawReviewEvidence": "5 linked",
+      "trailerCommits": 1,
+      "libDomains": [],
+      "processComplete": true
+    },
+    {
+      "slice": "2026-06-29-add-ledger-items-review",
+      "reviewEvidence": "clean",
+      "rawReviewEvidence": "5 linked",
+      "trailerCommits": 1,
+      "libDomains": [],
+      "processComplete": true
+    },
+    {
+      "slice": "2026-06-29-add-manual-text-input",
+      "reviewEvidence": "clean",
+      "rawReviewEvidence": "4 linked",
+      "trailerCommits": 1,
+      "libDomains": [],
+      "processComplete": true
+    },
+    {
+      "slice": "2026-06-29-add-parsing-pipeline",
+      "reviewEvidence": "clean",
+      "rawReviewEvidence": "5 linked",
+      "trailerCommits": 1,
+      "libDomains": [],
+      "processComplete": true
+    },
+    {
+      "slice": "2026-06-29-add-receipt-photo-imports",
+      "reviewEvidence": "clean",
+      "rawReviewEvidence": "4 linked",
+      "trailerCommits": 1,
+      "libDomains": [],
+      "processComplete": true
+    },
+    {
+      "slice": "2026-06-30-add-settings",
+      "reviewEvidence": "clean",
+      "rawReviewEvidence": "5 linked",
+      "trailerCommits": 1,
+      "libDomains": [],
+      "processComplete": true
+    }
+  ],
+  "overlaps": [],
+  "failures": [],
+  "warnings": [
+    {
+      "check": "review-evidence",
+      "msg": "2026-06-26-add-foundation-shell: review-findings.json is missing (review must have run clean before archive)"
+    },
+    {
+      "check": "trailer",
+      "msg": "2026-06-26-add-foundation-shell: no commit carries a \"Slice: add-foundation-shell\" trailer"
+    }
+  ]
+}

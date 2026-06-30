@@ -1,0 +1,85 @@
+{
+  "slice": "add-settings",
+  "clean": true,
+  "rawEvidence": [
+    "reviews/code-reviewer.md",
+    "reviews/security-reviewer.md",
+    "reviews/spec-compliance-auditor.md",
+    "reviews/eval-judge.md",
+    "reviews/eval-produced-output.txt"
+  ],
+  "summary": "Single-round maker≠checker review by four fresh reviewers over the uncommitted slice diff (the maker did not review). Verdicts: code APPROVE_WITH_NITS, security PASS_WITH_NOTES (clean; only the documented plaintext-key-at-rest note), spec-compliance PASS (11/11 scenarios implemented, 0 missing/contradicted), eval-judge 93/100 PASS. Eight findings were folded with regression coverage: the user-facing CSV now resolves the readable account NAME for «Рахунок» (CODE-1, was a raw UUID), renders Ukrainian «Тип»/«Статус» labels (CODE-2) and a Europe/Kyiv local date (CODE-3) instead of machine codes + an ISO timestamp; the error-banner title moved into the single-source copy module (CODE-5); the rewired import actions use a clearer two-step await (CODE-6); the numeric amount column is emitted raw so it stays summable, with formula-injection hardening scoped to free-text columns (SPEC-1); the BOM behavior is documented in design.md D5 (SPEC-2); and the change's tasks.md checkboxes were ticked (SPEC-3). CODE-4 (the api-key-required branch is unreachable via the blank-key-keeps-existing action path) was annotated rather than removed, since it remains directly unit-tested. Accepted with rationale: plaintext key at rest (design.md D2 — v1 single-user no-auth; the requirement is write-only over the wire, which is upheld; deferred hardening) and the first-char-only formula-trigger check (CODE-7 nit — a leading space before a trigger is treated as text by spreadsheets; security reviewer confirmed no bypass).",
+  "verdicts": {
+    "code": "APPROVE_WITH_NITS",
+    "security": "PASS_WITH_NOTES",
+    "spec-compliance": "PASS (11/11)",
+    "eval-judge": "93/100 PASS"
+  },
+  "fixed": [
+    {
+      "id": "CODE-1-CSV-ACCOUNT-NAME",
+      "severity": "major",
+      "round": 1,
+      "evidence": "SettingsService now takes the accounts repository and exportLedgerCsv() builds an id→name map (incl. archived accounts) passed to toLedgerCsv (src/modules/settings/service.ts; src/domain/csv-export.ts rowFor uses accountNames?.get(id) ?? id). New test asserts the «Рахунок» column shows «Картка ПриватБанк», not the UUID (src/modules/settings/service.test.ts)."
+    },
+    {
+      "id": "CODE-2-CSV-UA-ENUM-LABELS",
+      "severity": "minor",
+      "round": 1,
+      "evidence": "csv-export.ts maps type→{Витрата,Дохід} and status→{Очікує,Підтверджено,Вилучено}; csv-export.test.ts asserts «Вилучено» and that the raw «deleted» code does not leak."
+    },
+    {
+      "id": "CODE-3-CSV-KYIV-DATE",
+      "severity": "minor",
+      "round": 1,
+      "evidence": "csv-export.ts kyivDate() renders YYYY-MM-DD in Europe/Kyiv; test asserts a 22:30Z instant exports as 2025-05-13 (next Kyiv day), no time/Z."
+    },
+    {
+      "id": "CODE-5-BANNER-COPY-SOT",
+      "severity": "minor",
+      "round": 1,
+      "evidence": "SETTINGS.errorBannerTitle added to settings-content.ts; app/settings/page.tsx ErrorState uses it instead of an inline literal."
+    },
+    {
+      "id": "CODE-6-DOUBLE-AWAIT",
+      "severity": "nit",
+      "round": 1,
+      "evidence": "app/imports/{text,files,bank}/actions.ts use `const svc = await service(); await svc.importX(...)`."
+    },
+    {
+      "id": "SPEC-1-AMOUNT-COLUMN-RAW",
+      "severity": "minor",
+      "round": 1,
+      "evidence": "csv-export.ts emits amountForCsv(...) raw (not via csvCell) so negative amounts stay summable; hardening applies only to free-text columns. Test asserts the amount cell is `-60.00`, not `'-60.00`."
+    },
+    {
+      "id": "SPEC-2-BOM-DOCUMENTED",
+      "severity": "minor",
+      "round": 1,
+      "evidence": "design.md D5 now records the UTF-8 BOM (Excel compatibility) and the raw-amount-column decision."
+    },
+    {
+      "id": "SPEC-3-TASKS-CHECKBOXES",
+      "severity": "minor",
+      "round": 1,
+      "evidence": "openspec/changes/add-settings/tasks.md 1.x/2.x/3.1 ticked; 4.x/5.x left open until run."
+    }
+  ],
+  "acceptedOrDeferred": [
+    {
+      "id": "SEC-NOTE-PLAINTEXT-KEY-AT-REST",
+      "severity": "minor",
+      "rationale": "openai_api_key is stored unencrypted. Accepted for v1 per design.md D2: single-user, no-auth (DB access already implies full access); no KMS/secret-store infra exists. The FR-SET-02 requirement is write-only OVER THE WIRE, which is upheld (security review confirmed the key never reaches the client). Tracked as deferred hardening for a future multi-user/auth phase."
+    },
+    {
+      "id": "CODE-4-UNREACHABLE-REQUIRED-BRANCH",
+      "severity": "minor",
+      "rationale": "validateOpenAiApiKey's `api-key-required` branch is unreachable via saveAiProvider (blank key short-circuits to keep-existing), but it is directly unit-tested in app-config.test.ts and is correct defensive validation for any direct caller. Annotated with a comment rather than removed."
+    },
+    {
+      "id": "CODE-7-FIRST-CHAR-FORMULA-CHECK",
+      "severity": "nit",
+      "rationale": "csvCell inspects only value[0], so ` =cmd` (leading space) is not apostrophe-prefixed. A leading space disables formula interpretation in Excel/Sheets, so there is no injection vector; the security reviewer independently confirmed no bypass. Left as-is."
+    }
+  ]
+}

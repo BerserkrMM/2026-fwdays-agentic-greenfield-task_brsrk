@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  html,body{margin:0;padding:0;background:#eef2ef;color:#14241d;font-family:'Schibsted Grotesk',system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+  *{box-sizing:border-box;}
+  ::selection{background:#cdeedd;}
+  @keyframes finup-shimmer{0%{background-position:-360px 0}100%{background-position:360px 0}}
+  @keyframes finup-spin{to{transform:rotate(360deg)}}
+  @keyframes finup-pulse{0%,100%{opacity:.45}50%{opacity:1}}
+</style>
+</helmet>
+
+<div style="position:sticky;top:0;z-index:50;background:rgba(238,242,239,.82);backdrop-filter:blur(14px);border-bottom:1px solid #dfe7e2;">
+  <div style="max-width:1180px;margin:0 auto;padding:0 28px;height:60px;display:flex;align-items:center;gap:20px;">
+    <div style="display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;letter-spacing:-.02em;">
+      <span style="width:26px;height:26px;border-radius:8px;background:#1f8a5b;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:700;">₴</span>
+      Finup
+      <span style="font-weight:500;color:#7c8b83;font-size:13px;">Reference</span>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:4px;font-size:13.5px;font-weight:500;color:#4a5b53;">
+      <a href="#foundations" style="padding:7px 12px;border-radius:8px;text-decoration:none;color:inherit;">Основи</a>
+      <a href="#components" style="padding:7px 12px;border-radius:8px;text-decoration:none;color:inherit;">Компоненти</a>
+      <a href="#navigation" style="padding:7px 12px;border-radius:8px;text-decoration:none;color:inherit;">Навігація</a>
+      <a href="#screens" style="padding:7px 12px;border-radius:8px;text-decoration:none;color:inherit;">Екрани</a>
+      <a href="#states" style="padding:7px 12px;border-radius:8px;text-decoration:none;color:inherit;">Стани</a>
+    </div>
+  </div>
+</div>
+
+<section style="max-width:1180px;margin:0 auto;padding:64px 28px 28px;">
+  <div style="display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;background:#e6f2eb;color:#167049;font-size:13px;font-weight:600;">
+    <span style="width:7px;height:7px;border-radius:50%;background:#1f8a5b;"></span>
+    Finup Greenfield · Design Reference v1
+  </div>
+  <h1 style="font-size:54px;line-height:1.02;letter-spacing:-.035em;font-weight:700;margin:22px 0 0;max-width:18ch;">Спокійний фінансовий мінімалізм для PWA.</h1>
+  <p style="font-size:19px;line-height:1.55;color:#4a5b53;max-width:62ch;margin:18px 0 0;">Єдиний reference-дизайн для застосунку обліку особистих фінансів. Кожна операція потрапляє в Журнал зі статусом «очікує перевірки» й чекає на ручне підтвердження. Mobile-first, offline-aware, українською.</p>
+  <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;">
+    <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #e4ebe7;font-size:14px;font-weight:500;color:#14241d;">PWA-first</div>
+    <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #e4ebe7;font-size:14px;font-weight:500;color:#14241d;">UAH · Europe/Kyiv</div>
+    <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #e4ebe7;font-size:14px;font-weight:500;color:#14241d;">pending → approved → deleted</div>
+    <div style="display:flex;align-items:center;gap:8px;padding:9px 14px;border-radius:10px;background:#fff;border:1px solid #e4ebe7;font-size:14px;font-weight:500;color:#14241d;">Світла + темна сумісність</div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:34px;">
+    <div style="background:#14241d;color:#eaf3ee;border-radius:18px;padding:20px;">
+      <div style="font-size:13px;color:#9fb3a8;font-weight:500;">Загальний баланс</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:600;margin-top:8px;font-feature-settings:'tnum';letter-spacing:-.02em;">164 280 ₴</div>
+      <div style="font-size:12.5px;color:#76d9a6;margin-top:8px;font-weight:500;">3 рахунки · синхронізовано</div>
+    </div>
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;padding:20px;">
+      <div style="font-size:13px;color:#7c8b83;font-weight:500;">Доходи (червень)</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:600;margin-top:8px;color:#1f8a5b;">+62 400 ₴</div>
+      <div style="font-size:12.5px;color:#7c8b83;margin-top:8px;">↑ 8% до минулого</div>
+    </div>
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;padding:20px;">
+      <div style="font-size:13px;color:#7c8b83;font-weight:500;">Витрати (червень)</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:28px;font-weight:600;margin-top:8px;color:#be123c;">−38 910 ₴</div>
+      <div style="font-size:12.5px;color:#7c8b83;margin-top:8px;">↓ 3% до минулого</div>
+    </div>
+    <div style="background:#e6f2eb;border:1px solid #cfe6da;border-radius:18px;padding:20px;display:flex;flex-direction:column;">
+      <div style="font-size:13px;color:#167049;font-weight:600;">Очікує перевірки</div>
+      <div style="font-size:28px;font-weight:700;margin-top:8px;color:#14241d;">7</div>
+      <div style="margin-top:auto;font-size:12.5px;color:#167049;font-weight:500;">Перевірити операції →</div>
+    </div>
+  </div>
+</section>
+
+
+<section id="foundations" style="max-width:1180px;margin:0 auto;padding:36px 28px;">
+  <div style="display:flex;align-items:baseline;gap:14px;border-top:1px solid #dfe7e2;padding-top:34px;">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#1f8a5b;font-weight:600;">01</span>
+    <h2 style="font-size:30px;letter-spacing:-.03em;font-weight:700;margin:0;">Основи</h2>
+    <span style="color:#7c8b83;font-size:15px;margin-left:auto;">Колір · Типографіка · Радіуси · Тіні</span>
+  </div>
+
+  <div style="margin-top:26px;font-size:14px;font-weight:600;color:#4a5b53;">Палітра</div>
+  <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:12px;">
+    <div style="border-radius:14px;overflow:hidden;border:1px solid #e4ebe7;background:#fff;">
+      <div style="height:64px;background:#1f8a5b;"></div>
+      <div style="padding:10px 12px;"><div style="font-size:13px;font-weight:600;">Primary</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7c8b83;">#1F8A5B</div></div>
+    </div>
+    <div style="border-radius:14px;overflow:hidden;border:1px solid #e4ebe7;background:#fff;">
+      <div style="height:64px;background:#14241d;"></div>
+      <div style="padding:10px 12px;"><div style="font-size:13px;font-weight:600;">Foreground</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7c8b83;">#14241D</div></div>
+    </div>
+    <div style="border-radius:14px;overflow:hidden;border:1px solid #e4ebe7;background:#fff;">
+      <div style="height:64px;background:#eef2ef;"></div>
+      <div style="padding:10px 12px;"><div style="font-size:13px;font-weight:600;">Background</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7c8b83;">#EEF2EF</div></div>
+    </div>
+    <div style="border-radius:14px;overflow:hidden;border:1px solid #e4ebe7;background:#fff;">
+      <div style="height:64px;background:#d97706;"></div>
+      <div style="padding:10px 12px;"><div style="font-size:13px;font-weight:600;">Warning</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7c8b83;">#D97706</div></div>
+    </div>
+    <div style="border-radius:14px;overflow:hidden;border:1px solid #e4ebe7;background:#fff;">
+      <div style="height:64px;background:#e11d48;"></div>
+      <div style="padding:10px 12px;"><div style="font-size:13px;font-weight:600;">Error</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7c8b83;">#E11D48</div></div>
+    </div>
+    <div style="border-radius:14px;overflow:hidden;border:1px solid #e4ebe7;background:#fff;">
+      <div style="height:64px;background:#2563eb;"></div>
+      <div style="padding:10px 12px;"><div style="font-size:13px;font-weight:600;">Info</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7c8b83;">#2563EB</div></div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap;">
+    <span style="font-size:12.5px;color:#7c8b83;align-self:center;">Поверхні та лінії:</span>
+    <span style="display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:9px;background:#fff;border:1px solid #e4ebe7;font-size:12.5px;font-family:'JetBrains Mono',monospace;">surface #FFFFFF</span>
+    <span style="display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:9px;background:#fff;border:1px solid #e4ebe7;font-size:12.5px;font-family:'JetBrains Mono',monospace;">line #E4EBE7</span>
+    <span style="display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:9px;background:#e6f2eb;border:1px solid #cfe6da;font-size:12.5px;font-family:'JetBrains Mono',monospace;color:#167049;">soft-emerald #E6F2EB</span>
+    <span style="display:flex;align-items:center;gap:7px;padding:6px 11px;border-radius:9px;background:#fff;border:1px solid #e4ebe7;font-size:12.5px;font-family:'JetBrains Mono',monospace;color:#4a5b53;">muted #4A5B53</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1.4fr 1fr;gap:22px;margin-top:30px;">
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;padding:24px;">
+      <div style="font-size:14px;font-weight:600;color:#4a5b53;margin-bottom:16px;">Типографіка — Schibsted Grotesk</div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid #eef3f0;padding-bottom:12px;"><span style="font-size:34px;font-weight:700;letter-spacing:-.03em;">Заголовок H1</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7c8b83;">34 / 700</span></div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid #eef3f0;padding-bottom:12px;"><span style="font-size:22px;font-weight:600;letter-spacing:-.02em;">Заголовок секції H2</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7c8b83;">22 / 600</span></div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;border-bottom:1px solid #eef3f0;padding-bottom:12px;"><span style="font-size:16px;font-weight:500;">Основний текст · читабельний body</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7c8b83;">16 / 500</span></div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;"><span style="font-size:13px;color:#7c8b83;">Допоміжний підпис / caption</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7c8b83;">13 / 400</span></div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;border-top:1px solid #eef3f0;padding-top:14px;"><span style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:600;font-feature-settings:'tnum';">164 280,00 ₴</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#7c8b83;">Mono · tnum</span></div>
+      </div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:18px;">
+      <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;padding:22px;">
+        <div style="font-size:14px;font-weight:600;color:#4a5b53;margin-bottom:14px;">Радіуси</div>
+        <div style="display:flex;align-items:flex-end;gap:12px;">
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;"><div style="width:46px;height:46px;background:#e6f2eb;border:1px solid #cfe6da;border-radius:9px;"></div><span style="font-size:11px;color:#7c8b83;">9 · контролі</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;"><div style="width:46px;height:46px;background:#e6f2eb;border:1px solid #cfe6da;border-radius:14px;"></div><span style="font-size:11px;color:#7c8b83;">14 · cards</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;"><div style="width:46px;height:46px;background:#e6f2eb;border:1px solid #cfe6da;border-radius:18px;"></div><span style="font-size:11px;color:#7c8b83;">18 · panels</span></div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;"><div style="width:46px;height:46px;background:#e6f2eb;border:1px solid #cfe6da;border-radius:999px;"></div><span style="font-size:11px;color:#7c8b83;">pill</span></div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;padding:22px;">
+        <div style="font-size:14px;font-weight:600;color:#4a5b53;margin-bottom:16px;">Тіні (легкі)</div>
+        <div style="display:flex;gap:16px;">
+          <div style="flex:1;height:54px;background:#fff;border-radius:12px;box-shadow:0 1px 2px rgba(20,36,29,.06);display:flex;align-items:center;justify-content:center;font-size:11px;color:#7c8b83;">sm</div>
+          <div style="flex:1;height:54px;background:#fff;border-radius:12px;box-shadow:0 4px 14px rgba(20,36,29,.08);display:flex;align-items:center;justify-content:center;font-size:11px;color:#7c8b83;">md</div>
+          <div style="flex:1;height:54px;background:#fff;border-radius:12px;box-shadow:0 14px 38px rgba(20,36,29,.14);display:flex;align-items:center;justify-content:center;font-size:11px;color:#7c8b83;">overlay</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="components" style="max-width:1180px;margin:0 auto;padding:36px 28px;">
+  <div style="display:flex;align-items:baseline;gap:14px;border-top:1px solid #dfe7e2;padding-top:34px;">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#1f8a5b;font-weight:600;">02</span>
+    <h2 style="font-size:30px;letter-spacing:-.03em;font-weight:700;margin:0;">Компоненти</h2>
+    <span style="color:#7c8b83;font-size:15px;margin-left:auto;">Будівельні блоки reference-системи</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:18px;margin-top:26px;">
+
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;padding:22px;">
+      <div style="font-size:13px;font-weight:600;color:#7c8b83;margin-bottom:16px;text-transform:uppercase;letter-spacing:.04em;">Кнопки</div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;">
+        <button style="border:none;background:#1f8a5b;color:#fff;font:inherit;font-weight:600;font-size:14px;padding:11px 18px;border-radius:10px;cursor:pointer;">Підтвердити</button>
+        <button style="border:1px solid #d6e0da;background:#fff;color:#14241d;font:inherit;font-weight:600;font-size:14px;padding:11px 18px;border-radius:10px;cursor:pointer;">Скасувати</button>
+        <button style="border:1px solid #f6c9d4;background:#fce7ec;color:#be123c;font:inherit;font-weight:600;font-size:14px;padding:11px 18px;border-radius:10px;cursor:pointer;">Відхилити</button>
+        <button style="border:none;background:#eef3f0;color:#9fb0a7;font:inherit;font-weight:600;font-size:14px;padding:11px 18px;border-radius:10px;cursor:not-allowed;">Disabled</button>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px;">
+        <button style="border:none;background:#1f8a5b;color:#fff;font:inherit;font-weight:600;font-size:13px;padding:8px 14px;border-radius:9px;cursor:pointer;">Small</button>
+        <button style="border:none;background:#14241d;color:#fff;font:inherit;font-weight:600;font-size:14px;padding:11px 18px;border-radius:10px;cursor:pointer;display:flex;align-items:center;gap:8px;"><span style="font-size:16px;line-height:1;">＋</span> Додати транзакцію</button>
+        <button style="border:none;background:transparent;color:#1f8a5b;font:inherit;font-weight:600;font-size:14px;padding:11px 8px;cursor:pointer;">Текстова дія →</button>
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;padding:22px;">
+      <div style="font-size:13px;font-weight:600;color:#7c8b83;margin-bottom:16px;text-transform:uppercase;letter-spacing:.04em;">StatusBadge · pending / approved / deleted</div>
+      <div style="display:flex;flex-wrap:wrap;gap:9px;">
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:#fff4e2;color:#b45309;font-size:12.5px;font-weight:600;"><span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span>Очікує перевірки</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:#e6f2eb;color:#167049;font-size:12.5px;font-weight:600;"><span style="width:6px;height:6px;border-radius:50%;background:#1f8a5b;"></span>Підтверджено</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:#f2f6f4;color:#9fb0a7;font-size:12.5px;font-weight:600;text-decoration:line-through;"><span style="width:6px;height:6px;border-radius:50%;background:#b9c4bd;"></span>Видалено</span>
+      </div>
+      <div style="font-size:11.5px;color:#9fb0a7;margin-top:9px;line-height:1.5;">pending → амбер «перевір мене» · approved → емеральд · deleted → нейтральний, закреслений лог-рядок.</div>
+      <div style="font-size:13px;font-weight:600;color:#7c8b83;margin:18px 0 10px;text-transform:uppercase;letter-spacing:.04em;">SegmentedFilter</div>
+      <div style="display:inline-flex;background:#eef3f0;border-radius:11px;padding:4px;gap:2px;">
+        <span style="padding:8px 16px;border-radius:8px;background:#fff;font-size:13.5px;font-weight:600;color:#14241d;box-shadow:0 1px 2px rgba(20,36,29,.06);">Очікує перевірки · 2</span>
+        <span style="padding:8px 16px;border-radius:8px;font-size:13.5px;font-weight:500;color:#7c8b83;">Підтверджено</span>
+        <span style="padding:8px 16px;border-radius:8px;font-size:13.5px;font-weight:500;color:#7c8b83;">Видалено</span>
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;padding:22px;">
+      <div style="font-size:13px;font-weight:600;color:#7c8b83;margin-bottom:16px;text-transform:uppercase;letter-spacing:.04em;">Поля та пошук</div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <label style="display:flex;flex-direction:column;gap:6px;">
+          <span style="font-size:13px;font-weight:600;color:#4a5b53;">Сума</span>
+          <div style="display:flex;align-items:center;gap:8px;border:1px solid #d6e0da;border-radius:10px;padding:0 12px;background:#fff;">
+            <input value="842" style="border:none;outline:none;font:inherit;font-family:'JetBrains Mono',monospace;font-size:15px;padding:11px 0;width:100%;background:transparent;" />
+            <span style="color:#7c8b83;font-weight:600;">₴</span>
+          </div>
+        </label>
+        <label style="display:flex;flex-direction:column;gap:6px;">
+          <span style="font-size:13px;font-weight:600;color:#4a5b53;">Категорія <span style="font-weight:500;color:#9fb0a7;">· вільний текст</span></span>
+          <div style="border:1.5px solid #1f8a5b;border-radius:10px;padding:11px 12px;background:#fff;display:flex;align-items:center;gap:8px;box-shadow:0 0 0 3px rgba(31,138,91,.12);">
+            <input value="Продукти" style="border:none;outline:none;font:inherit;font-size:14px;width:100%;background:transparent;" />
+          </div>
+          <span style="font-size:11.5px;color:#9fb0a7;">Без словника й випадайки. Порожнє → «Без категорії».</span>
+        </label>
+        <div style="display:flex;align-items:center;gap:9px;border:1px solid #d6e0da;border-radius:10px;padding:10px 13px;background:#f7faf8;">
+          <span style="color:#9fb0a7;">⌕</span>
+          <span style="font-size:14px;color:#9fb0a7;">Пошук за рахунком, сумою, категорією…</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;padding:22px;">
+      <div style="font-size:13px;font-weight:600;color:#7c8b83;margin-bottom:16px;text-transform:uppercase;letter-spacing:.04em;">Завантаження файлів</div>
+      <div style="border:2px dashed #cfdbd4;border-radius:14px;padding:26px;text-align:center;background:#f7faf8;">
+        <div style="width:42px;height:42px;border-radius:12px;background:#e6f2eb;display:inline-flex;align-items:center;justify-content:center;color:#1f8a5b;font-size:20px;margin-bottom:10px;">⤓</div>
+        <div style="font-size:14px;font-weight:600;">Перетягніть файл або оберіть</div>
+        <div style="font-size:12.5px;color:#7c8b83;margin-top:4px;">Камера · Галерея · Файли · PDF/JPG/PNG</div>
+      </div>
+      <div style="font-size:13px;font-weight:600;color:#7c8b83;margin:18px 0 10px;text-transform:uppercase;letter-spacing:.04em;">Skeleton (slow network)</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="height:14px;width:70%;border-radius:6px;background:linear-gradient(90deg,#eef3f0,#f7faf8,#eef3f0);background-size:360px 100%;animation:finup-shimmer 1.3s infinite linear;"></div>
+        <div style="height:14px;width:92%;border-radius:6px;background:linear-gradient(90deg,#eef3f0,#f7faf8,#eef3f0);background-size:360px 100%;animation:finup-shimmer 1.3s infinite linear;"></div>
+        <div style="height:14px;width:48%;border-radius:6px;background:linear-gradient(90deg,#eef3f0,#f7faf8,#eef3f0);background-size:360px 100%;animation:finup-shimmer 1.3s infinite linear;"></div>
+      </div>
+    </div>
+  </div>
+
+  <div style="font-size:14px;font-weight:600;color:#4a5b53;margin:30px 0 12px;">Повідомлення · Notice / Banner</div>
+  <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;">
+    <div style="display:flex;gap:12px;align-items:flex-start;background:#e6f2eb;border:1px solid #cfe6da;border-radius:14px;padding:15px 16px;">
+      <span style="width:22px;height:22px;border-radius:50%;background:#1f8a5b;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">✓</span>
+      <div><div style="font-size:14px;font-weight:600;color:#14241d;">Операцію збережено</div><div style="font-size:13px;color:#3f6552;margin-top:2px;">Зміни записано. Операція залишається в Статусі «очікує перевірки».</div></div>
+    </div>
+    <div style="display:flex;gap:12px;align-items:flex-start;background:#fce7ec;border:1px solid #f6c9d4;border-radius:14px;padding:15px 16px;">
+      <span style="width:22px;height:22px;border-radius:50%;background:#e11d48;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">!</span>
+      <div><div style="font-size:14px;font-weight:600;color:#14241d;">Парсер не впорався</div><div style="font-size:13px;color:#9f1239;margin-top:2px;">Не вдалося розпізнати текст. Перевірте формат або спробуйте ще раз.</div></div>
+    </div>
+    <div style="display:flex;gap:12px;align-items:flex-start;background:#fff4e2;border:1px solid #f5dcb0;border-radius:14px;padding:15px 16px;">
+      <span style="width:22px;height:22px;border-radius:50%;background:#d97706;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">▲</span>
+      <div><div style="font-size:14px;font-weight:600;color:#14241d;">Рахунок не вказано</div><div style="font-size:13px;color:#92500a;margin-top:2px;">Буде призначено типовий рахунок. Можна змінити пізніше.</div></div>
+    </div>
+    <div style="display:flex;gap:12px;align-items:flex-start;background:#e8edfb;border:1px solid #cdd9f7;border-radius:14px;padding:15px 16px;">
+      <span style="width:22px;height:22px;border-radius:50%;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">i</span>
+      <div><div style="font-size:14px;font-weight:600;color:#14241d;">Офлайн-режим</div><div style="font-size:13px;color:#1e40af;margin-top:2px;">Зміни збережено локально й синхронізуються пізніше.</div></div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;">
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:14px;padding:20px;">
+      <div style="font-size:13px;font-weight:600;color:#7c8b83;margin-bottom:12px;text-transform:uppercase;letter-spacing:.04em;">ConfirmBlock (inline)</div>
+      <div style="border:1px solid #f6c9d4;background:#fff6f8;border-radius:12px;padding:16px;">
+        <div style="font-size:14.5px;font-weight:600;">Видалити операцію?</div>
+        <div style="font-size:13px;color:#9f1239;margin-top:4px;line-height:1.5;">Операція перейде в статус «видалено» і більше не впливатиме на баланс, але залишиться в Журналі як лог.</div>
+        <div style="display:flex;gap:9px;margin-top:14px;">
+          <button style="border:none;background:#e11d48;color:#fff;font:inherit;font-weight:600;font-size:13.5px;padding:9px 16px;border-radius:9px;cursor:pointer;">Так, видалити</button>
+          <button style="border:1px solid #d6e0da;background:#fff;color:#14241d;font:inherit;font-weight:600;font-size:13.5px;padding:9px 16px;border-radius:9px;cursor:pointer;">Скасувати</button>
+        </div>
+      </div>
+    </div>
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:14px;padding:20px;">
+      <div style="font-size:13px;font-weight:600;color:#7c8b83;margin-bottom:12px;text-transform:uppercase;letter-spacing:.04em;">Empty state</div>
+      <div style="text-align:center;padding:18px 10px;">
+        <div style="width:52px;height:52px;border-radius:16px;background:#eef3f0;display:inline-flex;align-items:center;justify-content:center;font-size:24px;color:#9fb0a7;margin-bottom:12px;">◍</div>
+        <div style="font-size:15px;font-weight:600;">Поки що немає операцій</div>
+        <div style="font-size:13px;color:#7c8b83;margin-top:4px;max-width:34ch;margin-left:auto;margin-right:auto;line-height:1.5;">Додайте першу операцію вручну або імпортуйте виписку банку.</div>
+        <button style="margin-top:14px;border:none;background:#1f8a5b;color:#fff;font:inherit;font-weight:600;font-size:13.5px;padding:10px 18px;border-radius:10px;cursor:pointer;">Додати операцію</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="navigation" style="max-width:1180px;margin:0 auto;padding:36px 28px;">
+  <div style="display:flex;align-items:baseline;gap:14px;border-top:1px solid #dfe7e2;padding-top:34px;">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#1f8a5b;font-weight:600;">03</span>
+    <h2 style="font-size:30px;letter-spacing:-.03em;font-weight:700;margin:0;">Навігація</h2>
+    <span style="color:#7c8b83;font-size:15px;margin-left:auto;">Desktop rail + topbar · Mobile bottom nav</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1.55fr 1fr;gap:22px;margin-top:26px;align-items:start;">
+
+    <!-- Desktop shell -->
+    <div>
+      <div style="font-size:13px;color:#7c8b83;margin-bottom:10px;font-weight:600;">Desktop · sidebar + topbar</div>
+      <div style="border:1px solid #e4ebe7;border-radius:18px;overflow:hidden;box-shadow:0 14px 38px rgba(20,36,29,.10);background:#fff;">
+        <div style="display:flex;height:420px;">
+          <!-- sidebar -->
+          <div style="width:212px;background:#fbfdfc;border-right:1px solid #eef3f0;padding:18px 14px;display:flex;flex-direction:column;flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:9px;font-weight:700;font-size:16px;padding:4px 8px 16px;">
+              <span style="width:24px;height:24px;border-radius:7px;background:#1f8a5b;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:14px;">₴</span>Finup
+            </div>
+            <div style="display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;background:#e6f2eb;color:#167049;font-weight:600;font-size:14px;"><span>◰</span>Огляд</div>
+            <div style="display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#4a5b53;font-size:14px;margin-top:2px;"><span>≣</span>Журнал<span style="margin-left:auto;font-size:11px;background:#fff4e2;color:#b45309;font-weight:700;padding:2px 7px;border-radius:999px;">2</span></div>
+            <div style="display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#4a5b53;font-size:14px;margin-top:2px;"><span>⤓</span>Імпорт</div>
+            <div style="display:flex;flex-direction:column;gap:1px;margin:2px 0 2px 30px;">
+              <div style="font-size:13px;color:#7c8b83;padding:6px 12px;border-radius:8px;">Текст</div>
+              <div style="font-size:13px;color:#7c8b83;padding:6px 12px;border-radius:8px;">Виписка банку</div>
+              <div style="font-size:13px;color:#7c8b83;padding:6px 12px;border-radius:8px;">Фото чек</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#4a5b53;font-size:14px;margin-top:2px;"><span>▢</span>Рахунки</div>
+            <div style="display:flex;align-items:center;gap:11px;padding:10px 12px;border-radius:10px;color:#4a5b53;font-size:14px;margin-top:2px;"><span>⚙</span>Налаштування</div>
+            <div style="margin-top:auto;display:flex;align-items:center;gap:9px;padding:10px 12px;border-radius:10px;background:#f2f6f4;font-size:12.5px;color:#4a5b53;"><span style="width:7px;height:7px;border-radius:50%;background:#1f8a5b;"></span>Синхронізовано</div>
+          </div>
+          <!-- main -->
+          <div style="flex:1;display:flex;flex-direction:column;">
+            <div style="height:58px;border-bottom:1px solid #eef3f0;display:flex;align-items:center;padding:0 20px;gap:14px;">
+              <div style="font-size:17px;font-weight:700;letter-spacing:-.02em;">Огляд фінансів</div>
+              <div style="margin-left:auto;display:flex;align-items:center;gap:9px;border:1px solid #e4ebe7;border-radius:9px;padding:7px 12px;color:#9fb0a7;font-size:13px;width:200px;">⌕ Пошук…</div>
+              <button style="border:none;background:#14241d;color:#fff;font:inherit;font-weight:600;font-size:13px;padding:8px 13px;border-radius:9px;display:flex;align-items:center;gap:6px;cursor:pointer;">＋ Додати</button>
+            </div>
+            <div style="flex:1;padding:18px 20px;background:#f7faf8;">
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+                <div style="background:#fff;border:1px solid #e4ebe7;border-radius:13px;padding:14px;"><div style="font-size:11.5px;color:#7c8b83;">Баланс</div><div style="font-family:'JetBrains Mono',monospace;font-weight:600;font-size:18px;margin-top:4px;">164 280 ₴</div></div>
+                <div style="background:#fff;border:1px solid #e4ebe7;border-radius:13px;padding:14px;"><div style="font-size:11.5px;color:#7c8b83;">Доходи</div><div style="font-family:'JetBrains Mono',monospace;font-weight:600;font-size:18px;margin-top:4px;color:#1f8a5b;">+62 400</div></div>
+                <div style="background:#fff;border:1px solid #e4ebe7;border-radius:13px;padding:14px;"><div style="font-size:11.5px;color:#7c8b83;">Витрати</div><div style="font-family:'JetBrains Mono',monospace;font-weight:600;font-size:18px;margin-top:4px;color:#be123c;">−38 910</div></div>
+              </div>
+              <div style="background:#fff;border:1px solid #e4ebe7;border-radius:13px;padding:14px;margin-top:12px;">
+                <div style="display:flex;justify-content:space-between;font-size:13px;color:#4a5b53;font-weight:600;">Останні операції <span style="color:#1f8a5b;">Усі →</span></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid #f2f6f4;margin-top:8px;"><span style="font-size:13px;">АТБ-Маркет</span><span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#be123c;">−842 ₴</span></div>
+                <div style="display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-top:1px solid #f2f6f4;"><span style="font-size:13px;">Нова Пошта</span><span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#be123c;">−120 ₴</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile nav -->
+    <div>
+      <div style="font-size:13px;color:#7c8b83;margin-bottom:10px;font-weight:600;">Mobile · bottom navigation</div>
+      <div style="width:300px;margin:0 auto;border:9px solid #14241d;border-radius:42px;overflow:hidden;box-shadow:0 18px 44px rgba(20,36,29,.22);background:#14241d;">
+        <div style="background:#f7faf8;height:540px;display:flex;flex-direction:column;position:relative;">
+          <div style="height:30px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:12px;font-weight:600;color:#14241d;"><span>9:41</span><span style="display:flex;gap:5px;align-items:center;">▦ ▮▮▮ ▰</span></div>
+          <div style="padding:8px 16px 0;display:flex;align-items:center;justify-content:space-between;">
+            <div style="font-size:20px;font-weight:700;letter-spacing:-.02em;">Огляд</div>
+            <div style="width:34px;height:34px;border-radius:50%;background:#e6f2eb;display:flex;align-items:center;justify-content:center;color:#167049;font-weight:700;font-size:13px;">К</div>
+          </div>
+          <div style="padding:14px 16px;display:flex;flex-direction:column;gap:10px;flex:1;overflow:hidden;">
+            <div style="background:#14241d;color:#eaf3ee;border-radius:16px;padding:16px;"><div style="font-size:12px;color:#9fb3a8;">Загальний баланс</div><div style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:600;margin-top:4px;">164 280 ₴</div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+              <div style="background:#fff;border:1px solid #e4ebe7;border-radius:14px;padding:13px;"><div style="font-size:11px;color:#7c8b83;">Доходи</div><div style="font-family:'JetBrains Mono',monospace;font-weight:600;color:#1f8a5b;margin-top:3px;">+62 400</div></div>
+              <div style="background:#fff;border:1px solid #e4ebe7;border-radius:14px;padding:13px;"><div style="font-size:11px;color:#7c8b83;">Витрати</div><div style="font-family:'JetBrains Mono',monospace;font-weight:600;color:#be123c;margin-top:3px;">−38 910</div></div>
+            </div>
+            <div style="background:#e6f2eb;border:1px solid #cfe6da;border-radius:14px;padding:13px;display:flex;align-items:center;gap:10px;"><span style="width:26px;height:26px;border-radius:8px;background:#1f8a5b;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;">7</span><span style="font-size:13px;color:#167049;font-weight:600;">Очікують перевірки →</span></div>
+          </div>
+          <!-- FAB -->
+          <div style="position:absolute;right:18px;bottom:80px;width:52px;height:52px;border-radius:50%;background:#1f8a5b;color:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 8px 20px rgba(31,138,91,.4);">＋</div>
+          <!-- bottom nav -->
+          <div style="height:66px;background:#fff;border-top:1px solid #eef3f0;display:flex;align-items:center;justify-content:space-around;padding-bottom:8px;">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#1f8a5b;"><span style="font-size:18px;">◰</span><span style="font-size:10.5px;font-weight:600;">Огляд</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#9fb0a7;"><span style="font-size:18px;">≣</span><span style="font-size:10.5px;">Журнал</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#9fb0a7;"><span style="font-size:18px;">⤓</span><span style="font-size:10.5px;">Імпорт</span></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#9fb0a7;"><span style="font-size:18px;">▢</span><span style="font-size:10.5px;">Рахунки</span></div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#7c8b83;margin-top:12px;line-height:1.55;text-align:center;">Tap targets ≥ 44px · safe-area inset · sticky FAB для головної дії · без hover-only станів.</div>
+    </div>
+  </div>
+</section>
+
+<section id="screens" style="max-width:1180px;margin:0 auto;padding:36px 28px 0;">
+  <div style="display:flex;align-items:baseline;gap:14px;border-top:1px solid #dfe7e2;padding-top:34px;">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#1f8a5b;font-weight:600;">04</span>
+    <h2 style="font-size:30px;letter-spacing:-.03em;font-weight:700;margin:0;">Екрани</h2>
+    <span style="color:#7c8b83;font-size:15px;margin-left:auto;">Desktop + mobile/PWA · усі ключові стани</span>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section style="max-width:1180px;margin:0 auto;padding:26px 28px;">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#9fb0a7;">4.1</span><h3 style="font-size:19px;font-weight:700;margin:0;letter-spacing:-.02em;">Dashboard · Огляд фінансів</h3></div>
+  <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;padding:22px;box-shadow:0 4px 14px rgba(20,36,29,.05);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+      <div><div style="font-size:20px;font-weight:700;letter-spacing:-.02em;">Огляд фінансів</div><div style="font-size:13px;color:#7c8b83;margin-top:2px;">Червень 2025 · Europe/Kyiv</div></div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;background:#e6f2eb;color:#167049;font-size:12.5px;font-weight:600;"><span style="width:6px;height:6px;border-radius:50%;background:#1f8a5b;"></span>Connected</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;background:#eef3f0;color:#9fb0a7;font-size:12.5px;font-weight:600;">Partial</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;background:#eef3f0;color:#9fb0a7;font-size:12.5px;font-weight:600;">Empty</span>
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:6px 11px;border-radius:999px;background:#eef3f0;color:#9fb0a7;font-size:12.5px;font-weight:600;">Error</span>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:14px;">
+      <div style="background:#14241d;color:#eaf3ee;border-radius:16px;padding:20px;">
+        <div style="font-size:13px;color:#9fb3a8;">Загальний баланс</div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:30px;font-weight:600;margin-top:6px;letter-spacing:-.02em;">164 280 ₴</div>
+        <div style="display:flex;gap:14px;margin-top:14px;font-size:12px;color:#9fb3a8;"><span>Mono · 48 920</span><span>Privat · 102 360</span><span>Готівка · 13 000</span></div>
+        <div style="font-size:11px;color:#76d9a6;margin-top:10px;">Враховано pending + approved. Видалені — поза балансом.</div>
+      </div>
+      <div style="background:#f7faf8;border:1px solid #eef3f0;border-radius:16px;padding:20px;"><div style="font-size:13px;color:#7c8b83;">Доходи</div><div style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:600;margin-top:6px;color:#1f8a5b;">+62 400 ₴</div><div style="font-size:12px;color:#7c8b83;margin-top:8px;">↑ 8% до травня</div></div>
+      <div style="background:#f7faf8;border:1px solid #eef3f0;border-radius:16px;padding:20px;"><div style="font-size:13px;color:#7c8b83;">Витрати</div><div style="font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:600;margin-top:6px;color:#be123c;">−38 910 ₴</div><div style="font-size:12px;color:#7c8b83;margin-top:8px;">↓ 3% до травня</div></div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;">
+      <!-- category breakdown -->
+      <div style="background:#fff;border:1px solid #e4ebe7;border-radius:16px;padding:18px;">
+        <div style="font-size:14px;font-weight:600;margin-bottom:14px;">Витрати за категоріями <span style="font-weight:500;color:#9fb0a7;font-size:12px;">· за текстом</span></div>
+        <div style="display:flex;height:12px;border-radius:999px;overflow:hidden;margin-bottom:16px;">
+          <sc-for list="{{ breakdown }}" as="b" hint-placeholder-count="5"><div style="width:{{ b.pct }}%;background:{{ b.color }};"></div></sc-for>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:11px;">
+          <sc-for list="{{ breakdown }}" as="b" hint-placeholder-count="5">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span style="width:9px;height:9px;border-radius:3px;background:{{ b.color }};"></span>
+              <span style="font-size:13.5px;color:#14241d;">{{ b.name }}</span>
+              <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:13px;color:#4a5b53;">{{ b.amt }}</span>
+              <span style="font-size:12px;color:#9fb0a7;width:34px;text-align:right;">{{ b.pct }}%</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <!-- trend + accounts snapshot -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div style="background:#fff;border:1px solid #e4ebe7;border-radius:16px;padding:18px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;"><span style="font-size:14px;font-weight:600;">Тренд · 6 міс</span><span style="font-size:12px;color:#1f8a5b;font-weight:600;">Витрати ↓</span></div>
+          <div style="display:flex;align-items:flex-end;gap:8px;height:74px;">
+            <div style="flex:1;background:#dceee4;border-radius:5px 5px 0 0;height:52%;"></div>
+            <div style="flex:1;background:#dceee4;border-radius:5px 5px 0 0;height:68%;"></div>
+            <div style="flex:1;background:#dceee4;border-radius:5px 5px 0 0;height:44%;"></div>
+            <div style="flex:1;background:#dceee4;border-radius:5px 5px 0 0;height:80%;"></div>
+            <div style="flex:1;background:#dceee4;border-radius:5px 5px 0 0;height:60%;"></div>
+            <div style="flex:1;background:#1f8a5b;border-radius:5px 5px 0 0;height:48%;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:10.5px;color:#9fb0a7;margin-top:6px;"><span>Січ</span><span>Лют</span><span>Бер</span><span>Кві</span><span>Тра</span><span>Чер</span></div>
+        </div>
+        <div style="background:#fff4e2;border:1px solid #f5dcb0;border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px;">
+          <span style="width:30px;height:30px;border-radius:9px;background:#d97706;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;">7</span>
+          <div style="flex:1;"><div style="font-size:13.5px;font-weight:600;">Очікують перевірки</div><div style="font-size:12px;color:#92500a;">Уже впливають на баланс — підтвердьте або видаліть</div></div>
+          <span style="color:#b45309;font-weight:600;font-size:13px;">→</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="font-size:12.5px;color:#7c8b83;margin-top:12px;line-height:1.55;">Read-only. Групування витрат — за <b style="color:#14241d;">текстом категорії</b> (вкл. «Без категорії»). Баланс рахує <b style="color:#14241d;">pending + approved</b>; deleted виключені. Data states: <b style="color:#14241d;">connected</b> · <b style="color:#14241d;">partial</b> (банер + сірі плейсхолдери) · <b style="color:#14241d;">empty</b> (онбординг-CTA) · <b style="color:#14241d;">error</b> (банер «Повторити»). На mobile — одна колонка, breakdown стає списком.</div>
+</section>
+
+<!-- JOURNAL (LEDGER) -->
+<section style="max-width:1180px;margin:0 auto;padding:26px 28px;">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#9fb0a7;">4.2</span><h3 style="font-size:19px;font-weight:700;margin:0;letter-spacing:-.02em;">Журнал · операції</h3></div>
+  <div style="display:grid;grid-template-columns:1.62fr 1fr;gap:22px;align-items:start;">
+
+    <!-- desktop table -->
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;padding:20px;box-shadow:0 4px 14px rgba(20,36,29,.05);">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <div style="display:inline-flex;background:#eef3f0;border-radius:11px;padding:4px;gap:2px;">
+          <span style="padding:7px 14px;border-radius:8px;background:#fff;font-size:13px;font-weight:600;box-shadow:0 1px 2px rgba(20,36,29,.06);">Очікує перевірки · 2</span>
+          <span style="padding:7px 14px;border-radius:8px;font-size:13px;font-weight:500;color:#7c8b83;">Підтверджено</span>
+          <span style="padding:7px 14px;border-radius:8px;font-size:13px;font-weight:500;color:#7c8b83;">Видалено</span>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:8px;border:1px solid #e4ebe7;border-radius:9px;padding:7px 11px;color:#9fb0a7;font-size:13px;width:190px;">⌕ Пошук…</div>
+      </div>
+
+      <div style="display:flex;gap:12px;align-items:flex-start;background:#e6f2eb;border:1px solid #cfe6da;border-radius:12px;padding:11px 14px;margin-bottom:12px;">
+        <span style="width:20px;height:20px;border-radius:50%;background:#1f8a5b;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">✓</span>
+        <div style="font-size:13px;color:#3f6552;"><b style="color:#14241d;">Операцію підтверджено.</b> Статус → «підтверджено».</div>
+        <span style="margin-left:auto;color:#7c9b8a;cursor:pointer;">×</span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr auto auto;gap:8px;padding:0 8px 8px;font-size:11.5px;color:#9fb0a7;font-weight:600;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #eef3f0;">
+        <span>Мерчант</span><span>Категорія</span><span>Рахунок</span><span style="text-align:right;">Сума</span><span>Статус</span>
+      </div>
+      <sc-for list="{{ tx }}" as="t" hint-placeholder-count="6">
+        <div style="display:grid;grid-template-columns:1.6fr 1fr 1fr auto auto;gap:8px;align-items:center;padding:12px 8px;border-bottom:1px solid #f2f6f4;opacity:{{ t.rowOpacity }};">
+          <div style="display:flex;flex-direction:column;"><span style="font-size:14px;font-weight:500;text-decoration:{{ t.mTextDecoration }};">{{ t.m }}</span><span style="font-size:11.5px;color:#9fb0a7;">{{ t.date }}</span></div>
+          <span style="font-size:13px;color:#4a5b53;">{{ t.cat }}</span>
+          <span style="font-size:13px;color:#4a5b53;">{{ t.acc }}</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:13.5px;text-align:right;color:{{ t.amtColor }};">{{ t.amt }}</span>
+          <span style="justify-self:start;display:inline-flex;align-items:center;gap:5px;padding:4px 9px;border-radius:999px;font-size:11.5px;font-weight:600;background:{{ t.badgeBg }};color:{{ t.badgeFg }};"><span style="width:5px;height:5px;border-radius:50%;background:{{ t.badgeDot }};"></span>{{ t.statusLabel }}</span>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- mobile card list -->
+    <div>
+      <div style="width:300px;margin:0 auto;border:9px solid #14241d;border-radius:42px;overflow:hidden;box-shadow:0 18px 44px rgba(20,36,29,.22);background:#14241d;">
+        <div style="background:#f7faf8;height:540px;display:flex;flex-direction:column;">
+          <div style="height:30px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:12px;font-weight:600;"><span>9:41</span><span>▦ ▮▮ ▰</span></div>
+          <div style="padding:6px 16px 10px;"><div style="font-size:20px;font-weight:700;">Журнал</div></div>
+          <div style="padding:0 16px;"><div style="display:flex;background:#eef3f0;border-radius:11px;padding:3px;gap:2px;font-size:12px;"><span style="flex:1;text-align:center;padding:7px 0;border-radius:8px;background:#fff;font-weight:600;box-shadow:0 1px 2px rgba(20,36,29,.06);">Очікує</span><span style="flex:1;text-align:center;padding:7px 0;color:#7c8b83;">Підтв.</span><span style="flex:1;text-align:center;padding:7px 0;color:#7c8b83;">Видал.</span></div></div>
+          <div style="flex:1;overflow:hidden;padding:12px 16px;display:flex;flex-direction:column;gap:10px;">
+            <div style="background:#fff;border:1px solid #e4ebe7;border-radius:14px;padding:13px;display:flex;align-items:center;gap:12px;">
+              <div style="width:38px;height:38px;border-radius:11px;background:#eef3f0;display:flex;align-items:center;justify-content:center;font-size:15px;">🛒</div>
+              <div style="flex:1;"><div style="font-size:14px;font-weight:600;">АТБ-Маркет</div><div style="font-size:11.5px;color:#9fb0a7;">Продукти · Mono</div></div>
+              <div style="text-align:right;"><div style="font-family:'JetBrains Mono',monospace;font-size:14px;color:#be123c;">−842 ₴</div><span style="font-size:10px;color:#b45309;background:#fff4e2;padding:1px 6px;border-radius:999px;font-weight:600;">Очікує</span></div>
+            </div>
+            <div style="background:#fff;border:1px solid #e4ebe7;border-radius:14px;padding:13px;display:flex;align-items:center;gap:12px;">
+              <div style="width:38px;height:38px;border-radius:11px;background:#e6f2eb;display:flex;align-items:center;justify-content:center;font-size:15px;">💼</div>
+              <div style="flex:1;"><div style="font-size:14px;font-weight:600;">Зарплата</div><div style="font-size:11.5px;color:#9fb0a7;">Без категорії · Privat</div></div>
+              <div style="text-align:right;"><div style="font-family:'JetBrains Mono',monospace;font-size:14px;color:#167049;">+48 000</div><span style="font-size:10px;color:#b45309;background:#fff4e2;padding:1px 6px;border-radius:999px;font-weight:600;">Очікує</span></div>
+            </div>
+            <div style="background:#fff;border:1px solid #e4ebe7;border-radius:14px;padding:13px;display:flex;align-items:center;gap:12px;">
+              <div style="width:38px;height:38px;border-radius:11px;background:#eef3f0;display:flex;align-items:center;justify-content:center;font-size:15px;">📦</div>
+              <div style="flex:1;"><div style="font-size:14px;font-weight:600;">Нова Пошта</div><div style="font-size:11.5px;color:#9fb0a7;">Доставка · Mono</div></div>
+              <div style="text-align:right;"><div style="font-family:'JetBrains Mono',monospace;font-size:14px;color:#be123c;">−120 ₴</div><span style="font-size:10px;color:#167049;background:#e6f2eb;padding:1px 6px;border-radius:999px;font-weight:600;">Підтв.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:#7c8b83;margin-top:12px;line-height:1.55;text-align:center;">На mobile таблиця → картки. Tap → перевірка. Кнопки Підтвердити / Видалити.</div>
+    </div>
+  </div>
+</section>
+
+<!-- TRANSACTION REVIEW -->
+<section style="max-width:1180px;margin:0 auto;padding:26px 28px;">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#9fb0a7;">4.3</span><h3 style="font-size:19px;font-weight:700;margin:0;letter-spacing:-.02em;">Перевірка операції</h3><span style="font-size:12px;font-weight:600;color:#167049;background:#e6f2eb;padding:3px 9px;border-radius:999px;">Ключовий екран</span></div>
+  <div style="font-size:13px;color:#7c8b83;margin-bottom:14px;">Editable при pending → Зберегти / Підтвердити / Видалити. Видалені — read-only лог.</div>
+
+  <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;overflow:hidden;box-shadow:0 4px 14px rgba(20,36,29,.05);">
+    <!-- header -->
+    <div style="padding:20px 22px;border-bottom:1px solid #eef3f0;display:flex;align-items:flex-start;gap:16px;">
+      <button style="border:1px solid #e4ebe7;background:#fff;border-radius:10px;width:38px;height:38px;font-size:16px;cursor:pointer;color:#4a5b53;">←</button>
+      <div style="flex:1;">
+        <div style="display:flex;align-items:center;gap:10px;"><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#fff4e2;color:#b45309;font-size:12px;font-weight:600;"><span style="width:6px;height:6px;border-radius:50%;background:#d97706;"></span>Очікує перевірки</span><span style="font-size:12.5px;color:#9fb0a7;">25 червня 2025 · 18:42</span></div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:34px;font-weight:600;color:#be123c;margin-top:8px;letter-spacing:-.02em;">−842,00 ₴</div>
+        <div style="font-size:14px;color:#4a5b53;margin-top:2px;">АТБ-Маркет №241 · розпізнано з фото</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1.55fr 1fr;gap:0;">
+      <!-- editable fields -->
+      <div style="padding:22px;border-right:1px solid #eef3f0;">
+        <div style="font-size:13px;font-weight:600;color:#7c8b83;text-transform:uppercase;letter-spacing:.04em;margin-bottom:14px;">Дані операції</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+          <label style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12.5px;font-weight:600;color:#4a5b53;">Тип</span>
+            <div style="display:flex;background:#eef3f0;border-radius:9px;padding:3px;gap:2px;"><span style="flex:1;text-align:center;padding:8px 0;border-radius:7px;background:#fff;font-size:13px;font-weight:600;box-shadow:0 1px 2px rgba(20,36,29,.06);">Витрата</span><span style="flex:1;text-align:center;padding:8px 0;font-size:13px;color:#7c8b83;">Дохід</span></div>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12.5px;font-weight:600;color:#4a5b53;">Сума</span>
+            <div style="display:flex;align-items:center;border:1px solid #d6e0da;border-radius:9px;padding:0 12px;"><input value="842,00" style="border:none;outline:none;font:inherit;font-family:'JetBrains Mono',monospace;font-size:14px;padding:10px 0;width:100%;background:transparent;" /><span style="color:#7c8b83;">₴</span></div>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12.5px;font-weight:600;color:#4a5b53;">Рахунок</span>
+            <div style="border:1.5px solid #1f8a5b;border-radius:9px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 0 0 3px rgba(31,138,91,.1);"><span style="font-size:14px;">Mono картка</span><span style="color:#7c8b83;font-size:11px;">▾</span></div>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12.5px;font-weight:600;color:#4a5b53;">Категорія <span style="font-weight:500;color:#9fb0a7;">· вільний текст</span></span>
+            <div style="border:1px solid #d6e0da;border-radius:9px;padding:10px 12px;display:flex;align-items:center;"><input value="Продукти" style="border:none;outline:none;font:inherit;font-size:14px;width:100%;background:transparent;" /></div>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12.5px;font-weight:600;color:#4a5b53;">Дата та час</span>
+            <div style="border:1px solid #d6e0da;border-radius:9px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:14px;font-family:'JetBrains Mono',monospace;">25.06.2025 18:42</span><span style="color:#7c8b83;font-size:11px;">▾</span></div>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12.5px;font-weight:600;color:#4a5b53;">Опис</span>
+            <div style="border:1px solid #d6e0da;border-radius:9px;padding:10px 12px;"><span style="font-size:14px;color:#9fb0a7;">Додати нотатку…</span></div>
+          </label>
+        </div>
+
+        <!-- items -->
+        <div style="font-size:13px;font-weight:600;color:#7c8b83;text-transform:uppercase;letter-spacing:.04em;margin:22px 0 10px;">Товари · 4</div>
+        <div style="border:1px solid #eef3f0;border-radius:12px;overflow:hidden;">
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:9px 14px;background:#f7faf8;font-size:11px;color:#9fb0a7;font-weight:600;text-transform:uppercase;letter-spacing:.04em;"><span>Назва</span><span>К-сть</span><span style="text-align:right;">Сума</span></div>
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:10px 14px;border-top:1px solid #f2f6f4;font-size:13.5px;"><span>Молоко 2,5%</span><span style="color:#7c8b83;">2</span><span style="font-family:'JetBrains Mono',monospace;text-align:right;">76,00</span></div>
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:10px 14px;border-top:1px solid #f2f6f4;font-size:13.5px;"><span>Хліб «Цільнозерновий»</span><span style="color:#7c8b83;">1</span><span style="font-family:'JetBrains Mono',monospace;text-align:right;">38,00</span></div>
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:10px 14px;border-top:1px solid #f2f6f4;font-size:13.5px;"><span>Куряче філе</span><span style="color:#7c8b83;">0,8 кг</span><span style="font-family:'JetBrains Mono',monospace;text-align:right;">412,00</span></div>
+          <div style="display:grid;grid-template-columns:1fr auto auto;gap:8px;padding:10px 14px;border-top:1px solid #f2f6f4;font-size:13.5px;"><span>Овочі (набір)</span><span style="color:#7c8b83;">1</span><span style="font-family:'JetBrains Mono',monospace;text-align:right;">316,00</span></div>
+          <div style="display:grid;grid-template-columns:1fr auto;gap:8px;padding:11px 14px;border-top:1px solid #eef3f0;background:#f7faf8;font-size:13.5px;font-weight:600;"><span>Разом</span><span style="font-family:'JetBrains Mono',monospace;text-align:right;">842,00 ₴</span></div>
+        </div>
+      </div>
+
+      <!-- lifecycle panel -->
+      <div style="padding:22px;background:#f7faf8;display:flex;flex-direction:column;gap:14px;">
+        <div style="font-size:13px;font-weight:600;color:#7c8b83;text-transform:uppercase;letter-spacing:.04em;">Дії</div>
+        <div style="display:flex;flex-direction:column;gap:9px;">
+          <button style="border:none;background:#1f8a5b;color:#fff;font:inherit;font-weight:600;font-size:14.5px;padding:13px;border-radius:11px;cursor:pointer;">Підтвердити</button>
+          <button style="border:1px solid #d6e0da;background:#fff;color:#14241d;font:inherit;font-weight:600;font-size:14px;padding:12px;border-radius:11px;cursor:pointer;">Зберегти</button>
+          <button style="border:1px solid #f6c9d4;background:#fff;color:#be123c;font:inherit;font-weight:600;font-size:14px;padding:12px;border-radius:11px;cursor:pointer;">Видалити</button>
+        </div>
+        <div style="display:flex;gap:10px;align-items:flex-start;background:#e8edfb;border:1px solid #cdd9f7;border-radius:12px;padding:13px;">
+          <span style="color:#2563eb;font-weight:700;">i</span>
+          <div style="font-size:12.5px;color:#1e40af;line-height:1.5;">Операція вже впливає на баланс. «Підтвердити» означає «я перевірив і погоджуюсь» — не проведення.</div>
+        </div>
+        <div style="border-top:1px dashed #d6e0da;padding-top:14px;margin-top:2px;">
+          <div style="font-size:12px;color:#9fb0a7;line-height:1.6;">Створено: 25.06 18:42<br>Джерело: AI-зір (фото)<br>ID: <span style="font-family:'JetBrains Mono',monospace;">item_8fa31c</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- warning + read-only states -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px;">
+    <div>
+      <div style="font-size:13px;color:#7c8b83;font-weight:600;margin-bottom:10px;">Стан: рахунок не вказано (inform, не блокує)</div>
+      <div style="background:#fff;border:1px solid #e4ebe7;border-radius:16px;padding:18px;">
+        <div style="display:flex;gap:10px;align-items:flex-start;background:#fff4e2;border:1px solid #f5dcb0;border-radius:12px;padding:13px;margin-bottom:14px;">
+          <span style="width:22px;height:22px;border-radius:50%;background:#d97706;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;">▲</span>
+          <div style="font-size:13px;color:#92500a;"><b style="color:#14241d;">Рахунок не вказано.</b> При підтвердженні буде призначено типовий рахунок «Mono картка».</div>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:6px;margin-bottom:14px;"><span style="font-size:12.5px;font-weight:600;color:#4a5b53;">Рахунок</span>
+          <div style="border:1px solid #d6e0da;border-radius:9px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;background:#fff;"><span style="font-size:14px;color:#9fb0a7;">Типовий · Mono картка</span><span style="color:#7c8b83;font-size:11px;">▾</span></div>
+        </label>
+        <button style="border:none;background:#1f8a5b;color:#fff;font:inherit;font-weight:600;font-size:14px;padding:12px;border-radius:11px;width:100%;cursor:pointer;">Підтвердити</button>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:13px;color:#7c8b83;font-weight:600;margin-bottom:10px;">Стан: видалено (read-only лог)</div>
+      <div style="background:#fff;border:1px solid #e4ebe7;border-radius:16px;padding:18px;opacity:.7;">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;"><span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:999px;background:#f2f6f4;color:#9fb0a7;font-size:12px;font-weight:600;text-decoration:line-through;"><span style="width:6px;height:6px;border-radius:50%;background:#b9c4bd;"></span>Видалено</span><span style="font-size:12px;color:#9fb0a7;">поза балансом</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+          <div style="background:#f7faf8;border:1px solid #eef3f0;border-radius:9px;padding:10px 12px;"><div style="font-size:11px;color:#9fb0a7;">Сума</div><div style="font-family:'JetBrains Mono',monospace;font-size:14px;margin-top:2px;color:#9fb0a7;">−6 299,00 ₴</div></div>
+          <div style="background:#f7faf8;border:1px solid #eef3f0;border-radius:9px;padding:10px 12px;"><div style="font-size:11px;color:#9fb0a7;">Рахунок</div><div style="font-size:14px;margin-top:2px;color:#9fb0a7;">Mono картка</div></div>
+          <div style="background:#f7faf8;border:1px solid #eef3f0;border-radius:9px;padding:10px 12px;"><div style="font-size:11px;color:#9fb0a7;">Категорія</div><div style="font-size:14px;margin-top:2px;color:#9fb0a7;">Електроніка</div></div>
+          <div style="background:#f7faf8;border:1px solid #eef3f0;border-radius:9px;padding:10px 12px;"><div style="font-size:11px;color:#9fb0a7;">Дата</div><div style="font-size:14px;margin-top:2px;font-family:'JetBrains Mono',monospace;color:#9fb0a7;">23.06.2025</div></div>
+        </div>
+        <div style="font-size:12px;color:#9fb0a7;line-height:1.5;">Архівний лог-рядок. Поля заблоковано — залишається як історія.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IMPORTS HUB + TEXT -->
+<section style="max-width:1180px;margin:0 auto;padding:26px 28px;">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#9fb0a7;">4.4</span><h3 style="font-size:19px;font-weight:700;margin:0;letter-spacing:-.02em;">Імпорт · хаб + текстовий ввід</h3></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:22px;align-items:start;">
+
+    <!-- hub -->
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;padding:22px;box-shadow:0 4px 14px rgba(20,36,29,.05);">
+      <div style="font-size:18px;font-weight:700;letter-spacing:-.02em;">Як додати операції?</div>
+      <div style="font-size:13.5px;color:#7c8b83;margin-top:4px;line-height:1.5;">Будь-який імпорт створює операції зі статусом <b style="color:#14241d;">«очікує перевірки»</b>. Перевірте їх у Журналі.</div>
+
+      <!-- pipeline -->
+      <div style="display:flex;align-items:center;gap:8px;margin:16px 0 18px;font-size:11.5px;font-weight:600;">
+        <span style="background:#e6f2eb;color:#167049;padding:6px 11px;border-radius:8px;">Вхід</span><span style="color:#cfdbd4;">→</span>
+        <span style="background:#fff4e2;color:#b45309;padding:6px 11px;border-radius:8px;">Очікує перевірки</span><span style="color:#cfdbd4;">→</span>
+        <span style="background:#eef3f0;color:#4a5b53;padding:6px 11px;border-radius:8px;">Перевірка</span>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:center;gap:14px;border:1.5px solid #1f8a5b;background:#f4fbf7;border-radius:13px;padding:15px;cursor:pointer;">
+          <div style="width:42px;height:42px;border-radius:12px;background:#e6f2eb;display:flex;align-items:center;justify-content:center;font-size:20px;">✍️</div>
+          <div style="flex:1;"><div style="font-size:15px;font-weight:600;">Текст</div><div style="font-size:12.5px;color:#7c8b83;">Вставте опис — розпізнаємо суми й категорії</div></div><span style="color:#1f8a5b;">→</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;border:1px solid #e4ebe7;border-radius:13px;padding:15px;cursor:pointer;">
+          <div style="width:42px;height:42px;border-radius:12px;background:#eef3f0;display:flex;align-items:center;justify-content:center;font-size:20px;">🏦</div>
+          <div style="flex:1;"><div style="font-size:15px;font-weight:600;">Виписка банку</div><div style="font-size:12.5px;color:#7c8b83;">Monobank / PrivatBank · CSV</div></div><span style="color:#9fb0a7;">→</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px;border:1px solid #e4ebe7;border-radius:13px;padding:15px;cursor:pointer;">
+          <div style="width:42px;height:42px;border-radius:12px;background:#eef3f0;display:flex;align-items:center;justify-content:center;font-size:20px;">🧾</div>
+          <div style="flex:1;"><div style="font-size:15px;font-weight:600;">Фото чек</div><div style="font-size:12.5px;color:#7c8b83;">Одне фото · PDF поза scope</div></div><span style="color:#9fb0a7;">→</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- text input -->
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;padding:22px;box-shadow:0 4px 14px rgba(20,36,29,.05);display:flex;flex-direction:column;">
+      <div style="font-size:18px;font-weight:700;letter-spacing:-.02em;">Текстовий ввід</div>
+      <div style="font-size:13px;color:#7c8b83;margin-top:4px;">Опишіть витрати звичайною мовою.</div>
+      <div style="border:1px solid #d6e0da;border-radius:13px;padding:16px;margin-top:14px;background:#f7faf8;min-height:150px;flex:1;">
+        <div style="font-size:14px;color:#9fb0a7;line-height:1.6;">напр.<br>«40 грн ковбаса, 20 грн хліб<br>таксі 180 готівка<br>Spotify 95 підписка»</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start;background:#e8edfb;border:1px solid #cdd9f7;border-radius:11px;padding:11px 13px;margin-top:12px;">
+        <span style="color:#2563eb;font-weight:700;">i</span><div style="font-size:12.5px;color:#1e40af;line-height:1.5;">Розпізнавання створить операції зі статусом «очікує перевірки». Категорія — вільний текст, порожнє → «Без категорії».</div>
+      </div>
+      <button style="border:none;background:#1f8a5b;color:#fff;font:inherit;font-weight:600;font-size:14.5px;padding:13px;border-radius:11px;cursor:pointer;margin-top:12px;">Розпізнати і створити операції</button>
+      <div style="display:flex;gap:10px;align-items:center;background:#e6f2eb;border:1px solid #cfe6da;border-radius:11px;padding:11px 13px;margin-top:10px;">
+        <span style="width:20px;height:20px;border-radius:50%;background:#1f8a5b;color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;">✓</span>
+        <div style="font-size:13px;color:#3f6552;flex:1;"><b style="color:#14241d;">Створено 3 операції (очікують перевірки).</b></div>
+        <span style="font-size:13px;color:#167049;font-weight:600;cursor:pointer;">У Журнал →</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BANK STATEMENT + RECEIPT -->
+<section style="max-width:1180px;margin:0 auto;padding:26px 28px;">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#9fb0a7;">4.5</span><h3 style="font-size:19px;font-weight:700;margin:0;letter-spacing:-.02em;">Виписка банку · Фото чек</h3></div>
+  <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:22px;align-items:start;">
+
+    <!-- bank statement -->
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;padding:22px;box-shadow:0 4px 14px rgba(20,36,29,.05);">
+      <div style="display:flex;align-items:center;justify-content:space-between;">
+        <div style="font-size:18px;font-weight:700;letter-spacing:-.02em;">Виписка банку</div>
+        <span style="display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:#e6f2eb;color:#167049;font-size:12px;font-weight:600;">Визначено: Monobank</span>
+      </div>
+      <div style="font-size:12.5px;color:#7c8b83;margin-top:4px;">statement_2025-06.csv · 4 рядки · provider detection ✓</div>
+
+      <!-- preview table -->
+      <div style="border:1px solid #eef3f0;border-radius:12px;overflow:hidden;margin-top:14px;">
+        <div style="display:grid;grid-template-columns:auto 60px 1fr auto;gap:10px;padding:9px 14px;background:#f7faf8;font-size:11px;color:#9fb0a7;font-weight:600;text-transform:uppercase;letter-spacing:.04em;"><span style="width:18px;"></span><span>Дата</span><span>Опис</span><span style="text-align:right;">Сума</span></div>
+        <sc-for list="{{ bankRows }}" as="r" hint-placeholder-count="4">
+          <div style="display:grid;grid-template-columns:auto 60px 1fr auto;gap:10px;padding:11px 14px;border-top:1px solid #f2f6f4;align-items:center;background:{{ r.rowBg }};">
+            <span style="width:18px;height:18px;border-radius:5px;border:1.5px solid {{ r.boxColor }};background:{{ r.boxFill }};display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;">{{ r.check }}</span>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:12.5px;color:#4a5b53;">{{ r.d }}</span>
+            <div><div style="font-size:13.5px;">{{ r.m }}</div><div style="font-size:11px;color:#b45309;">{{ r.note }}</div></div>
+            <span style="font-family:'JetBrains Mono',monospace;font-size:13px;text-align:right;color:#be123c;">{{ r.amt }}</span>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;gap:10px;align-items:flex-start;background:#fff4e2;border:1px solid #f5dcb0;border-radius:11px;padding:11px 13px;margin-top:12px;">
+        <span style="color:#b45309;font-weight:700;">▲</span><div style="font-size:12.5px;color:#92500a;">1 рядок не можна імпортувати: немає рахунку для зіставлення. Решта 3 готові.</div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:14px;">
+        <button style="border:none;background:#1f8a5b;color:#fff;font:inherit;font-weight:600;font-size:14px;padding:11px 18px;border-radius:10px;cursor:pointer;">Імпортувати 3 рядки</button>
+        <button style="border:1px solid #f6c9d4;background:#fff;color:#be123c;font:inherit;font-weight:600;font-size:14px;padding:11px 18px;border-radius:10px;cursor:pointer;">Відхилити прев’ю</button>
+      </div>
+
+      <div style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap;">
+        <span style="font-size:11.5px;color:#7c8b83;font-weight:600;align-self:center;">Інші стани:</span>
+        <span style="font-size:11.5px;padding:5px 10px;border-radius:8px;background:#eef3f0;color:#4a5b53;">Provider: unknown</span>
+        <span style="font-size:11.5px;padding:5px 10px;border-radius:8px;background:#fce7ec;color:#be123c;">XLS/XLSX не підтримується</span>
+        <span style="font-size:11.5px;padding:5px 10px;border-radius:8px;background:#e6f2eb;color:#167049;">Вже підтверджено</span>
+      </div>
+    </div>
+
+    <!-- receipt -->
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;padding:22px;box-shadow:0 4px 14px rgba(20,36,29,.05);display:flex;flex-direction:column;">
+      <div style="font-size:18px;font-weight:700;letter-spacing:-.02em;">Фото чек</div>
+      <div style="border:2px dashed #cfdbd4;border-radius:14px;padding:24px;text-align:center;background:#f7faf8;margin-top:14px;">
+        <div style="width:44px;height:44px;border-radius:13px;background:#e6f2eb;display:inline-flex;align-items:center;justify-content:center;color:#1f8a5b;font-size:21px;margin-bottom:10px;">📷</div>
+        <div style="font-size:14px;font-weight:600;">Камера · Галерея · Файл</div>
+        <div style="font-size:12px;color:#7c8b83;margin-top:4px;">Одне фото · JPG / PNG · PDF поза scope</div>
+      </div>
+      <div style="display:flex;gap:10px;align-items:flex-start;background:#fff4e2;border:1px solid #f5dcb0;border-radius:11px;padding:11px 13px;margin-top:12px;">
+        <span style="color:#b45309;font-weight:700;">▲</span><div style="font-size:12.5px;color:#92500a;">AI-зір розбирає фото. Якщо OCR недоступний або файл не підтримується — вставте текст чека вручну нижче.</div>
+      </div>
+      <div style="border:1px solid #d6e0da;border-radius:12px;padding:13px;margin-top:12px;background:#f7faf8;flex:1;min-height:92px;"><div style="font-size:13px;color:#9fb0a7;line-height:1.6;">Текст чека…</div></div>
+      <div style="display:flex;gap:9px;align-items:flex-start;background:#e8edfb;border:1px solid #cdd9f7;border-radius:11px;padding:10px 12px;margin-top:10px;">
+        <span style="color:#2563eb;font-weight:700;font-size:13px;">🔒</span><div style="font-size:12px;color:#1e40af;line-height:1.45;">Дані очищено перед обробкою. Видаліть особисту інформацію перед збереженням.</div>
+      </div>
+      <button style="border:none;background:#1f8a5b;color:#fff;font:inherit;font-weight:600;font-size:14px;padding:12px;border-radius:11px;cursor:pointer;margin-top:10px;">Створити операцію</button>
+    </div>
+  </div>
+</section>
+
+<!-- ACCOUNTS + SETTINGS -->
+<section style="max-width:1180px;margin:0 auto;padding:26px 28px;">
+  <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;"><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#9fb0a7;">4.6</span><h3 style="font-size:19px;font-weight:700;margin:0;letter-spacing:-.02em;">Рахунки · Налаштування</h3></div>
+  <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:22px;align-items:start;">
+
+    <!-- accounts -->
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;padding:22px;box-shadow:0 4px 14px rgba(20,36,29,.05);">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;"><div style="font-size:18px;font-weight:700;letter-spacing:-.02em;">Рахунки</div><span style="font-size:12px;color:#7c8b83;">Лише UAH</span></div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <sc-for list="{{ accounts }}" as="a" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;gap:13px;border:1px solid {{ a.border }};background:{{ a.bg }};border-radius:14px;padding:14px 16px;">
+            <div style="width:40px;height:40px;border-radius:11px;background:#eef3f0;display:flex;align-items:center;justify-content:center;font-size:18px;">💳</div>
+            <div style="flex:1;"><div style="display:flex;align-items:center;gap:8px;"><span style="font-size:15px;font-weight:600;">{{ a.name }}</span><span style="display:{{ a.defDisplay }};font-size:10.5px;font-weight:700;color:#167049;background:#e6f2eb;padding:2px 7px;border-radius:999px;">За замовч.</span></div><div style="font-size:12px;color:#9fb0a7;margin-top:2px;">{{ a.type }}</div></div>
+            <div style="text-align:right;"><div style="font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:{{ a.balColor }};">{{ a.bal }}</div><div style="font-size:11px;color:{{ a.statusColor }};">{{ a.statusText }}</div></div>
+          </div>
+        </sc-for>
+        <button style="border:1.5px dashed #cfdbd4;background:#f7faf8;color:#4a5b53;font:inherit;font-weight:600;font-size:14px;padding:13px;border-radius:14px;cursor:pointer;">＋ Додати рахунок</button>
+      </div>
+      <div style="font-size:12px;color:#7c8b83;margin-top:12px;line-height:1.5;">Стани балансу: <b style="color:#1f8a5b;">available</b> · <b style="color:#b45309;">deferred</b> (ще не порахований) · <b style="color:#be123c;">error</b> (не вдалося завантажити).</div>
+    </div>
+
+    <!-- settings (technical + AI provider) -->
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:18px;padding:22px;box-shadow:0 4px 14px rgba(20,36,29,.05);">
+      <div style="font-size:18px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px;">Налаштування</div>
+      <div style="font-size:12.5px;color:#7c8b83;margin-bottom:16px;line-height:1.5;">Технічна конфігурація. Категорії не керуються тут — вони є вільним текстом на самій операції.</div>
+
+      <!-- general -->
+      <div style="font-size:12px;font-weight:600;color:#7c8b83;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;">Загальне</div>
+      <div style="display:flex;flex-direction:column;gap:1px;border:1px solid #eef3f0;border-radius:12px;overflow:hidden;margin-bottom:18px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 15px;background:#fff;"><div><div style="font-size:13.5px;font-weight:600;">Валюта</div><div style="font-size:11.5px;color:#9fb0a7;">Лише UAH у v1</div></div><span style="font-size:13px;font-family:'JetBrains Mono',monospace;color:#4a5b53;background:#f2f6f4;padding:4px 10px;border-radius:7px;">₴ UAH</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 15px;background:#fff;border-top:1px solid #f2f6f4;"><div><div style="font-size:13.5px;font-weight:600;">Часовий пояс</div><div style="font-size:11.5px;color:#9fb0a7;">Для дат операцій</div></div><span style="font-size:13px;font-family:'JetBrains Mono',monospace;color:#4a5b53;background:#f2f6f4;padding:4px 10px;border-radius:7px;">Europe/Kyiv</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 15px;background:#fff;border-top:1px solid #f2f6f4;"><div><div style="font-size:13.5px;font-weight:600;">Типовий рахунок</div><div style="font-size:11.5px;color:#9fb0a7;">Призначається, якщо не вказано</div></div><span style="font-size:13px;color:#4a5b53;background:#f2f6f4;padding:4px 10px;border-radius:7px;">Mono картка ▾</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:13px 15px;background:#fff;border-top:1px solid #f2f6f4;"><div><div style="font-size:13.5px;font-weight:600;">Тема</div><div style="font-size:11.5px;color:#9fb0a7;">Світла як основна</div></div><div style="display:flex;background:#eef3f0;border-radius:8px;padding:3px;gap:2px;"><span style="padding:5px 11px;border-radius:6px;background:#fff;font-size:12px;font-weight:600;box-shadow:0 1px 2px rgba(20,36,29,.06);">Світла</span><span style="padding:5px 11px;border-radius:6px;font-size:12px;color:#7c8b83;">Темна</span><span style="padding:5px 11px;border-radius:6px;font-size:12px;color:#7c8b83;">Сист.</span></div></div>
+      </div>
+
+      <!-- AI provider -->
+      <div style="font-size:12px;font-weight:600;color:#7c8b83;text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px;">AI-провайдер · розпізнавання</div>
+      <div style="border:1px solid #eef3f0;border-radius:13px;padding:16px;background:#f7faf8;">
+        <label style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12.5px;font-weight:600;color:#4a5b53;">Провайдер</span>
+          <div style="display:flex;background:#eef3f0;border-radius:9px;padding:3px;gap:2px;"><span style="flex:1;text-align:center;padding:8px 0;border-radius:7px;background:#fff;font-size:12.5px;font-weight:600;box-shadow:0 1px 2px rgba(20,36,29,.06);">OpenAI</span><span style="flex:1;text-align:center;padding:8px 0;font-size:12.5px;color:#7c8b83;">Anthropic</span><span style="flex:1;text-align:center;padding:8px 0;font-size:12.5px;color:#7c8b83;">Локально</span></div>
+        </label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
+          <label style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12.5px;font-weight:600;color:#4a5b53;">Модель</span>
+            <div style="border:1px solid #d6e0da;border-radius:9px;padding:9px 11px;background:#fff;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;font-family:'JetBrains Mono',monospace;">gpt-4o-mini</span><span style="color:#7c8b83;font-size:11px;">▾</span></div>
+          </label>
+          <label style="display:flex;flex-direction:column;gap:6px;"><span style="font-size:12.5px;font-weight:600;color:#4a5b53;">Таймаут</span>
+            <div style="border:1px solid #d6e0da;border-radius:9px;padding:9px 11px;background:#fff;display:flex;align-items:center;gap:6px;"><input value="30" style="border:none;outline:none;font:inherit;font-family:'JetBrains Mono',monospace;font-size:13px;width:100%;background:transparent;" /><span style="font-size:12px;color:#7c8b83;">с</span></div>
+          </label>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:6px;margin-top:12px;"><span style="font-size:12.5px;font-weight:600;color:#4a5b53;">API-ключ</span>
+          <div style="border:1px solid #d6e0da;border-radius:9px;padding:9px 11px;background:#fff;display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;font-family:'JetBrains Mono',monospace;color:#9fb0a7;letter-spacing:.08em;">sk-•••••••••••4f2a</span><span style="font-size:11.5px;color:#1f8a5b;font-weight:600;cursor:pointer;">Показати</span></div>
+        </label>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:12px;padding-top:12px;border-top:1px solid #e4ebe7;">
+          <div style="display:flex;align-items:center;gap:8px;font-size:12.5px;color:#167049;font-weight:600;"><span style="width:7px;height:7px;border-radius:50%;background:#1f8a5b;"></span>З'єднання активне</div>
+          <button style="border:1px solid #d6e0da;background:#fff;color:#14241d;font:inherit;font-weight:600;font-size:12.5px;padding:7px 13px;border-radius:8px;cursor:pointer;">Перевірити</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:9px;align-items:flex-start;background:#e8edfb;border:1px solid #cdd9f7;border-radius:11px;padding:11px 13px;margin-top:12px;">
+        <span style="color:#2563eb;font-weight:700;font-size:13px;">i</span><div style="font-size:12px;color:#1e40af;line-height:1.45;">Ключ зберігається локально. Використовується лише для розпізнавання тексту та фото.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATES / PWA -->
+<section id="states" style="max-width:1180px;margin:0 auto;padding:36px 28px;">
+  <div style="display:flex;align-items:baseline;gap:14px;border-top:1px solid #dfe7e2;padding-top:34px;">
+    <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#1f8a5b;font-weight:600;">05</span>
+    <h2 style="font-size:30px;letter-spacing:-.03em;font-weight:700;margin:0;">Стани та PWA</h2>
+    <span style="color:#7c8b83;font-size:15px;margin-left:auto;">Offline · update · sync · повідомлення</span>
+  </div>
+
+  <!-- PWA banners -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px;">
+    <div style="background:#14241d;color:#eaf3ee;border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px;">
+      <span style="width:30px;height:30px;border-radius:9px;background:#2a3d34;display:flex;align-items:center;justify-content:center;font-size:15px;">⤓</span>
+      <div style="flex:1;"><div style="font-size:13.5px;font-weight:600;">Встановити Finup</div><div style="font-size:11.5px;color:#9fb3a8;">Додати на головний екран</div></div>
+      <span style="font-size:12px;font-weight:600;color:#76d9a6;">Додати</span>
+    </div>
+    <div style="background:#e8edfb;border:1px solid #cdd9f7;border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px;">
+      <span style="width:30px;height:30px;border-radius:9px;background:#2563eb;color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;">↻</span>
+      <div style="flex:1;"><div style="font-size:13.5px;font-weight:600;">Доступна нова версія</div><div style="font-size:11.5px;color:#1e40af;">Оновіть застосунок</div></div>
+      <span style="font-size:12px;font-weight:700;color:#1d4ed8;">Оновити</span>
+    </div>
+    <div style="background:#fff4e2;border:1px solid #f5dcb0;border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px;">
+      <span style="width:30px;height:30px;border-radius:9px;background:#d97706;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;">⚡</span>
+      <div style="flex:1;"><div style="font-size:13.5px;font-weight:600;">Офлайн-режим</div><div style="font-size:11.5px;color:#92500a;">Синхронізуємо при підключенні</div></div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px;">
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px;">
+      <span style="width:26px;height:26px;border-radius:50%;border:2px solid #cfe6da;border-top-color:#1f8a5b;animation:finup-spin .9s linear infinite;flex-shrink:0;"></span>
+      <div style="flex:1;"><div style="font-size:13.5px;font-weight:600;">Синхронізація…</div><div style="font-size:11.5px;color:#7c8b83;">3 операції очікують відправки</div></div>
+      <span style="font-size:11px;color:#b45309;background:#fff4e2;padding:3px 9px;border-radius:999px;font-weight:600;">pending 3</span>
+    </div>
+    <div style="background:#fce7ec;border:1px solid #f6c9d4;border-radius:14px;padding:16px;display:flex;align-items:center;gap:12px;">
+      <span style="width:26px;height:26px;border-radius:50%;background:#e11d48;color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;flex-shrink:0;">!</span>
+      <div style="flex:1;"><div style="font-size:13.5px;font-weight:600;">Помилка сервісу</div><div style="font-size:11.5px;color:#9f1239;">Не вдалося завантажити дані</div></div>
+      <span style="font-size:12px;font-weight:700;color:#be123c;cursor:pointer;">Повторити</span>
+    </div>
+  </div>
+
+  <!-- message matrix -->
+  <div style="font-size:14px;font-weight:600;color:#4a5b53;margin:30px 0 12px;">Семантика повідомлень</div>
+  <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;">
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:14px;padding:16px;"><span style="display:inline-block;width:24px;height:24px;border-radius:7px;background:#1f8a5b;color:#fff;text-align:center;line-height:24px;font-size:13px;">✓</span><div style="font-size:14px;font-weight:600;margin-top:10px;">Success</div><div style="font-size:12px;color:#7c8b83;margin-top:4px;line-height:1.5;">Операцію збережено · Підтверджено · Створено операції · Імпорт підтверджено.</div></div>
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:14px;padding:16px;"><span style="display:inline-block;width:24px;height:24px;border-radius:7px;background:#e11d48;color:#fff;text-align:center;line-height:24px;font-size:13px;">!</span><div style="font-size:14px;font-weight:600;margin-top:10px;">Error</div><div style="font-size:12px;color:#7c8b83;margin-top:4px;line-height:1.5;">Помилка сервісу · Парсер не впорався · Помилка завантаження. Recoverable.</div></div>
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:14px;padding:16px;"><span style="display:inline-block;width:24px;height:24px;border-radius:7px;background:#d97706;color:#fff;text-align:center;line-height:24px;font-size:12px;">▲</span><div style="font-size:14px;font-weight:600;margin-top:10px;">Warning</div><div style="font-size:12px;color:#7c8b83;margin-top:4px;line-height:1.5;">Рахунок не вказано (→ типовий) · Непідтримуваний файл/OCR · Часткові дані.</div></div>
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:14px;padding:16px;"><span style="display:inline-block;width:24px;height:24px;border-radius:7px;background:#2563eb;color:#fff;text-align:center;line-height:24px;font-size:13px;">i</span><div style="font-size:14px;font-weight:600;margin-top:10px;">Info</div><div style="font-size:12px;color:#7c8b83;margin-top:4px;line-height:1.5;">Офлайн-режим · Є операції, що очікують · Дані очищено.</div></div>
+    <div style="background:#fff;border:1px solid #e4ebe7;border-radius:14px;padding:16px;"><span style="display:inline-block;width:24px;height:24px;border-radius:7px;background:#14241d;color:#fff;text-align:center;line-height:24px;font-size:12px;">?</span><div style="font-size:14px;font-weight:600;margin-top:10px;">Confirm</div><div style="font-size:12px;color:#7c8b83;margin-top:4px;line-height:1.5;">Видалити операцію / відхилити preview: inline або bottom sheet.</div></div>
+  </div>
+
+  <!-- bottom sheet + responsive notes -->
+  <div style="display:grid;grid-template-columns:300px 1fr;gap:22px;margin-top:24px;align-items:start;">
+    <div>
+      <div style="font-size:13px;color:#7c8b83;font-weight:600;margin-bottom:10px;">Bottom sheet · confirm на mobile</div>
+      <div style="width:300px;border:9px solid #14241d;border-radius:42px;overflow:hidden;box-shadow:0 18px 44px rgba(20,36,29,.22);">
+        <div style="height:380px;background:#0e1714;position:relative;display:flex;flex-direction:column;justify-content:flex-end;">
+          <div style="position:absolute;inset:0;background:rgba(14,23,20,.55);"></div>
+          <div style="position:relative;background:#fff;border-radius:24px 24px 0 0;padding:20px 18px calc(18px + env(safe-area-inset-bottom));">
+            <div style="width:38px;height:4px;border-radius:999px;background:#e4ebe7;margin:0 auto 16px;"></div>
+            <div style="font-size:17px;font-weight:700;">Видалити операцію?</div>
+            <div style="font-size:13px;color:#9f1239;margin-top:6px;line-height:1.5;">Статус → «видалено». Поза балансом, але залишиться в Журналі як лог.</div>
+            <button style="border:none;background:#e11d48;color:#fff;font:inherit;font-weight:600;font-size:15px;padding:14px;border-radius:13px;width:100%;margin-top:16px;cursor:pointer;">Так, видалити</button>
+            <button style="border:1px solid #d6e0da;background:#fff;color:#14241d;font:inherit;font-weight:600;font-size:15px;padding:14px;border-radius:13px;width:100%;margin-top:9px;cursor:pointer;">Скасувати</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size:13px;color:#7c8b83;font-weight:600;margin-bottom:10px;">Поведінка адаптивності</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="background:#fff;border:1px solid #e4ebe7;border-radius:12px;padding:14px 16px;"><div style="font-size:13.5px;font-weight:600;">Таблиці → картки</div><div style="font-size:12.5px;color:#7c8b83;margin-top:3px;line-height:1.5;">DataTable (desktop) перетворюється на CardList (mobile). Жодного горизонтального скролу.</div></div>
+        <div style="background:#fff;border:1px solid #e4ebe7;border-radius:12px;padding:14px 16px;"><div style="font-size:13.5px;font-weight:600;">Меню</div><div style="font-size:12.5px;color:#7c8b83;margin-top:3px;line-height:1.5;">Sidebar (desktop) → bottom nav з 4–5 пунктів + sticky FAB (mobile). Імпорт як підменю.</div></div>
+        <div style="background:#fff;border:1px solid #e4ebe7;border-radius:12px;padding:14px 16px;"><div style="font-size:13.5px;font-weight:600;">Форми та дії</div><div style="font-size:12.5px;color:#7c8b83;margin-top:3px;line-height:1.5;">Поля на всю ширину, sticky primary action унизу. Confirm — inline block або bottom sheet, ніколи прихований.</div></div>
+        <div style="background:#fff;border:1px solid #e4ebe7;border-radius:12px;padding:14px 16px;"><div style="font-size:13.5px;font-weight:600;">Доступність</div><div style="font-size:12.5px;color:#7c8b83;margin-top:3px;line-height:1.5;">Tap ≥ 44px · фокус-стани · без hover-only · safe-area inset · клавіатура та screen reader.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="max-width:1180px;margin:0 auto;padding:32px 28px 60px;border-top:1px solid #dfe7e2;margin-top:20px;">
+  <div style="display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;"><span style="width:24px;height:24px;border-radius:7px;background:#1f8a5b;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:13px;">₴</span>Finup Greenfield · Design Reference v1</div>
+  <p style="font-size:13px;color:#7c8b83;margin-top:10px;max-width:64ch;line-height:1.6;">Mock-дані, без backend. Операції живуть у Журналі зі статусами pending / approved / deleted; pending та approved впливають на баланс, deleted — ні. Категорія — вільний текст. Світла тема як основна; токени сумісні з темною.</p>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180,&quot;height&quot;:820}}">
+class Component extends DCLogic {
+  renderVals() {
+    const tx = [
+      { id:'t1', m:'АТБ-Маркет', cat:'Продукти', acc:'Mono картка', amt:'−842 ₴', sign:'out', date:'25 черв · 18:42', status:'pending' },
+      { id:'t2', m:'Зарплата', cat:'Без категорії', acc:'ПриватБанк', amt:'+48 000 ₴', sign:'in', date:'25 черв · 10:00', status:'pending' },
+      { id:'t3', m:'Нова Пошта', cat:'Доставка', acc:'Mono картка', amt:'−120 ₴', sign:'out', date:'24 черв · 14:10', status:'approved' },
+      { id:'t4', m:'WOG АЗК', cat:'Авто · Паливо', acc:'Готівка', amt:'−1 450 ₴', sign:'out', date:'24 черв · 09:25', status:'approved' },
+      { id:'t5', m:'Rozetka', cat:'Електроніка', acc:'Mono картка', amt:'−6 299 ₴', sign:'out', date:'23 черв · 21:03', status:'deleted' },
+      { id:'t6', m:'Spotify', cat:'Підписки', acc:'Mono картка', amt:'−95 ₴', sign:'out', date:'23 черв · 08:00', status:'approved' },
+    ];
+    const breakdown = [
+      { name:'Продукти', amt:'12 480 ₴', pct:32, color:'#1f8a5b' },
+      { name:'Житло', amt:'9 200 ₴', pct:24, color:'#2f9e6b' },
+      { name:'Транспорт', amt:'5 640 ₴', pct:14, color:'#56b487' },
+      { name:'Підписки', amt:'3 110 ₴', pct:8, color:'#84c9a7' },
+      { name:'Без категорії', amt:'8 480 ₴', pct:22, color:'#b9ddca' },
+    ];
+    const accounts = [
+      { name:'Mono картка', type:'Картка · UAH', bal:'48 920 ₴', status:'ok', def:true },
+      { name:'ПриватБанк', type:'Картка · UAH', bal:'102 360 ₴', status:'ok', def:false },
+      { name:'Готівка', type:'Готівка · UAH', bal:'13 000 ₴', status:'ok', def:false },
+      { name:'Депозит', type:'Накопичення · UAH', bal:'— ₴', status:'deferred', def:false },
+    ];
+    const expenseCats = ['Продукти','Житло','Транспорт','Авто · Паливо','Підписки','Здоров’я','Розваги','Доставка'];
+    const incomeCats = ['Зарплата','Фріланс','Повернення','Подарунки'];
+    const bankRows = [
+      { d:'24.06', m:'АТБ-Маркет №241', amt:'−842,00', ok:true, note:'' },
+      { d:'24.06', m:'Переказ на картку **4417', amt:'−2 000,00', ok:true, note:'' },
+      { d:'23.06', m:'Невідомий мерчант', amt:'−310,00', ok:false, note:'Немає рахунку для зіставлення' },
+      { d:'23.06', m:'Rozetka.ua', amt:'−6 299,00', ok:true, note:'' },
+    ];
+    const statusMap = {
+      pending:  { label:'Очікує перевірки', bg:'#fff4e2', fg:'#b45309', dot:'#d97706' },
+      approved: { label:'Підтверджено',     bg:'#e6f2eb', fg:'#167049', dot:'#1f8a5b' },
+      deleted:  { label:'Видалено',         bg:'#f2f6f4', fg:'#9fb0a7', dot:'#b9c4bd' },
+    };
+    const txEnriched = tx.map(t => ({
+      ...t,
+      statusLabel: statusMap[t.status].label,
+      badgeBg: statusMap[t.status].bg,
+      badgeFg: statusMap[t.status].fg,
+      badgeDot: statusMap[t.status].dot,
+      deleted: t.status === 'deleted',
+      mTextDecoration: t.status === 'deleted' ? 'line-through' : 'none',
+      rowOpacity: t.status === 'deleted' ? 0.55 : 1,
+      amtColor: t.status === 'deleted' ? '#9fb0a7' : (t.sign === 'in' ? '#167049' : '#be123c'),
+    }));
+    const accStatus = {
+      ok:       { color:'#1f8a5b', text:'Доступно',   bal:'#14241d' },
+      deferred: { color:'#b45309', text:'Очікує розрахунку', bal:'#9fb0a7' },
+      error:    { color:'#be123c', text:'Помилка завантаження', bal:'#9fb0a7' },
+    };
+    const accountsEnriched = accounts.map(a => ({
+      ...a,
+      border: a.def ? '#cfe6da' : '#e4ebe7',
+      bg: a.def ? '#f4fbf7' : '#ffffff',
+      defDisplay: a.def ? 'inline-block' : 'none',
+      balColor: accStatus[a.status].bal,
+      statusColor: accStatus[a.status].color,
+      statusText: accStatus[a.status].text,
+    }));
+    const bankRowsEnriched = bankRows.map(r => ({
+      ...r,
+      rowBg: r.ok ? '#ffffff' : '#fffaf2',
+      boxColor: r.ok ? '#1f8a5b' : '#d6c4a0',
+      boxFill: r.ok ? '#1f8a5b' : '#ffffff',
+      check: r.ok ? '✓' : '',
+    }));
+    return { tx: txEnriched, breakdown, accounts: accountsEnriched, expenseCats, incomeCats, bankRows: bankRowsEnriched };
+  }
+}
+</script>
+</body>
+</html>

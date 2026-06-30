@@ -1,0 +1,139 @@
+{
+  "generatedAt": "2026-06-29T23:40:00Z",
+  "threshold": 70,
+  "dimensions": {
+    "ua-ux-clarity": 95,
+    "explicit-state-clarity": 96,
+    "ua-error-clarity": 93
+  },
+  "cases": [
+    {
+      "id": "eval-foundation-imports-hub-clarity",
+      "dimension": "ua-ux-clarity",
+      "trace": [
+        "FR-IMPORT-01",
+        "FR-SHELL-03",
+        "NFR-I18N-01"
+      ],
+      "capability": "foundation",
+      "score": 95,
+      "pass": true,
+      "judges": 1,
+      "disagreement": false,
+      "notes": "All three critical criteria are satisfied with directly quotable spans: the page is fully Ukrainian, exposes and links all three import channels, and explicitly states imports become operations with status «очікує перевірки» that the user later reviews. The non-critical criteria are also met — the screen is populated and actionable rather than blank, and the tone is calm and finance-oriented. The footer proactively clarifies PDF is not yet supported."
+    },
+    {
+      "id": "eval-foundation-placeholder-state-clarity",
+      "dimension": "explicit-state-clarity",
+      "trace": [
+        "FR-SHELL-03",
+        "BC-BRAND-01",
+        "NFR-I18N-01"
+      ],
+      "capability": "foundation",
+      "score": 96,
+      "pass": true,
+      "judges": 2,
+      "disagreement": false,
+      "notes": "All three critical criteria are explicitly evidenced: each screen surfaces an explicit «Скоро» state, every string is Ukrainian, and «Цей розділ зараз у розробці й з’явиться незабаром» honestly frames the section as under construction. Tone is calm and terse, and each route carries a distinct, capability-specific title and description. Minor deduction: the development sentence is shared boilerplate across the four screens. | Every screen renders an explicit «Скоро» state (not blank/404), the copy is entirely Ukrainian, and the message honestly frames the section as under development rather than implying absent data. Tone is calm and concise, and each of the four routes carries a distinct, capability-specific title and description. Negligible deduction for the uniform shared body line."
+    },
+    {
+      "id": "eval-accounts-error-clarity",
+      "dimension": "ua-error-clarity",
+      "trace": [
+        "FR-ACCT-05",
+        "FR-ACCT-01",
+        "NFR-I18N-01"
+      ],
+      "capability": "accounts",
+      "score": 93,
+      "pass": true,
+      "judges": 1,
+      "disagreement": false,
+      "notes": "All three CRITICAL criteria satisfied by quotable spans: every visible string is Ukrainian (currency code UAH glossed as «у гривні»); the archive-rejection messages state cause and remedy («Не можна архівувати типовий рахунок. Спершу зробіть типовим інший рахунок» and «…останній активний рахунок — має лишатися щонайменше один»); the default is labelled «Типовий» unambiguously and reused consistently in the set-default action. Tone is calm and finance-oriented; messages are situation-specific, never generic. Minor non-gating nit: the last-account message states the invariant rather than an explicit next step."
+    },
+    {
+      "id": "eval-ledger-items-error-clarity",
+      "dimension": "ua-error-clarity",
+      "trace": [
+        "FR-ITEM-03",
+        "FR-ITEM-04",
+        "FR-ITEM-05",
+        "NFR-I18N-01"
+      ],
+      "capability": "ledger-items",
+      "score": 93,
+      "pass": true,
+      "judges": 1,
+      "disagreement": false,
+      "notes": "Fresh eval-judge (maker≠checker) over the produced output, confirmed to match the live src/modules/ledger-items/ui/ledger-content.ts. All three CRITICAL criteria hold: every string is Ukrainian (loanwords «імпорт»/«архівовано» are standard Ukrainian, not English jargon); invalid-status/validation errors state cause and remedy («Затвердити можна лише операцію, що очікує; вилучену не можна редагувати», field-named description/date-required); the two empty states are distinct («Журнал порожній …» vs «Нічого не знайдено …»). amount-invalid gives concrete examples («напр. 200 або 200,50»). Calm tone, never a generic message in the graded surface. Minor deduction: «Невірна сума» is slightly blunt vs the otherwise polished phrasing — lands on par with the accounts baseline (93)."
+    },
+    {
+      "id": "eval-manual-input-error-clarity",
+      "dimension": "ua-error-clarity",
+      "trace": [
+        "FR-TEXT-01",
+        "FR-TEXT-03",
+        "FR-TEXT-05",
+        "NFR-I18N-01"
+      ],
+      "capability": "manual-input",
+      "score": 93,
+      "pass": true,
+      "judges": 1,
+      "disagreement": false,
+      "notes": "Fresh eval-judge (maker≠checker) over the produced output, verified to match the live manual-input-content.ts + import-summary.ts. All three CRITICAL criteria hold: every span is Ukrainian (AI localized as «ШІ»); the parse-failure error states what failed and gives two next actions («Не вдалося розпізнати текст. Перевірте налаштування ШІ або спробуйте ще раз.»); the empty-text validation is a direct imperative («Введіть текст для імпорту.»). Summary states created/failed counts explicitly and only when relevant; calm finance tone, no generic 'something went wrong' in the visible output. Minor: a generic fallback exists for unmapped codes (not in graded output). Held at 93, on par with the sibling baseline, not inflated."
+    },
+    {
+      "id": "eval-file-import-error-clarity",
+      "dimension": "ua-error-clarity",
+      "trace": [
+        "FR-FILE-01",
+        "FR-FILE-03",
+        "FR-FILE-04",
+        "FR-FILE-05",
+        "NFR-I18N-01"
+      ],
+      "capability": "file-imports",
+      "score": 93,
+      "pass": true,
+      "judges": 1,
+      "disagreement": false,
+      "notes": "Fresh eval-judge (maker≠checker) over the produced output, reconstructed from the live file-import-content.ts + import-summary.ts. All four CRITICAL criteria met: fully Ukrainian-first; file-invalid lists JPEG/PNG/WEBP and excludes PDF; parse-failure is recoverable («Перевірте, що фото чітке, або спробуйте ще раз») not a 500; recognized items go to the Журнал with no preview gate. Both quality criteria met (explicit created/failed counts; calm finance tone). -7 for verb shift розпізнати→зберегти in the partial summary and a dense hint sentence. On par with the ua-error-clarity baseline (93)."
+    },
+    {
+      "id": "eval-dashboard-state-clarity",
+      "dimension": "ua-error-clarity",
+      "trace": [
+        "FR-DASH-01",
+        "FR-DASH-04",
+        "FR-DASH-05",
+        "FR-SHELL-03",
+        "NFR-I18N-01"
+      ],
+      "capability": "dashboard",
+      "score": 93,
+      "pass": true,
+      "judges": 1,
+      "disagreement": false,
+      "notes": "Fresh eval-judge (maker≠checker) over the produced output from the live dashboard-content.ts. All three CRITICAL criteria hold: every string is Ukrainian (only Latin is the IANA «Europe/Kyiv» timezone label); the empty state explains «Ще немає операцій» and points to import («Перейти до імпорту»); the insufficient-trend state gives the concrete reason («Тренд з’явиться, коли операції охоплять щонайменше два різні місяці»). Partial vs total failure are distinguished with a retry, and the read-only note + balance hint name which statuses count. Minor non-gating nit: the partial state's «спробуйте оновити сторінку» wording diverges slightly from the error state's «Спробувати ще раз» button. On par with the sibling baseline (93), not inflated. A per-section «Не вдалося завантажити цей розділ» state was added after grading so a failed read no longer masquerades as empty/insufficient."
+    },
+    {
+      "id": "eval-settings-config-export-clarity",
+      "dimension": "ua-error-clarity",
+      "trace": [
+        "FR-SET-01",
+        "FR-SET-02",
+        "FR-SET-03",
+        "FR-SHELL-03",
+        "NFR-I18N-01"
+      ],
+      "capability": "settings",
+      "score": 93,
+      "pass": true,
+      "judges": 1,
+      "disagreement": false,
+      "notes": "Fresh eval-judge graded the live settings-content.ts copy. All three CRITICAL criteria met: fully Ukrainian-first (AI rendered as «ШІ»); the not-configured state states the consequence (AI parsing fails, entry still saved) and the next step (add a key); write-only is explicit («ніколи не показується повторно») with correct blank-field semantics («залиште порожнім, щоб не змінювати збережений ключ»). Validation errors required/whitespace/too-long are distinguishable, blame-free; export copy is read-only-explicit with the no-destructive-reset disclaimer. Minor: «API-ключ»/«Ключ OpenAI»/«Ключ» terminology not unified (sole reason it sits at peer ~93)."
+    }
+  ]
+}

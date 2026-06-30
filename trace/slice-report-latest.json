@@ -1,0 +1,66 @@
+{
+  "generatedAt": "2026-06-30T14:50:37.414Z",
+  "generatedBy": "scripts/slice-report.mjs",
+  "slice": "add-settings",
+  "commands": {
+    "openspecValidate": {
+      "command": "npx openspec validate --all --strict",
+      "exitCode": 0
+    },
+    "openspecList": {
+      "command": "npx openspec list",
+      "exitCode": 0
+    },
+    "tests": {
+      "command": "npm run test:run",
+      "exitCode": 0
+    },
+    "trace": {
+      "command": "node scripts/check-traceability.mjs --check-fresh",
+      "exitCode": 0
+    },
+    "trajectory": {
+      "command": "node scripts/check-trajectory.mjs --check-fresh",
+      "exitCode": 0
+    },
+    "evals": {
+      "command": "node scripts/check-eval-ratchet.mjs",
+      "exitCode": 0
+    },
+    "coverage": {
+      "command": "node scripts/check-coverage-ratchet.mjs",
+      "exitCode": 0
+    }
+  },
+  "metrics": {
+    "openspecPassed": 10,
+    "activeChanges": 0,
+    "testFilesPassed": 48,
+    "testsPassed": 277,
+    "traceFailures": 0,
+    "traceWarnings": 64,
+    "trajectoryFailures": 0,
+    "trajectoryWarnings": 2,
+    "changedFiles": 48,
+    "evalBaseline": {
+      "ua-ux-clarity": 95,
+      "explicit-state-clarity": 96,
+      "ua-error-clarity": 93
+    },
+    "coverageBaseline": {
+      "lines": 69.05,
+      "statements": 69.05,
+      "functions": 80.71,
+      "branches": 90.08
+    },
+    "reviewFindings": "clean",
+    "rawReviewEvidenceRefs": 5,
+    "sliceTrailerCommits": 1,
+    "refs": [
+      "FR-SET-01",
+      "FR-SET-02",
+      "FR-SET-03",
+      "FR-PARSE-06"
+    ]
+  }
+}

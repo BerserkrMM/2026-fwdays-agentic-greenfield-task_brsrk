@@ -1,0 +1,295 @@
+import { describe, expect, it } from "vitest";
+import {
+  BankStatementError,
+  assertBankProvider,
+  assertSupportedBankFile,
+  normalizeBankStatement,
+  statementBytesToText,
+} from "./bank-statement";
+
+// @trace FR-BANK-01, FR-BANK-02
+describe("bank statement validation", () => {
+  it("accepts supported providers and supported statement file types", () => {
+    expect(assertBankProvider("monobank")).toBe("monobank");
+    expect(assertBankProvider("privatbank")).toBe("privatbank");
+    expect(assertSupportedBankFile("june.csv", "text/csv")).toEqual({
+      fileName: "june.csv",
+      mimeType: "text/csv",
+    });
+    expect(assertSupportedBankFile("export.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet").fileName).toBe("export.xlsx");
+  });
+
+  it("rejects unsupported providers and files", () => {
+    expect(() => assertBankProvider("other")).toThrow(BankStatementError);
+    expect(() => assertSupportedBankFile("receipt.pdf", "application/pdf")).toThrow(
+      BankStatementError,
+    );
+  });
+});
+
+// @trace FR-BANK-03
+describe("provider-specific bank normalization", () => {
+  it("extracts structural monobank table rows with source row numbers without categorizing", () => {
+    const table = normalizeBankStatement({
+      provider: "monobank",
+      rawText: "Дата,Опис,MCC,Сума,Валюта\n2026-06-01,АТБ маркет,5411,-120.50,UAH\nРазом,,,,-120.50\n",
+    });
+    expect(table).toMatchObject({
+      provider: "monobank",
+      headerRowNumber: 1,
+      headers: ["Дата", "Опис", "MCC", "Сума", "Валюта"],
+      rows: [
+        {
+          rowNumber: 2,
+          rowId: "r2",
+          cells: ["2026-06-01", "АТБ маркет", "5411", "-120.50", "UAH"],
+        },
+      ],
+    });
+    expect(JSON.stringify(table)).not.toContain("category");
+    expect(JSON.stringify(table)).not.toContain("expense");
+  });
+
+  it("extracts structural privatbank rows and skips obvious non-transaction rows", () => {
+    const table = normalizeBankStatement({
+      provider: "privatbank",
+      rawText: "Дата;Призначення платежу;Сума;Валюта\nПеріод: червень;;;\n03.06.2026;Поповнення картки;2000,00;UAH\nБаланс на кінець;;;\n",
+    });
+    expect(table.rows).toEqual([
+      {
+        rowNumber: 3,
+        rowId: "r3",
+        cells: ["03.06.2026", "Поповнення картки", "2000,00", "UAH"],
+      },
+    ]);
+  });
+
+  it("handles quoted delimiters and tab-separated exports", () => {
+    const table = normalizeBankStatement({
+      provider: "monobank",
+      rawText: 'Дата\tОпис\tСума\n2026-06-01\t"АТБ, маркет"\t-120.00\n',
+    });
+    expect(table.rows[0].cells).toEqual(["2026-06-01", "АТБ, маркет", "-120.00"]);
+  });
+
+  it("extracts rows from an Excel HTML .xls export before normalization", () => {
+    const text = statementBytesToText({
+      fileName: "pb.xls",
+      bytes: new Uint8Array(),
+      textFallback:
+        "<table><tr><th>Дата</th><th>Призначення платежу</th><th>Сума</th></tr><tr><td>2026-06-01</td><td>АТБ</td><td>-120.50</td></tr></table>",
+    });
+    expect(normalizeBankStatement({ provider: "privatbank", rawText: text }).rows[0].cells).toContain(
+      "АТБ",
+    );
+  });
+
+  it("extracts worksheet rows from an XLSX workbook before normalization", () => {
+    const workbook = makeStoredXlsx({
+      "xl/sharedStrings.xml": "<sst><si><t>Дата</t></si><si><t>Опис</t></si><si><t>Сума</t></si><si><t>АТБ</t></si></sst>",
+      "xl/worksheets/sheet1.xml": '<worksheet><sheetData><row r="1"><c r="A1" t="s"><v>0</v></c><c r="B1" t="s"><v>1</v></c><c r="C1" t="s"><v>2</v></c></row><row r="2"><c r="A2"><v>2026-06-01</v></c><c r="B2" t="s"><v>3</v></c><c r="C2"><v>-120.50</v></c></row></sheetData></worksheet>',
+    });
+    const text = statementBytesToText({ fileName: "mono.xlsx", bytes: workbook, textFallback: "" });
+    expect(normalizeBankStatement({ provider: "monobank", rawText: text }).rows[0]).toMatchObject({
+      rowNumber: 2,
+      cells: ["2026-06-01", "АТБ", "-120.50"],
+    });
+  });
+
+  it("keeps comma-bearing cells intact when rebuilding an Excel HTML .xls export", () => {
+    const text = statementBytesToText({
+      fileName: "pb.xls",
+      bytes: new Uint8Array(),
+      textFallback:
+        "<table><tr><th>Дата</th><th>Опис</th><th>Сума</th></tr><tr><td>2026-06-01</td><td>АТБ, маркет</td><td>-120.50</td></tr></table>",
+    });
+    expect(normalizeBankStatement({ provider: "privatbank", rawText: text }).rows[0].cells).toEqual([
+      "2026-06-01",
+      "АТБ, маркет",
+      "-120.50",
+    ]);
+  });
+
+  it("keeps comma-bearing cells intact when rebuilding an XLSX worksheet", () => {
+    const workbook = makeStoredXlsx({
+      "xl/sharedStrings.xml":
+        "<sst><si><t>Дата</t></si><si><t>Опис</t></si><si><t>Сума</t></si><si><t>АТБ, маркет</t></si></sst>",
+      "xl/worksheets/sheet1.xml":
+        '<worksheet><sheetData><row r="1"><c r="A1" t="s"><v>0</v></c><c r="B1" t="s"><v>1</v></c><c r="C1" t="s"><v>2</v></c></row><row r="2"><c r="A2"><v>2026-06-01</v></c><c r="B2" t="s"><v>3</v></c><c r="C2"><v>-120.50</v></c></row></sheetData></worksheet>',
+    });
+    const text = statementBytesToText({ fileName: "mono.xlsx", bytes: workbook, textFallback: "" });
+    expect(normalizeBankStatement({ provider: "monobank", rawText: text }).rows[0]).toMatchObject({
+      rowNumber: 2,
+      cells: ["2026-06-01", "АТБ, маркет", "-120.50"],
+    });
+  });
+
+  it("rejects a legacy binary BIFF .xls (OLE2 compound file) as an invalid file", () => {
+    const ole2 = new Uint8Array([0xd0, 0xcf, 0x11, 0xe0, 0xa1, 0xb1, 0x1a, 0xe1, 0x00, 0x00]);
+    expect(() =>
+      statementBytesToText({ fileName: "old.xls", bytes: ole2, textFallback: "binary" }),
+    ).toThrow(BankStatementError);
+  });
+
+  it("detects the delimiter from the header even when a preamble precedes the table", () => {
+    const table = normalizeBankStatement({
+      provider: "monobank",
+      rawText: "Виписка за період червень 2026\nДата,Опис,Сума\n2026-06-01,АТБ,-10.00\n",
+    });
+    expect(table).toMatchObject({
+      headerRowNumber: 2,
+      rows: [{ rowNumber: 3, cells: ["2026-06-01", "АТБ", "-10.00"] }],
+    });
+  });
+
+  it("preserves the real Excel row number when XLSX rows are non-contiguous", () => {
+    const workbook = makeStoredXlsx({
+      "xl/sharedStrings.xml": "<sst><si><t>Дата</t></si><si><t>Опис</t></si><si><t>Сума</t></si><si><t>АТБ</t></si></sst>",
+      "xl/worksheets/sheet1.xml":
+        '<worksheet><sheetData><row r="1"><c r="A1" t="s"><v>0</v></c><c r="B1" t="s"><v>1</v></c><c r="C1" t="s"><v>2</v></c></row><row r="7"><c r="A7"><v>2026-06-01</v></c><c r="B7" t="s"><v>3</v></c><c r="C7"><v>-120.50</v></c></row></sheetData></worksheet>',
+    });
+    const text = statementBytesToText({ fileName: "mono.xlsx", bytes: workbook, textFallback: "" });
+    expect(normalizeBankStatement({ provider: "monobank", rawText: text }).rows[0]).toMatchObject({
+      rowNumber: 7,
+      rowId: "r7",
+      cells: ["2026-06-01", "АТБ", "-120.50"],
+    });
+  });
+
+  it("treats a text-based .xls (no OLE2 signature, no table) as delimited text", () => {
+    const text = statementBytesToText({
+      fileName: "data.xls",
+      bytes: new TextEncoder().encode("Дата,Опис,Сума\n2026-06-01,АТБ,-10.00\n"),
+    });
+    expect(normalizeBankStatement({ provider: "monobank", rawText: text }).rows[0].cells[1]).toBe("АТБ");
+  });
+
+  it("parses an XLSX workbook shipped with a .xls extension (detect by content)", () => {
+    const workbook = makeStoredXlsx({
+      "xl/sharedStrings.xml": "<sst><si><t>Дата</t></si><si><t>Опис</t></si><si><t>Сума</t></si><si><t>АТБ</t></si></sst>",
+      "xl/worksheets/sheet1.xml":
+        '<worksheet><sheetData><row r="1"><c r="A1" t="s"><v>0</v></c><c r="B1" t="s"><v>1</v></c><c r="C1" t="s"><v>2</v></c></row><row r="2"><c r="A2"><v>2026-06-01</v></c><c r="B2" t="s"><v>3</v></c><c r="C2"><v>-120.50</v></c></row></sheetData></worksheet>',
+    });
+    const text = statementBytesToText({ fileName: "report.xls", bytes: workbook });
+    expect(normalizeBankStatement({ provider: "monobank", rawText: text }).rows[0].cells[1]).toBe("АТБ");
+  });
+
+  it("decodes a Windows-1251 (cp1251) CSV instead of producing mojibake", () => {
+    const text = statementBytesToText({
+      fileName: "mono.csv",
+      bytes: toCp1251("Дата;Опис;Сума\n2026-06-01;АТБ;-10,00\n"),
+    });
+    expect(normalizeBankStatement({ provider: "monobank", rawText: text }).rows[0].cells).toEqual([
+      "2026-06-01",
+      "АТБ",
+      "-10,00",
+    ]);
+  });
+
+  it("does not require descriptive semantic column titles to map fields deterministically", () => {
+    const table = normalizeBankStatement({
+      provider: "privatbank",
+      rawText:
+        "Історія операцій\n" +
+        "Коли\tГрупа\tХто/що\tРух коштів\tГрошова одиниця\n" +
+        "27.02.2025 18:04:09\tТаксі\tUklon\t-242.0\tUAH\n",
+    });
+    expect(table.headers).toEqual(["Коли", "Група", "Хто/що", "Рух коштів", "Грошова одиниця"]);
+    expect(table.rows[0]).toMatchObject({
+      rowNumber: 3,
+      cells: ["27.02.2025 18:04:09", "Таксі", "Uklon", "-242.0", "UAH"],
+    });
+  });
+
+  it("rejects a corrupt XLSX upload as an invalid file instead of throwing", () => {
+    expect(() =>
+      statementBytesToText({
+        fileName: "evil.xlsx",
+        bytes: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]),
+        textFallback: "",
+      }),
+    ).toThrow(BankStatementError);
+  });
+
+  it("rejects a statement with no normalized transaction rows", () => {
+    expect(() =>
+      normalizeBankStatement({ provider: "monobank", rawText: "Дата,Опис,Сума\nРазом,,0\n" }),
+    ).toThrow(BankStatementError);
+  });
+
+  it("rejects a statement with no recognizable header", () => {
+    expect(() => normalizeBankStatement({ provider: "privatbank", rawText: "не виписка" })).toThrow(
+      BankStatementError,
+    );
+  });
+});
+
+function makeStoredXlsx(files: Record<string, string>): Uint8Array {
+  const chunks: number[][] = [];
+  const central: number[][] = [];
+  let offset = 0;
+  for (const [name, content] of Object.entries(files)) {
+    const nameBytes = bytes(name);
+    const data = bytes(content);
+    const crc = crc32(data);
+    const local = [
+      ...u32(0x04034b50), ...u16(20), ...u16(0), ...u16(0), ...u16(0), ...u16(0),
+      ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(nameBytes.length), ...u16(0),
+      ...nameBytes, ...data,
+    ];
+    chunks.push(local);
+    central.push([
+      ...u32(0x02014b50), ...u16(20), ...u16(20), ...u16(0), ...u16(0), ...u16(0), ...u16(0),
+      ...u32(crc), ...u32(data.length), ...u32(data.length), ...u16(nameBytes.length), ...u16(0), ...u16(0),
+      ...u16(0), ...u16(0), ...u32(0), ...u32(offset), ...nameBytes,
+    ]);
+    offset += local.length;
+  }
+  const centralOffset = offset;
+  const centralBytes = central.flat();
+  const eocd = [
+    ...u32(0x06054b50), ...u16(0), ...u16(0), ...u16(central.length), ...u16(central.length),
+    ...u32(centralBytes.length), ...u32(centralOffset), ...u16(0),
+  ];
+  return new Uint8Array([...chunks.flat(), ...centralBytes, ...eocd]);
+}
+
+function bytes(value: string): number[] {
+  return [...new TextEncoder().encode(value)];
+}
+
+// Encode Cyrillic + ASCII text to Windows-1251 bytes (enough of the cp1251 map
+// for Ukrainian statement headers) so the decoder fallback can be tested.
+function toCp1251(value: string): Uint8Array {
+  const extra: Record<number, number> = {
+    0x0401: 0xa8, 0x0451: 0xb8, 0x0406: 0xb2, 0x0456: 0xb3, 0x0407: 0xaf,
+    0x0457: 0xbf, 0x0404: 0xaa, 0x0454: 0xba, 0x0490: 0xa5, 0x0491: 0xb4,
+  };
+  const out: number[] = [];
+  for (const ch of value) {
+    const cp = ch.codePointAt(0) ?? 0x3f;
+    if (cp < 0x80) out.push(cp);
+    else if (cp >= 0x0410 && cp <= 0x044f) out.push(cp - 0x0410 + 0xc0);
+    else out.push(extra[cp] ?? 0x3f);
+  }
+  return new Uint8Array(out);
+}
+
+function u16(value: number): number[] {
+  return [value & 0xff, (value >> 8) & 0xff];
+}
+
+function u32(value: number): number[] {
+  return [value & 0xff, (value >> 8) & 0xff, (value >> 16) & 0xff, (value >> 24) & 0xff];
+}
+
+function crc32(data: number[]): number {
+  let crc = 0xffffffff;
+  for (const byte of data) {
+    crc ^= byte;
+    for (let i = 0; i < 8; i += 1) {
+      crc = (crc >>> 1) ^ (0xedb88320 & -(crc & 1));
+    }
+  }
+  return (crc ^ 0xffffffff) >>> 0;
+}

@@ -1,0 +1,12 @@
+{
+  "command": "npx vitest run src/domain/ledger-query.test.ts src/modules/ledger/service.test.ts src/modules/ledger/ledger.smoke.test.ts",
+  "exitCode": 1,
+  "gitHead": "a4c0b841e090c259d208e31e8473d837ee74c28f",
+  "timestamp": "2026-06-28T20:41:27.000Z",
+  "failingTests": [
+    "src/domain/ledger-query.test.ts",
+    "src/modules/ledger/service.test.ts",
+    "src/modules/ledger/ledger.smoke.test.ts"
+  ],
+  "notes": "Tests-first RED: all three new suites fail to load because the implementation modules do not exist yet (src/domain/ledger-query.ts, src/modules/ledger/service.ts) and LedgerItemRepository has no read primitive. Behavior is asserted before code exists; no implementation was written before this run."
+}

@@ -4,10 +4,7 @@
 # Перевірки дорадчі (не блокують мердж) — це навчальний фідбек, не гейт.
 language: "uk-UA"
 tone_instructions: >-
-  Ти — ментор курсу Agentic Engineering (greenfield). Пиши українською, дружньо,
-  але вимогливо. Оцінюй ПРОЦЕС (як застосовано агентні інженерні практики), а не
-  лише код. Стек може бути будь-який — ніколи не вимагай конкретної технології,
-  фреймворку чи структури папок.
+  Пиши українською як дружній, але вимогливий ментор. Оцінюй докази Agentic Engineering процесу, верифікацію й завершеність, а не вибір стеку.
 
 reviews:
   profile: "assertive"
@@ -17,6 +14,11 @@ reviews:
   auto_review:
     enabled: true
     drafts: false
+  path_filters:
+    # Local/vendor tooling prompts and bundled design runtime are not product review surface.
+    - "!.claude/commands/**"
+    - "!.pi/prompts/**"
+    - "!docs/design/support.js"
   path_instructions:
     - path: "**"
       instructions: >-
