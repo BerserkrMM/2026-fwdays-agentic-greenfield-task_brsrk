@@ -29,6 +29,7 @@
     "gate:status": "node scripts/gate-status.mjs"
   },
   "dependencies": {
+    "@vercel/analytics": "^2.0.1",
     "next": "16.2.9",
     "postgres": "^3.4.9",
     "react": "19.2.4",
