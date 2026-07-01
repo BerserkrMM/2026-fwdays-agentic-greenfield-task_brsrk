@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AppShell } from "@/src/modules/foundation/ui/AppShell";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -44,6 +45,7 @@ export default function RootLayout({
     >
       <body className="min-h-dvh">
         <AppShell>{children}</AppShell>
+        <Analytics />
       </body>
     </html>
   );
